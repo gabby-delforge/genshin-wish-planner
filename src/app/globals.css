@@ -7,6 +7,114 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@theme {
+  /* Colors */
+  --color-bg-dark-2: #2a2c42;
+
+  --color-gold-1: #f5d0a9;
+
+  --color-yellow-1: #f9f9c5;
+
+  --color-void-1: #1a1b2e;
+  --color-void-2: #4a4c72;
+
+  /* Other */
+  --text-base: 0.8rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8rem;
+  --text-md: 0.9rem;
+  --text-lg: 1rem;
+  --text-xl: 1.1rem;
+  --text-2xl: 1.2rem;
+  --text-3xl: 1.3rem;
+  --text-4xl: 1.4rem;
+  --text-5xl: 2.2rem;
+  --text-6xl: 2rem;
+  --text-7xl: 2.4rem;
+}
+
+/* Typography */
+@layer components {
+  .h0 {
+    @apply text-6xl text-gold-1 lg:text-7xl font-bold tracking-tighter;
+  }
+
+  .h1 {
+    @apply text-5xl lg:text-6xl font-bold tracking-tighter;
+  }
+
+  .h2 {
+    @apply text-4xl lg:text-5xl font-bold tracking-tight;
+  }
+
+  .h3 {
+    @apply text-3xl lg:text-4xl font-bold;
+  }
+
+  .h4 {
+    @apply text-2xl lg:text-3xl font-semibold;
+  }
+
+  .h5 {
+    @apply text-xl lg:text-2xl font-semibold;
+  }
+
+  .h6 {
+    @apply text-lg lg:text-xl font-semibold;
+  }
+
+  /* Body text styles */
+  .body-large {
+    @apply text-lg leading-relaxed;
+  }
+
+  .body {
+    @apply text-base leading-relaxed;
+  }
+
+  .body-small {
+    @apply text-sm leading-normal;
+  }
+
+  /* Additional text styles */
+  .caption {
+    @apply text-xs leading-normal;
+  }
+
+  .overline {
+    @apply text-xs uppercase tracking-wider font-medium;
+  }
+}
+
+@layer utilities {
+  /* Icon sizes that match typography */
+  .size-h0 {
+    width: var(--text-7xl);
+    height: var(--text-7xl);
+  }
+
+  .size-h1 {
+    width: var(--text-6xl);
+    height: var(--text-6xl);
+  }
+
+  .size-h2 {
+    width: var(--text-5xl);
+    height: var(--text-5xl);
+  }
+
+  .size-h3 {
+    width: var(--text-4xl);
+    height: var(--text-4xl);
+  }
+
+  .size-h4 {
+    width: var(--text-7xl);
+    height: var(--text-7xl);
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -73,5 +181,14 @@ body {
   } */
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Hide the number input arrows */
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }

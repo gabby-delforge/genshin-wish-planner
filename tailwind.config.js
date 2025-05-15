@@ -1,11 +1,15 @@
+// tailwind.config.js
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        xs: "390px",
+        ...defaultTheme.screens,
+        "2xl": "1400px",
+      },
+    },
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
-}
+};

@@ -54,10 +54,10 @@ export function getCharacterElementColor(element: string): string {
  */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric',
-    month: 'short', 
-    day: 'numeric' 
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 
@@ -97,27 +97,29 @@ export function isPastDate(dateString: string): boolean {
  * Get the current banner based on the date
  * @param banners Array of banners
  */
-export function getCurrentBanner(banners: {startDate: string, endDate: string}[]): number {
+export function getCurrentBanner(
+  banners: { startDate: string; endDate: string }[]
+): number {
   const today = new Date();
-  
+
   for (let i = 0; i < banners.length; i++) {
     const startDate = new Date(banners[i].startDate);
     const endDate = new Date(banners[i].endDate);
-    
+
     if (today >= startDate && today <= endDate) {
       return i;
     }
   }
-  
+
   // If no current banner, return the next upcoming one
   for (let i = 0; i < banners.length; i++) {
     const startDate = new Date(banners[i].startDate);
-    
+
     if (today < startDate) {
       return i;
     }
   }
-  
+
   // Default to the first banner if none are current or upcoming
   return 0;
 }

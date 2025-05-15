@@ -2,24 +2,19 @@
 import React, {
   createContext,
   useContext,
-  useReducer,
   useEffect,
   useCallback,
   ReactNode,
   useMemo,
 } from "react";
-import { GenshinState } from "./types";
+import { GenshinState, initialStateData } from "./state";
 import { reducer } from "./reducer";
-import { runSimulation as runSimulationFunction } from "@/lib/simulation";
-import { loadState, saveState } from "../storage";
 import {
-  AccountStatus,
-  Banner,
-  AppMode,
-  VersionId,
-  CharacterId,
-  SimulationResults,
-} from "../types";
+  runOptimization,
+  runSimulationFunction,
+} from "@/lib/simulation/wish-simulator";
+import { AccountStatus, Banner, AppMode, SimulationResults } from "../types";
+import { useLocalStorageReducer } from "./useLocalStorageReducer";
 
 // Create the context
 const GenshinContext = createContext<GenshinState | undefined>(undefined);
@@ -28,20 +23,30 @@ const GenshinContext = createContext<GenshinState | undefined>(undefined);
 export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // Initialize with loaded state or default
-  const [state, dispatch] = useReducer(reducer, loadState());
   const [isLoading, setIsLoading] = React.useState(true);
+  const [state, dispatch] = useLocalStorageReducer(
+    reducer,
+    initialStateData,
+    "genshin-state",
+    (success) => {
+      if (success) {
+        setIsLoading(false);
+      } else {
+        console.error("Failed to load state from session storage");
+      }
+    }
+  );
 
   // Reset all data function
   const resetAllData = useCallback(() => {
     dispatch({ type: "RESET_DATA" });
   }, []);
 
+  // Reset all data on render
   useEffect(() => {
     resetAllData();
-  }, []);
+  }, [resetAllData]);
 
-  // Debug key handler
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "d") {
@@ -54,15 +59,12 @@ export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [resetAllData]);
 
-  // Set loading state
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
-
-  // Then use it in your effect
-  useEffect(() => {
-    saveState(state);
-  }, [state]);
+  /** TODO: This causes the state to be saved right after the initial load; we should prevent that. */
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     saveState(state);
+  //   }
+  // }, [state, isLoading]);
 
   // Function implementations
   const setAccountStatus = useCallback((status: AccountStatus) => {
@@ -98,62 +100,44 @@ export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "SET_MODE", payload: newMode });
   }, []);
 
-  const updateWishAllocation = useCallback(
-    (bannerVersion: VersionId, characterId: CharacterId, wishes: number) => {
-      dispatch({
-        type: "UPDATE_WISH_ALLOCATION",
-        payload: { bannerVersion, characterId, wishes },
-      });
-    },
-    []
-  );
-
-  const updateWantAllocation = useCallback(
-    (
-      bannerVersion: VersionId,
-      characterId: CharacterId,
-      wantFactor: string
-    ) => {
-      dispatch({
-        type: "UPDATE_WANT_ALLOCATION",
-        payload: { bannerVersion, characterId, wantFactor },
-      });
-    },
-    []
-  );
-
   // Add the mode-specific simulation functions
   const runPlaygroundSimulation = useCallback(async () => {
     dispatch({ type: "RUN_SIMULATION", payload: { mode: "playground" } });
-    await runSimulationFunction({
-      ...state,
-      setIsSimulating,
-      setSimulationProgress,
-      setSimulationResults: (results) => {
+    await runSimulationFunction(
+      state.banners,
+      state.bannerAllocations,
+      state.accountStatus.currentPity,
+      state.accountStatus.isNextFiftyFiftyGuaranteed,
+      state.simulations,
+      (results: SimulationResults) => {
         dispatch({
           type: "SET_SIMULATION_RESULTS",
           payload: { mode: "playground", results },
         });
       },
-    });
+      setIsSimulating,
+      setSimulationProgress
+    );
   }, [state, setIsSimulating, setSimulationProgress]);
 
-  const runOptimizerSimulation = useCallback(() => {
-    dispatch({ type: "RUN_SIMULATION", payload: { mode: "optimizer" } });
-    runSimulationFunction({
-      ...state,
-      setIsSimulating,
-      setSimulationProgress,
-      mode: "optimizer",
-      setSimulationResults: (results) => {
+  const runOptimizerSimulation = useCallback(async () => {
+    dispatch({ type: "RUN_SIMULATION", payload: { mode: "strategy" } });
+    await runOptimization(
+      state.banners,
+      state.bannerAllocations,
+      state.accountStatus.currentPity,
+      state.accountStatus.isNextFiftyFiftyGuaranteed,
+      state.availableWishes,
+      (results: SimulationResults) => {
         dispatch({
           type: "SET_SIMULATION_RESULTS",
-          payload: { mode: "optimizer", results },
+          payload: { mode: "playground", results },
         });
       },
-    });
+      setIsSimulating,
+      setSimulationProgress
+    );
   }, [state, setIsSimulating, setSimulationProgress]);
-
   const setPlaygroundSimulationResults = useCallback(
     (results: SimulationResults) => {
       dispatch({
@@ -168,7 +152,7 @@ export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
     (results: SimulationResults) => {
       dispatch({
         type: "SET_SIMULATION_RESULTS",
-        payload: { mode: "optimizer", results },
+        payload: { mode: "strategy", results },
       });
     },
     []
@@ -182,8 +166,6 @@ export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
       setIsSimulating,
       setSimulationProgress,
       switchMode,
-      updateWishAllocation,
-      updateWantAllocation,
       resetAllData,
       dispatch,
       runPlaygroundSimulation,
@@ -198,8 +180,6 @@ export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
       setIsSimulating,
       setSimulationProgress,
       switchMode,
-      updateWishAllocation,
-      updateWantAllocation,
       resetAllData,
       dispatch,
       runPlaygroundSimulation,

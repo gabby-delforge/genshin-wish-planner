@@ -1,6 +1,6 @@
 "use client";
 
-import { GenshinStateData, initialStateData } from "./context/types";
+import { GenshinStateData, initialStateData } from "./context/state";
 
 // Storage keys
 const STORAGE_KEY = "genshin-state";
@@ -15,6 +15,8 @@ const getLocalStorage = (): Storage | null => {
 
 // Save state to localStorage
 export const saveState = (state: GenshinStateData): void => {
+  console.log("saving state", state);
+  debugger;
   const storage = getLocalStorage();
   if (storage) {
     try {
@@ -35,6 +37,8 @@ export const loadState = (): GenshinStateData => {
       if (serializedState === null) {
         return initialStateData;
       }
+      debugger;
+      console.log(JSON.parse(serializedState));
       return JSON.parse(serializedState) as GenshinStateData;
     } catch (error) {
       console.error(`Error loading state from localStorage: ${error}`);

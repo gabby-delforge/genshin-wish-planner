@@ -1,6 +1,6 @@
 "use client";
 
-import { AppMode, WishAllocation, WantAllocation } from "@/lib/types";
+import { AppMode, Allocations } from "@/lib/types";
 import { SimulationResults } from "@/lib/types";
 import { AccountStatus, Banner } from "@/lib/types";
 
@@ -11,8 +11,7 @@ const STORAGE_KEYS = {
   SIMULATION_RESULTS: "genshin-simulation-results",
   SIMULATIONS: "genshin-simulations-count",
   MODE: "genshin-mode",
-  WISH_ALLOCATION: "genshin-wish-allocation",
-  WANT_ALLOCATION: "genshin-want-allocation",
+  BANNER_ALLOCATIONS: "genshin-banner-allocations",
 };
 
 // Type for storable data
@@ -22,8 +21,7 @@ export interface StorableState {
   simulationResults?: SimulationResults | null;
   simulations?: number;
   mode?: AppMode;
-  wishAllocation?: WishAllocation;
-  wantAllocation?: WantAllocation;
+  bannerAllocations?: Allocations;
 }
 
 // Safely access localStorage
@@ -87,12 +85,8 @@ export const saveState = (state: StorableState): void => {
     saveToStorage(STORAGE_KEYS.MODE, state.mode);
   }
 
-  if (state.wishAllocation !== undefined) {
-    saveToStorage(STORAGE_KEYS.WISH_ALLOCATION, state.wishAllocation);
-  }
-
-  if (state.wantAllocation !== undefined) {
-    saveToStorage(STORAGE_KEYS.WANT_ALLOCATION, state.wantAllocation);
+  if (state.bannerAllocations !== undefined) {
+    saveToStorage(STORAGE_KEYS.BANNER_ALLOCATIONS, state.bannerAllocations);
   }
 
   if (state.banners) {
@@ -111,8 +105,8 @@ export const saveState = (state: StorableState): void => {
     saveToStorage(STORAGE_KEYS.MODE, state.mode);
   }
 
-  if (state.wishAllocation !== undefined) {
-    saveToStorage(STORAGE_KEYS.WISH_ALLOCATION, state.wishAllocation);
+  if (state.bannerAllocations !== undefined) {
+    saveToStorage(STORAGE_KEYS.BANNER_ALLOCATIONS, state.bannerAllocations);
   }
 };
 
@@ -121,8 +115,8 @@ export const loadState = (): StorableState => {
   return {
     accountStatus: loadFromStorage<AccountStatus>(STORAGE_KEYS.ACCOUNT_STATUS, {
       currentPity: 0,
-      isGuaranteed: false,
-      wishResources: {
+      isNextFiftyFiftyGuaranteed: false,
+      ownedWishResources: {
         primogems: 0,
         starglitter: 0,
         wishes: 0,
@@ -130,6 +124,7 @@ export const loadState = (): StorableState => {
       hasWelkin: false,
       hasBattlePass: false,
       addEstimatedWishes: false,
+      addExplorationWishes: false,
     }),
     banners: loadFromStorage<Banner[]>(STORAGE_KEYS.BANNERS, []),
     simulationResults: loadFromStorage<SimulationResults | null>(
