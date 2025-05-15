@@ -1,9 +1,10 @@
 "use client";
-import { Separator } from "@/components/ui/separator";
 import BannerCard from "@/components/banner-card";
+import { Separator } from "@/components/ui/separator";
 import { useGenshin } from "@/lib/context/genshin-context";
-import RunSimulationButton from "./runSimulationButton";
 import { VersionId } from "@/lib/types";
+
+import RunSimulationButton from "./runSimulationButton";
 
 export default function StrategyMode() {
   const {
@@ -14,10 +15,6 @@ export default function StrategyMode() {
   } = useGenshin();
   const handlePriorityChange = () => {
     console.log("TODO: update banner allocation");
-  };
-
-  const handleStopAtChange = () => {
-    console.log("TODO: update stop at");
   };
 
   return (
@@ -42,11 +39,10 @@ export default function StrategyMode() {
               key={banner.id}
               banner={banner}
               mode="strategy"
-              onPriorityChange={handlePriorityChange}
               allocation={bannerAllocations[banner.id as VersionId]}
               availableWishes={availableWishes}
               estimatedNewWishesPerBanner={estimatedNewWishesPerBanner}
-              onStopAtChange={handleStopAtChange}
+              updateBannerConfiguration={handlePriorityChange}
             />
           ))}
         </div>

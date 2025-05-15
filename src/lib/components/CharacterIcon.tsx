@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
 import Image from "next/image";
+import React, { useState } from "react";
 
 interface CharacterIconProps {
   name: string;
@@ -12,33 +12,33 @@ interface CharacterIconProps {
 
 /**
  * Component to display a Genshin Impact character icon
- * 
+ *
  * This component will attempt to display a character icon based on the name provided.
  * If the icon fails to load, it will display a fallback placeholder.
  */
-const CharacterIcon: React.FC<CharacterIconProps> = ({ 
-  name, 
-  size = 48, 
-  className = "", 
+const CharacterIcon: React.FC<CharacterIconProps> = ({
+  name,
+  size = 48,
+  className = "",
   alt,
-  useSquareIcon = false
+  useSquareIcon = false,
 }) => {
   const [imgError, setImgError] = useState(false);
-  
+
   // For square icons, we use a different naming convention
-  const iconFilename = useSquareIcon 
+  const iconFilename = useSquareIcon
     ? `UI_AvatarIcon_${name}.png`
     : `UI_AvatarIcon_Side_${name.toLowerCase()}.png`;
-  
+
   const iconPath = `/images/characters/${iconFilename}`;
-  
+
   // Fallback placeholder path
   const fallbackIcon = "/images/unknown_character.png";
-  
-  const borderClass = useSquareIcon ? 'rounded-md' : 'rounded-full';
-  
+
+  const borderClass = useSquareIcon ? "rounded-md" : "rounded-full";
+
   return (
-    <div 
+    <div
       className={`relative overflow-hidden ${borderClass} ${className}`}
       style={{ width: size, height: size }}
     >

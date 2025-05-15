@@ -1,10 +1,10 @@
 "use client";
 
+import ScenariosGrid from "@/components/scenarios-grid";
+import { SimulationResultsGrid } from "@/components/simulation-results-grid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGenshin } from "@/lib/context/genshin-context";
-import ScenariosGrid from "@/components/scenarios-grid";
-import { SimulationResultsGrid } from "@/components/simulation-results-grid";
 
 export default function SimulationResults() {
   const { mode, playgroundSimulationResults, banners } = useGenshin();

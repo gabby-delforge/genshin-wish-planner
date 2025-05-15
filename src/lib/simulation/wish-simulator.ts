@@ -1,4 +1,3 @@
-import { get5StarProbability } from "./simulation";
 import {
   Allocations,
   DEFAULT_PRIORITY,
@@ -8,7 +7,12 @@ import {
   SimulationResults,
   VersionId,
 } from "../types";
+import { get5StarProbability } from "./simulation";
 
+import {
+  IGetCompareValue,
+  MaxPriorityQueue,
+} from "@datastructures-js/priority-queue";
 import {
   ApiCharacter,
   Banner,
@@ -17,10 +21,6 @@ import {
   CharacterSimulationResult,
   WishForCharacterResult,
 } from "../types";
-import {
-  IGetCompareValue,
-  MaxPriorityQueue,
-} from "@datastructures-js/priority-queue";
 
 /**
  * Simulate a single wish

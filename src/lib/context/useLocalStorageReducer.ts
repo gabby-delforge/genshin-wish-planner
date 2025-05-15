@@ -21,6 +21,7 @@ const initializer =
     if (!stored) {
       return initial;
     }
+
     return JSON.parse(stored);
   };
 

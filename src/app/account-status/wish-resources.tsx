@@ -1,7 +1,7 @@
-import { AccountStatus as AccountStatusType } from "@/lib/types";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { LimitedWish, Primogem, Starglitter } from "@/components/resource";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AccountStatus as AccountStatusType } from "@/lib/types";
 
 type WishResourcesProps = {
   accountStatus: AccountStatusType;

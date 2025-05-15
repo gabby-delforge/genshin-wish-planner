@@ -1,6 +1,6 @@
 "use client";
-import { GenshinProvider } from "@/lib/context/genshin-context";
 import WishOptimizer from "@/app/wish-optimizer";
+import { GenshinProvider } from "@/lib/context/genshin-context";
 
 export default function Home() {
   return (

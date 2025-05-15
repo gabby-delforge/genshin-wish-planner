@@ -1,8 +1,8 @@
 import { useGenshin } from "@/lib/context/genshin-context";
 import { Label } from "@radix-ui/react-label";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 
 export default function RunSimulationButton() {
   const {

@@ -1,7 +1,7 @@
-import { Banner, Scenario, ScenarioResult } from "@/lib/types";
-import ScenarioCell from "./scenario-cell";
-import { useMemo } from "react";
 import { simulationResultsToScenario } from "@/lib/simulation/simulation";
+import { Banner, Scenario, ScenarioResult } from "@/lib/types";
+import { useMemo } from "react";
+import ScenarioCell from "./scenario-cell";
 
 type ScenariosGridProps = {
   scenarioResults: ScenarioResult[];

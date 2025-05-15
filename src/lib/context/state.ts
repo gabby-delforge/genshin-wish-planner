@@ -1,16 +1,16 @@
 import { initialBanners } from "../data";
 import {
-  SimulationResults,
   AccountStatus,
-  Banner,
-  VersionId,
-  AppMode,
-  CharacterId,
-  BannerAllocation,
   Allocations,
+  AppMode,
+  Banner,
+  BannerAllocation,
   BannerCharacterAllocation,
-  Priority,
+  CharacterId,
   DEFAULT_PRIORITY,
+  Priority,
+  SimulationResults,
+  VersionId,
 } from "../types";
 import { GenshinAction } from "./actions";
 

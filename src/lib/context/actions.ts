@@ -1,10 +1,10 @@
 import {
   AccountStatus,
-  Banner,
-  VersionId,
   AppMode,
-  SimulationResults,
+  Banner,
   BannerAllocation,
+  SimulationResults,
+  VersionId,
 } from "../types";
 import { GenshinState } from "./state";
 

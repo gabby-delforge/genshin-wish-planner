@@ -1,19 +1,19 @@
 "use client";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useCallback,
-  ReactNode,
-  useMemo,
-} from "react";
-import { GenshinState, initialStateData } from "./state";
-import { reducer } from "./reducer";
 import {
   runOptimization,
   runSimulationFunction,
 } from "@/lib/simulation/wish-simulator";
-import { AccountStatus, Banner, AppMode, SimulationResults } from "../types";
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
+import { AccountStatus, AppMode, Banner, SimulationResults } from "../types";
+import { reducer } from "./reducer";
+import { GenshinState, initialStateData } from "./state";
 import { useLocalStorageReducer } from "./useLocalStorageReducer";
 
 // Create the context

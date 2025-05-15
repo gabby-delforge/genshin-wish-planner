@@ -3,6 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   DEFAULT_PRIORITY,
   PriorityValueToText,
   type AppMode,
@@ -11,14 +18,7 @@ import {
   type Priority,
   type VersionId,
 } from "@/lib/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { getCharacterRarityColor, getCharacterElementColor } from "@/lib/utils";
+import { getCharacterElementColor, getCharacterRarityColor } from "@/lib/utils";
 import { useMemo } from "react";
 interface BannerCardProps {
   banner: Banner;

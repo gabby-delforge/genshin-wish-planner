@@ -1,8 +1,12 @@
 "use client";
 
-import { AppMode, Allocations } from "@/lib/types";
-import { SimulationResults } from "@/lib/types";
-import { AccountStatus, Banner } from "@/lib/types";
+import {
+  AccountStatus,
+  Allocations,
+  AppMode,
+  Banner,
+  SimulationResults,
+} from "@/lib/types";
 
 // Storage keys
 const STORAGE_KEYS = {

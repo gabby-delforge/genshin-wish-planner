@@ -1,6 +1,6 @@
 "use client";
-import { Separator } from "@/components/ui/separator";
 import BannerCard from "@/components/banner-card";
+import { Separator } from "@/components/ui/separator";
 import { useGenshin } from "@/lib/context/genshin-context";
 import { Banner, BannerAllocation, VersionId } from "@/lib/types";
 import RunSimulationButton from "./runSimulationButton";

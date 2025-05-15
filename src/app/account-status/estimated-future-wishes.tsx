@@ -1,13 +1,13 @@
 import { LimitedWish, Primogem } from "@/components/resource";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
+  AccountStatus as AccountStatusType,
   PRIMOGEM_SOURCE_VALUES,
   PrimogemSourceKey,
   PrimogemSourceValue,
 } from "@/lib/types";
-import { AccountStatus as AccountStatusType } from "@/lib/types";
 import { useMemo } from "react";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 
 type EstimatedFutureWishesProps = {
   estimatedNewWishesPerBanner: number;

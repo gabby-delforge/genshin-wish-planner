@@ -1,5 +1,5 @@
-import { bannerResultToToken } from "./simulation";
 import { Allocations, SimulationResult, VersionId } from "../types";
+import { bannerResultToToken } from "./simulation";
 
 import {
   ApiCharacter,

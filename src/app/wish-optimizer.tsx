@@ -1,15 +1,15 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AccountStatus from "@/app/account-status/account-status";
 import PlaygroundMode from "@/app/playground-mode";
-import StrategyMode from "@/app/strategy-mode";
 import SimulationResults from "@/app/simulation-results";
-import type { AppMode } from "@/lib/types";
-import { useGenshin } from "@/lib/context/genshin-context";
-import { Sparkles } from "lucide-react";
+import StrategyMode from "@/app/strategy-mode";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGenshin } from "@/lib/context/genshin-context";
+import type { AppMode } from "@/lib/types";
+import { Sparkles } from "lucide-react";
 
 export default function WishOptimizer() {
   const { mode, switchMode } = useGenshin();
