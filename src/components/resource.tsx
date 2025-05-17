@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 type ResourceProps = {
@@ -13,7 +15,7 @@ type ResourceType =
 
 const resourceMap = {
   primogem:
-    "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png/revision/latest?cb=20201117071158",
+    "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png",
   "limited-wish": "/images/resources/limited-wish.webp",
   "standard-wish": "/images/resources/standard-wish.webp",
   starglitter: "/images/resources/starglitter.webp",
