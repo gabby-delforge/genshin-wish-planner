@@ -22,9 +22,6 @@ export default function PlaygroundMode() {
     setBannerAllocation(bannerVersion, newAllocation);
   };
 
-  console.log(banners);
-  console.log(bannerAllocations);
-
   return (
     <div className="space-y-6">
       <div className="space-y-2">

@@ -23,7 +23,6 @@ export default function ScenariosGrid({
     );
   }, [scenarioResults, banners]);
 
-  console.log(scenarios);
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Common Scenarios</h3>
