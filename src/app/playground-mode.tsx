@@ -1,7 +1,8 @@
 "use client";
 import BannerCard from "@/components/banner-card";
 import { Separator } from "@/components/ui/separator";
-import { useGenshin } from "@/lib/context/genshin-context";
+import { useGenshinState } from "@/lib/context/genshin-context";
+import { useGenshinActions } from "@/lib/context/useGenshinActions";
 import { Banner, BannerAllocation, VersionId } from "@/lib/types";
 import RunSimulationButton from "./runSimulationButton";
 
@@ -11,16 +12,14 @@ export default function PlaygroundMode() {
     bannerAllocations,
     availableWishes,
     estimatedNewWishesPerBanner,
-    dispatch,
-  } = useGenshin();
+  } = useGenshinState();
+  const { setBannerAllocation } = useGenshinActions();
+
   const updateBannerConfiguration = (
-    bannerId: VersionId,
+    bannerVersion: VersionId,
     newAllocation: BannerAllocation
   ) => {
-    dispatch({
-      type: "UPDATE_BANNER_ALLOCATION",
-      payload: { bannerVersion: bannerId, allocation: newAllocation },
-    });
+    setBannerAllocation(bannerVersion, newAllocation);
   };
 
   console.log(banners);

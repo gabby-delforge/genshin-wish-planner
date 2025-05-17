@@ -7,12 +7,14 @@ import StrategyMode from "@/app/strategy-mode";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGenshin } from "@/lib/context/genshin-context";
+import { useGenshinState } from "@/lib/context/genshin-context";
+import { useGenshinActions } from "@/lib/context/useGenshinActions";
 import type { AppMode } from "@/lib/types";
 import { Sparkles } from "lucide-react";
 
 export default function WishOptimizer() {
-  const { mode, switchMode } = useGenshin();
+  const { mode } = useGenshinState();
+  const { switchMode } = useGenshinActions();
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-8xl">

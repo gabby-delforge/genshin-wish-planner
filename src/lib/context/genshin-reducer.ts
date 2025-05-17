@@ -4,12 +4,12 @@ import {
   calculateTotalAvailableWishes,
 } from "../simulation/simulation";
 import { GenshinAction } from "./actions";
-import { GenshinStateData, initialStateData } from "./state";
+import { GenshinState, initialStateData } from "./genshin-state";
 
-export function reducer(
-  state: GenshinStateData,
+export function GenshinReducer(
+  state: GenshinState,
   action: GenshinAction
-): GenshinStateData {
+): GenshinState {
   switch (action.type) {
     case "INIT":
       const estimatedNewWishesPerBanner = calculateEstimatedWishes(
@@ -53,7 +53,7 @@ export function reducer(
       };
     }
     case "SET_SIMULATIONS":
-      return { ...state, simulations: action.payload };
+      return { ...state, simulationCount: action.payload };
     case "SET_BANNERS":
       const newBanners = action.payload;
       const newAvailableWishes = calculateAvailableWishesForBanners(
@@ -86,26 +86,17 @@ export function reducer(
         ),
       };
 
-    case "SET_SIMULATION_RESULTS":
-      const { mode, results } = action.payload;
-      if (mode === "playground") {
-        return {
-          ...state,
-          isSimulating: false,
-          playgroundSimulationResults: results,
-        };
-      } else if (mode === "strategy") {
-        return {
-          ...state,
-          isSimulating: false,
-          optimizerSimulationResults: results,
-        };
-      }
-      return state;
-    case "RUN_SIMULATION":
+    case "SET_PLAYGROUND_SIMULATION_RESULTS":
       return {
         ...state,
-        isSimulating: true,
+        isSimulating: false,
+        playgroundSimulationResults: action.payload.results,
+      };
+    case "SET_OPTIMIZER_SIMULATION_RESULTS":
+      return {
+        ...state,
+        isSimulating: false,
+        optimizerSimulationResults: action.payload.results,
       };
     default:
       return state;

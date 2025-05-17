@@ -1,5 +1,10 @@
-import { Allocations, SimulationResult, VersionId } from "../types";
-import { bannerResultToToken } from "./simulation";
+import {
+  Allocations,
+  DEFAULT_PRIORITY,
+  Priority,
+  SimulationResult,
+  VersionId,
+} from "../types";
 
 import {
   ApiCharacter,
@@ -189,12 +194,6 @@ export class WishSimulator {
     for (const banner of this.banners) {
       this.wishForBanner(banner, this.allocations, this.pity, this.guaranteed);
     }
-
-    this.simulationResults.pattern = Object.keys(this.simulationResults)
-      .map((banner) =>
-        bannerResultToToken(this.simulationResults[banner as VersionId])
-      )
-      .join("");
   }
 
   /**
@@ -239,10 +238,10 @@ export class WishSimulator {
   // and returns the best result.
   runOptimization() {
     const defaultAllocations = {
-      "must-have": 80,
-      want: 50,
-      "nice-to-have": 20,
-      skip: 0,
+      [0 as Priority]: 80,
+      [1 as Priority]: 50,
+      [2 as Priority]: 20,
+      [3 as Priority]: 0,
     };
 
     const startingAllocation: Allocations = {};
@@ -254,7 +253,7 @@ export class WishSimulator {
           defaultAllocations[
             this.allocations[banner.version as VersionId][
               character.id as CharacterId
-            ]?.pullPriority || "must-have"
+            ]?.pullPriority || DEFAULT_PRIORITY
           ];
         const characterAllocation =
           this.allocations[banner.version as VersionId][
@@ -264,7 +263,7 @@ export class WishSimulator {
           character.id as CharacterId
         ] = {
           wishesAllocated: startingAllocationForCharacter,
-          pullPriority: characterAllocation?.pullPriority || "must-have",
+          pullPriority: characterAllocation?.pullPriority || DEFAULT_PRIORITY,
           maxConstellation: characterAllocation?.maxConstellation || 0,
         };
       }

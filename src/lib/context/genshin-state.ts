@@ -12,10 +12,9 @@ import {
   SimulationResults,
   VersionId,
 } from "../types";
-import { GenshinAction } from "./actions";
 
 // Pure state without functions
-export type GenshinStateData = {
+export type GenshinState = {
   // Account state
   accountStatus: AccountStatus;
 
@@ -23,7 +22,7 @@ export type GenshinStateData = {
   banners: Banner[];
 
   // Simulation
-  simulations: number;
+  simulationCount: number;
   isSimulating: boolean;
   simulationProgress: number;
 
@@ -45,7 +44,7 @@ export type GenshinStateData = {
   playgroundSimulationResults: SimulationResults | null;
 
   // Optimizer state data
-  optimizerSimulationResults: SimulationResults | null;
+  optimizerSimulationResults: Allocations[] | null;
 
   // Combined allocations across both modes
   bannerAllocations: Allocations;
@@ -55,13 +54,17 @@ export type GenshinStateData = {
 };
 
 // Functions that operate on the state
-export type GenshinFunctions = {
+export type GenshinActions = {
   // State setters
   setAccountStatus: (status: AccountStatus) => void;
   setBanners: (banners: Banner[]) => void;
-  setSimulations: (simulations: number) => void;
+  setSimulationCount: (simulations: number) => void;
   setIsSimulating: (simulating: boolean) => void;
   setSimulationProgress: (progress: number) => void;
+  setBannerAllocation: (
+    bannerVersion: VersionId,
+    allocation: BannerAllocation
+  ) => void;
 
   // Mode functions
   switchMode: (newMode: AppMode) => void;
@@ -72,15 +75,11 @@ export type GenshinFunctions = {
 
   // Optimizer functions
   runOptimizerSimulation: () => void;
-  setOptimizerSimulationResults: (results: SimulationResults) => void;
+  setOptimizerSimulationResults: (results: Allocations[]) => void;
 
   // Global functions
   resetAllData: () => void;
-  dispatch: React.Dispatch<GenshinAction>;
 };
-
-// Combined type for the context
-export type GenshinState = GenshinStateData & GenshinFunctions;
 
 const initialBannerAllocations: Allocations = initialBanners.reduce(
   (acc, banner) => {
@@ -119,7 +118,7 @@ initialBannerAllocations["5.7v2"]["raiden"] = {
 };
 
 // Initial state should only include the data portion
-export const initialStateData: GenshinStateData = {
+export const initialStateData: GenshinState = {
   accountStatus: {
     currentPity: 0,
     isNextFiftyFiftyGuaranteed: false,
@@ -150,7 +149,7 @@ export const initialStateData: GenshinStateData = {
     },
   },
   banners: initialBanners,
-  simulations: 10000,
+  simulationCount: 10000,
   isSimulating: false,
   simulationProgress: 0,
   totalAvailableWishes: 0,

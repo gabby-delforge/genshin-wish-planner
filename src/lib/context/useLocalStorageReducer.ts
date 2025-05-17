@@ -1,29 +1,12 @@
 "use client";
-import { Dispatch, Reducer, useCallback, useEffect, useReducer } from "react";
-
-const getLocalStorage = (): Storage | null => {
-  if (typeof window !== "undefined") {
-    return window.localStorage;
-  }
-  return null;
-};
-
-const initializer =
-  (key: string, onLoad?: (success: boolean) => void) =>
-  <T>(initial: T) => {
-    const storage = getLocalStorage();
-    if (!storage) {
-      onLoad?.(false);
-      return initial;
-    }
-    onLoad?.(true);
-    const stored = storage.getItem(key);
-    if (!stored) {
-      return initial;
-    }
-
-    return JSON.parse(stored);
-  };
+import {
+  Dispatch,
+  Reducer,
+  useCallback,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 
 export const useLocalStorageReducer = <T extends object, A>(
   reducer: Reducer<T, A>,
@@ -31,24 +14,47 @@ export const useLocalStorageReducer = <T extends object, A>(
   key: string,
   onLoad?: (success: boolean) => void
 ): [T, Dispatch<A>, VoidFunction] => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    initialState,
-    initializer(key, onLoad)
-  );
-  const clearValue = useCallback(() => {
-    const storage = getLocalStorage();
-    if (storage) {
-      storage.removeItem(key);
-    }
-  }, [key]);
+  // Use internal state for initialization
+  const [state, setState] = useState<T>(initialState);
 
+  // Only create reducer after client-side initialization
+  const [reducerState, dispatch] = useReducer(reducer, state);
+
+  // Safe check for client-side
+  const isClient = typeof window !== "undefined";
+
+  // Initialize from localStorage only on client-side
   useEffect(() => {
-    const storage = getLocalStorage();
-    if (storage) {
-      storage.setItem(key, JSON.stringify(state));
-    }
-  }, [state]);
+    if (!isClient) return;
 
-  return [state, dispatch, clearValue];
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        setState(JSON.parse(stored));
+      }
+      onLoad?.(true);
+    } catch (error) {
+      console.error("Error loading from localStorage:", error);
+      onLoad?.(false);
+    }
+  }, [isClient, key, onLoad]);
+
+  // Save to localStorage when state changes (client-side only)
+  useEffect(() => {
+    if (!isClient) return;
+
+    try {
+      localStorage.setItem(key, JSON.stringify(reducerState));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [reducerState, key, isClient]);
+
+  const clearValue = useCallback(() => {
+    if (isClient) {
+      localStorage.removeItem(key);
+    }
+  }, [key, isClient]);
+
+  return [reducerState, dispatch, clearValue];
 };

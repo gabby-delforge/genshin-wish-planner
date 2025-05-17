@@ -138,6 +138,8 @@ export interface SimulationResults {
   topScenarios: ScenarioResult[];
 }
 
+export type OptimizationResults = Allocations[];
+
 // User Data Types
 // --------------
 

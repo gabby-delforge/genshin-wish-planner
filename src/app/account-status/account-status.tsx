@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import type React from "react";
 
-import { useGenshin } from "@/lib/context/genshin-context";
+import { useGenshinState } from "@/lib/context/genshin-context";
+import { useGenshinActions } from "@/lib/context/useGenshinActions";
 import {
   AccountStatus as AccountStatusType,
   PrimogemSourceKey,
@@ -72,17 +73,14 @@ const SkeletonAccountStatus: React.FC = () => {
 };
 
 export default function AccountStatus() {
-  const { accountStatus, estimatedNewWishesPerBanner, dispatch, isLoading } =
-    useGenshin();
-
+  const { accountStatus, estimatedNewWishesPerBanner, isLoading } =
+    useGenshinState();
+  const { setAccountStatus } = useGenshinActions();
   const updateAccountStatus = useCallback(
     (newStatus: AccountStatusType) => {
-      dispatch({
-        type: "SET_ACCOUNT_STATUS",
-        payload: newStatus,
-      });
+      setAccountStatus(newStatus);
     },
-    [dispatch]
+    [setAccountStatus]
   );
 
   // Update wish resources

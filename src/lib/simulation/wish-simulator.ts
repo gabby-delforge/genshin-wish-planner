@@ -1,6 +1,7 @@
 import {
   Allocations,
   DEFAULT_PRIORITY,
+  OptimizationResults,
   Priority,
   PriorityAllocations,
   SimulationResult,
@@ -371,7 +372,7 @@ export const runSimulation = async (
   guaranteed: boolean,
   simulations: number,
   setSimulationProgress?: (progress: number) => void
-) => {
+): Promise<SimulationResults> => {
   // Run simulation with progress updates
   const totalSimulations = simulations;
   const batchSize = Math.min(1000, Math.floor(totalSimulations / 10));
@@ -762,10 +763,10 @@ export const runOptimization = async (
   pity: number,
   guaranteed: boolean,
   availableWishes: Record<VersionId, number>,
-  setSimulationResults: (results: SimulationResults) => void,
+  setSimulationResults: (results: Allocations[]) => void,
   setIsSimulating: (simulating: boolean) => void,
   setSimulationProgress: (progress: number) => void
-) => {
+): Promise<OptimizationResults> => {
   const priorityAllocations: PriorityAllocations = {};
   for (const bannerId in allocations) {
     const bannerAllocations = allocations[bannerId as VersionId];
@@ -863,7 +864,8 @@ export const runOptimization = async (
     }
   }
   if (bestSimulation) {
-    setSimulationResults(bestSimulation.results);
+    setSimulationResults([bestSimulation.allocation]);
   }
   setIsSimulating(false);
+  return optimalAllocations;
 };

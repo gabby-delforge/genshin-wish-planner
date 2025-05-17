@@ -1,19 +1,17 @@
-import { useGenshin } from "@/lib/context/genshin-context";
+import { useGenshinState } from "@/lib/context/genshin-context";
+import { useGenshinActions } from "@/lib/context/useGenshinActions";
 import { Label } from "@radix-ui/react-label";
 import { Loader2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
 export default function RunSimulationButton() {
+  const { mode, simulationCount, isSimulating } = useGenshinState();
   const {
-    mode,
-    simulations,
-    setSimulations,
-    isSimulating,
     runPlaygroundSimulation,
     runOptimizerSimulation,
-  } = useGenshin();
-
+    setSimulationCount,
+  } = useGenshinActions();
   const handleRunSimulation = () => {
     if (mode === "playground") {
       runPlaygroundSimulation();
@@ -33,9 +31,9 @@ export default function RunSimulationButton() {
           min="1000"
           max="100000"
           step="1000"
-          value={simulations}
+          value={simulationCount}
           onChange={(e) =>
-            setSimulations(Number.parseInt(e.target.value) || 10000)
+            setSimulationCount(Number.parseInt(e.target.value) || 10000)
           }
           className="bg-void-1 border-void-2"
         />

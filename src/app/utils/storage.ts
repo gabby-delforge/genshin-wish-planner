@@ -5,6 +5,7 @@ import {
   Allocations,
   AppMode,
   Banner,
+  DEFAULT_PRIMOGEM_SOURCES_ENABLED,
   SimulationResults,
 } from "@/lib/types";
 
@@ -125,10 +126,7 @@ export const loadState = (): StorableState => {
         starglitter: 0,
         wishes: 0,
       },
-      hasWelkin: false,
-      hasBattlePass: false,
-      addEstimatedWishes: false,
-      addExplorationWishes: false,
+      primogemSources: DEFAULT_PRIMOGEM_SOURCES_ENABLED,
     }),
     banners: loadFromStorage<Banner[]>(STORAGE_KEYS.BANNERS, []),
     simulationResults: loadFromStorage<SimulationResults | null>(

@@ -4,10 +4,10 @@ import ScenariosGrid from "@/components/scenarios-grid";
 import { SimulationResultsGrid } from "@/components/simulation-results-grid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGenshin } from "@/lib/context/genshin-context";
+import { useGenshinState } from "@/lib/context/genshin-context";
 
 export default function SimulationResults() {
-  const { mode, playgroundSimulationResults, banners } = useGenshin();
+  const { mode, playgroundSimulationResults, banners } = useGenshinState();
 
   return (
     <Card className="bg-bg-dark-2/80 border-void-2 backdrop-blur-sm mt-6">

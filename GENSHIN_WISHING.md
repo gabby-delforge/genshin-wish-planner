@@ -52,7 +52,7 @@ This application focuses on the first type, Character Event Wish.
 - **Battle Pass**: Paid progression system providing ~8-10 wishes per version
 - **Events & Updates**: Each version provides roughly 50-70 wishes from events, maintenance, etc.
 
-## Simulation Approach
+## Simulation Approach - "Playground Mode"
 
 1. **Allocation Phase**:
 
@@ -73,5 +73,21 @@ This application focuses on the first type, Character Event Wish.
    - Calculate success rates for each character
    - Identify common outcome scenarios
    - Visualize probability distributions
+
+This simulation helps players simulate different scenarios to find the optimal allocation of wishes for their most desired characters, as well as visualize the accumulation of wishes over time.
+
+## Simulation Approach - "Strategy Mode"
+
+1. **Allocation Phase**:
+
+   - Players indicate which characters they want to obtain, and their relative priorities / degree of desire
+   - As an example, a player can mark a character as a "must have", in which case the simulation will only output allocations that guarantee the character.
+   - As another example, a player can mark a character as a "want", in which case the simulation will prioritize "must have" characters over this character, try to target a high probability of obtaining this character, but the simulation will not guarantee the character.
+   - The simulation runs "in reverse", testing many different allocation strategies
+   - The simulation will output the optimal allocations for each banner
+   - In the (likely) scenario that it is not possible to obtain all desired characters with the necessary probabilities, the simulation will:
+     - Tell the player what the optimal allocation is for each banner
+     - Tell the player how many wishes they would need to obtain to make up the difference
+     - Tell the player what the optimal allocation is for their actual wishes, even if some characters won't be obtained / guaranteed
 
 This simulation helps players strategically allocate their limited resources to maximize chances of obtaining their most desired characters.
