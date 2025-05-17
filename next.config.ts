@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/webp"],
     remotePatterns: [
-      new URL("https://static.wikia.nocookie.net/gensin-impact/images/**"),
+      {
+        protocol: "https",
+        hostname: "static.wikia.nocookie.net",
+      },
     ],
   },
 };
