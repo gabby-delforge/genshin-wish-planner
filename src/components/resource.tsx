@@ -11,6 +11,14 @@ type ResourceType =
   | "standard-wish"
   | "starglitter";
 
+const resourceMap = {
+  primogem:
+    "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png/revision/latest?cb=20201117071158",
+  "limited-wish": "/images/resources/limited-wish.webp",
+  "standard-wish": "/images/resources/standard-wish.webp",
+  starglitter: "/images/resources/starglitter.webp",
+};
+
 function Resource({
   number,
   size = 24,
@@ -20,10 +28,11 @@ function Resource({
     <div className="flex items-center flex-shrink-0">
       {number && <div>{number}</div>}
       <Image
-        src={`/images/resources/${type}.webp`}
+        src={resourceMap[type]}
         alt={type}
         width={size}
         height={size}
+        unoptimized
       />
     </div>
   );
