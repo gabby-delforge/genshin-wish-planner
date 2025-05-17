@@ -11,8 +11,7 @@ export default function Primogem({ number, size = 100 }: PrimogemProps) {
     <div>
       <div>{number}</div>
       <Image
-        unoptimized
-        src="/images/resources/primogem.webp"
+        src="https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png/revision/latest?cb=20201117071158"
         alt="primogem"
         width={size}
         height={size}
