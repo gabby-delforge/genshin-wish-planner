@@ -1,7 +1,55 @@
-import { LimitedWish, Primogem, Starglitter } from "@/components/resource";
+import {
+  GenesisCrystal,
+  LimitedWish,
+  Primogem,
+  StandardWish,
+  Stardust,
+  Starglitter,
+} from "@/components/resource";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AccountStatus as AccountStatusType } from "@/lib/types";
+import { AccountStatus as AccountStatusType, ResourceType } from "@/lib/types";
+
+const ResourceInput = ({
+  label,
+  amount,
+  handleChange,
+  type,
+}: {
+  label: string;
+  amount: number;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type: ResourceType;
+}) => {
+  const resourceIcon = {
+    primogem: <Primogem />,
+    starglitter: <Starglitter />,
+    limitedWish: <LimitedWish />,
+    standardWish: <StandardWish />,
+    stardust: <Stardust />,
+    genesisCrystal: <GenesisCrystal />,
+  }[type];
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={type} className="text-xs">
+        {label}
+      </Label>
+      <div className="flex flex-row gap-1">
+        <Input
+          id={type}
+          name={type}
+          type="number"
+          min="0"
+          value={amount}
+          onChange={handleChange}
+          className="bg-void-1 border-void-2"
+        />
+        {resourceIcon}
+      </div>
+    </div>
+  );
+};
 
 type WishResourcesProps = {
   accountStatus: AccountStatusType;
@@ -14,60 +62,43 @@ export const WishResources = ({
   return (
     <div className="space-y-1">
       <Label className="text-sm text-gold-1">Wishes</Label>
-      <div className="flex flex-col @xs:flex-row gap-4 mt-2">
-        <div className="space-y-2">
-          <Label htmlFor="primogems" className="text-sm">
-            Primogems
-          </Label>
-          <div className="flex flex-row gap-1">
-            <Input
-              id="primogems"
-              name="primogems"
-              type="number"
-              min="0"
-              value={accountStatus.ownedWishResources.primogems}
-              onChange={handleResourceChange}
-              className="bg-void-1 border-void-2"
-            />
-            <Primogem />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="starglitter" className="text-sm">
-            Starglitter
-          </Label>
-          <div className="flex flex-row gap-1">
-            <Input
-              id="starglitter"
-              name="starglitter"
-              type="number"
-              min="0"
-              value={accountStatus.ownedWishResources.starglitter}
-              onChange={handleResourceChange}
-              className="bg-void-1 border-void-2"
-            />
-            <Starglitter />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="wishes" className="text-sm">
-            Wishes
-          </Label>
-          <div className="flex flex-row gap-1">
-            <Input
-              id="wishes"
-              name="wishes"
-              type="number"
-              min="0"
-              value={accountStatus.ownedWishResources.wishes}
-              onChange={handleResourceChange}
-              className="bg-void-1 border-void-2"
-            />
-            <LimitedWish />
-          </div>
-        </div>
+      <div className="grid grid-cols-3 gap-4">
+        <ResourceInput
+          label="Primogems"
+          amount={accountStatus.ownedWishResources.primogems}
+          handleChange={handleResourceChange}
+          type="primogem"
+        />
+        <ResourceInput
+          label="Intertwined Fate"
+          amount={accountStatus.ownedWishResources.limitedWishes}
+          handleChange={handleResourceChange}
+          type="limitedWish"
+        />
+        <ResourceInput
+          label="Acquaint Fate"
+          amount={accountStatus.ownedWishResources.standardWishes}
+          handleChange={handleResourceChange}
+          type="standardWish"
+        />
+        <ResourceInput
+          label="Starglitter"
+          amount={accountStatus.ownedWishResources.starglitter}
+          handleChange={handleResourceChange}
+          type="starglitter"
+        />
+        <ResourceInput
+          label="Stardust"
+          amount={accountStatus.ownedWishResources.stardust}
+          handleChange={handleResourceChange}
+          type="stardust"
+        />
+        <ResourceInput
+          label="Genesis Crystals"
+          amount={accountStatus.ownedWishResources.genesisCrystal}
+          handleChange={handleResourceChange}
+          type="genesisCrystal"
+        />
       </div>
     </div>
   );

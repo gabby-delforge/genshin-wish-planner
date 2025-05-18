@@ -1,5 +1,6 @@
 "use client";
 
+import { ResourceType } from "@/lib/types";
 import Image from "next/image";
 
 type ResourceProps = {
@@ -7,18 +8,19 @@ type ResourceProps = {
   size?: number;
 };
 
-type ResourceType =
-  | "primogem"
-  | "limited-wish"
-  | "standard-wish"
-  | "starglitter";
-
-const resourceMap = {
+const resourceMap: Record<ResourceType, string> = {
   primogem:
     "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png",
-  "limited-wish": "/images/resources/limited-wish.webp",
-  "standard-wish": "/images/resources/standard-wish.webp",
-  starglitter: "/images/resources/starglitter.webp",
+  limitedWish:
+    "https://static.wikia.nocookie.net/gensin-impact/images/1/1f/Item_Intertwined_Fate.png",
+  standardWish:
+    "https://static.wikia.nocookie.net/gensin-impact/images/2/22/Item_Acquaint_Fate.png",
+  starglitter:
+    "https://static.wikia.nocookie.net/gensin-impact/images/6/69/Item_Masterless_Starglitter.png",
+  stardust:
+    "https://static.wikia.nocookie.net/gensin-impact/images/7/7c/Item_Masterless_Stardust.png",
+  genesisCrystal:
+    "https://static.wikia.nocookie.net/gensin-impact/images/4/44/Item_Genesis_Crystal.png",
 };
 
 function Resource({
@@ -45,13 +47,21 @@ export function Primogem({ number, size = 24 }: ResourceProps) {
 }
 
 export function LimitedWish({ number, size = 24 }: ResourceProps) {
-  return <Resource number={number} size={size} type="limited-wish" />;
+  return <Resource number={number} size={size} type="limitedWish" />;
 }
 
 export function StandardWish({ number, size = 24 }: ResourceProps) {
-  return <Resource number={number} size={size} type="standard-wish" />;
+  return <Resource number={number} size={size} type="standardWish" />;
 }
 
 export function Starglitter({ number, size = 24 }: ResourceProps) {
   return <Resource number={number} size={size} type="starglitter" />;
+}
+
+export function Stardust({ number, size = 24 }: ResourceProps) {
+  return <Resource number={number} size={size} type="stardust" />;
+}
+
+export function GenesisCrystal({ number, size = 24 }: ResourceProps) {
+  return <Resource number={number} size={size} type="genesisCrystal" />;
 }

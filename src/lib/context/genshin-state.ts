@@ -125,7 +125,7 @@ export const initialStateData: GenshinState = {
     ownedWishResources: {
       primogems: 40,
       starglitter: 78,
-      wishes: 61,
+      limitedWishes: 61,
     },
     primogemSources: {
       gameUpdateCompensation: true,

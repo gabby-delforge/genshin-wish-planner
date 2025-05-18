@@ -31,11 +31,8 @@ export function GenshinReducer(
       return { ...state, ...action.payload };
     case "SET_ACCOUNT_STATUS": {
       const newAccountStatus = action.payload;
-      const newTotalAvailableWishes = calculateTotalAvailableWishes(
-        newAccountStatus.ownedWishResources.primogems,
-        newAccountStatus.ownedWishResources.starglitter,
-        newAccountStatus.ownedWishResources.wishes
-      );
+      const newTotalAvailableWishes =
+        calculateTotalAvailableWishes(newAccountStatus);
       const estimatedNewWishesPerBanner =
         calculateEstimatedWishes(newAccountStatus);
       console.log(estimatedNewWishesPerBanner);

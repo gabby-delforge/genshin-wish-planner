@@ -30,13 +30,28 @@ export const get5StarProbability = (pity: number): number => {
  * Calculate total available wishes from primogems and other resources
  */
 export const calculateTotalAvailableWishes = (
-  primogems: number,
-  starglitter: number,
-  wishes: number
+  accountStatus: AccountStatus
 ): number => {
-  const primoWishes = Math.floor(primogems / 160);
-  const starglitterWishes = Math.floor(starglitter / 5);
-  return primoWishes + starglitterWishes + wishes;
+  const primoWishes = Math.floor(
+    accountStatus.ownedWishResources.primogems / 160
+  );
+  const starglitterWishes = Math.floor(
+    accountStatus.ownedWishResources.starglitter / 5
+  );
+  const stardustWishes = Math.floor(
+    accountStatus.ownedWishResources.stardust / 10
+  );
+  const genesisCrystalWishes = Math.floor(
+    accountStatus.ownedWishResources.genesisCrystal / 10
+  );
+  const limitedWishes = accountStatus.ownedWishResources.limitedWishes;
+  return (
+    primoWishes +
+    starglitterWishes +
+    limitedWishes +
+    stardustWishes +
+    genesisCrystalWishes
+  );
 };
 
 /**
@@ -208,7 +223,7 @@ export const calculateEstimatedWishes = (
       sourceValue.forEach((resource) => {
         if (resource.type === "primogem") {
           totalPrimogems += resource.value;
-        } else if (resource.type === "limited_wish") {
+        } else if (resource.type === "limitedWish") {
           totalLimitedWishes += resource.value;
         }
       });
@@ -216,7 +231,7 @@ export const calculateEstimatedWishes = (
       // Handle single resource value
       if (sourceValue.type === "primogem") {
         totalPrimogems += sourceValue.value;
-      } else if (sourceValue.type === "limited_wish") {
+      } else if (sourceValue.type === "limitedWish") {
         totalLimitedWishes += sourceValue.value;
       }
     }

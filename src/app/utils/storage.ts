@@ -124,7 +124,7 @@ export const loadState = (): StorableState => {
       ownedWishResources: {
         primogems: 0,
         starglitter: 0,
-        wishes: 0,
+        limitedWishes: 0,
       },
       primogemSources: DEFAULT_PRIMOGEM_SOURCES_ENABLED,
     }),

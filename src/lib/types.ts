@@ -147,7 +147,10 @@ export type OptimizationResults = Allocations[];
 export interface WishResources {
   primogems: number;
   starglitter: number;
-  wishes: number;
+  stardust: number;
+  genesisCrystal: number;
+  limitedWishes: number;
+  standardWishes: number;
 }
 
 // User's account status
@@ -161,8 +164,10 @@ export interface AccountStatus {
 export type ResourceType =
   | "primogem"
   | "starglitter"
-  | "limited_wish"
-  | "standard_wish";
+  | "limitedWish"
+  | "standardWish"
+  | "stardust"
+  | "genesisCrystal";
 
 export type ResourceValue = {
   value: number;
@@ -196,22 +201,21 @@ export interface PrimogemSourceValues {
 }
 
 export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
-  // Permanent Contents
   gameUpdateCompensation: { value: 600, type: "primogem" },
   dailyCommissions: { value: 2520, type: "primogem" },
   paimonBargain: [
-    { value: 5, type: "limited_wish" },
-    { value: 5, type: "standard_wish" },
+    { value: 5, type: "limitedWish" },
+    { value: 5, type: "standardWish" },
   ],
   abyssAndTheater: { value: 2400, type: "primogem" },
-  battlePass: { value: 5, type: "standard_wish" },
+  battlePass: { value: 5, type: "standardWish" },
   battlePassGnostic: [
-    { value: 4, type: "limited_wish" },
+    { value: 4, type: "limitedWish" },
     { value: 680, type: "primogem" },
   ],
   blessingOfWelkin: { value: 3780, type: "primogem" },
   archonQuest: [
-    { value: 2, type: "limited_wish" },
+    { value: 2, type: "limitedWish" },
     { value: 620, type: "primogem" },
   ],
   storyQuests: { value: 120, type: "primogem" },
@@ -226,7 +230,7 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   newVersionCode: { value: 60, type: "primogem" },
   limitedExplorationRewards: { value: 400, type: "primogem" },
   thankYouGift: [
-    { value: 10, type: "limited_wish" },
+    { value: 10, type: "limitedWish" },
     { value: 1600, type: "primogem" },
   ],
 };
