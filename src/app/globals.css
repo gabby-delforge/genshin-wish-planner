@@ -7,6 +7,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  font-size: 14px;
+}
+
 @theme {
   /* Colors */
   --color-bg-dark-2: #2a2c42;
@@ -19,7 +23,6 @@
   --color-void-2: #4a4c72;
 
   /* Other */
-  --text-base: 0.8rem;
 
   --text-xs: 0.75rem;
   --text-sm: 0.8rem;

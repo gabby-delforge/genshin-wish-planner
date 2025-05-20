@@ -2,7 +2,7 @@ import {
   calculateAvailableWishesForBanners,
   calculateEstimatedWishes,
   calculateTotalAvailableWishes,
-} from "../simulation/simulation";
+} from "../simulation/simulation-utils";
 import { GenshinAction } from "./actions";
 import { GenshinState, initialStateData } from "./genshin-state";
 

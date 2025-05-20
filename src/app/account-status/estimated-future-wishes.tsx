@@ -1,5 +1,6 @@
 import { LimitedWish, Primogem } from "@/components/resource";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxWithLabel } from "@/components/ui/checkbox-with-label";
 import { Label } from "@/components/ui/label";
 import {
   AccountStatus as AccountStatusType,
@@ -16,6 +17,7 @@ type EstimatedFutureWishesProps = {
     source: PrimogemSourceKey,
     checked: boolean
   ) => void;
+  handleExcludeCurrentBannerPrimogemSourcesChange: (checked: boolean) => void;
 };
 
 // Helper function to get the primogem value from a source
@@ -37,12 +39,12 @@ const getPrimogemValue = (sourceValue: PrimogemSourceValue): number => {
 const getLimitedWishValue = (sourceValue: PrimogemSourceValue): number => {
   if (Array.isArray(sourceValue)) {
     return sourceValue.reduce((total, resource) => {
-      if (resource.type === "limited_wish") {
+      if (resource.type === "limitedWishes") {
         return total + resource.value;
       }
       return total;
     }, 0);
-  } else if (sourceValue.type === "limited_wish") {
+  } else if (sourceValue.type === "limitedWishes") {
     return sourceValue.value;
   }
   return 0;
@@ -97,6 +99,7 @@ export const EstimatedFutureWishes = ({
   estimatedNewWishesPerBanner,
   accountStatus,
   handlePrimogemSourceChange,
+  handleExcludeCurrentBannerPrimogemSourcesChange,
 }: EstimatedFutureWishesProps) => {
   // Calculate totals for each category
   const categoryTotals = useMemo(() => {
@@ -140,9 +143,8 @@ export const EstimatedFutureWishes = ({
         <div>
           <div className="flex items-center space-x-2">
             <Label className="flex items-center text-sm font-medium text-gold-1">
-              {`Free-to-play (`}
+              {`Free-to-play: `}
               <LimitedWish number={categoryTotals.freeToPlayTotal} />
-              {`)`}
             </Label>
           </div>
 
@@ -154,25 +156,23 @@ export const EstimatedFutureWishes = ({
               const wishValue = getLimitedWishValue(sourceValue);
 
               return (
-                <div key={sourceKey} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={sourceKey}
-                    checked={accountStatus.primogemSources[sourceKey]}
-                    onCheckedChange={(checked) =>
-                      handlePrimogemSourceChange(sourceKey, checked === true)
-                    }
-                  />
-                  <Label
-                    htmlFor={sourceKey}
-                    className="text-xs cursor-pointer flex justify-between items-center w-full"
-                  >
-                    <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
-                    <span className="text-sm text-muted-foreground flex items-center">
-                      {primoValue > 0 && <Primogem number={primoValue} />}
-                      {wishValue > 0 && <LimitedWish number={wishValue} />}
-                    </span>
-                  </Label>
-                </div>
+                <CheckboxWithLabel
+                  key={sourceKey}
+                  id={sourceKey}
+                  checked={accountStatus.primogemSources[sourceKey]}
+                  onCheckedChange={(checked) =>
+                    handlePrimogemSourceChange(sourceKey, checked === true)
+                  }
+                  label={
+                    <>
+                      <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
+                      <span className="text-sm text-muted-foreground flex items-center">
+                        {primoValue > 0 && <Primogem number={primoValue} />}
+                        {wishValue > 0 && <LimitedWish number={wishValue} />}
+                      </span>
+                    </>
+                  }
+                />
               );
             })}
           </div>
@@ -182,9 +182,8 @@ export const EstimatedFutureWishes = ({
         <div>
           <div className="flex items-center space-x-2">
             <Label className="flex items-center text-sm font-medium text-gold-1">
-              {`Premium (`}
+              {`Premium: `}
               <LimitedWish number={categoryTotals.paidTotal} />
-              {`)`}
             </Label>
           </div>
 
@@ -195,25 +194,23 @@ export const EstimatedFutureWishes = ({
               const wishValue = getLimitedWishValue(sourceValue);
 
               return (
-                <div key={sourceKey} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={sourceKey}
-                    checked={accountStatus.primogemSources[sourceKey]}
-                    onCheckedChange={(checked) =>
-                      handlePrimogemSourceChange(sourceKey, checked === true)
-                    }
-                  />
-                  <Label
-                    htmlFor={sourceKey}
-                    className="text-sm cursor-pointer flex justify-between items-center w-full"
-                  >
-                    <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
-                    <span className="text-sm text-muted-foreground flex items-center">
-                      {primoValue > 0 && <Primogem number={primoValue} />}
-                      {wishValue > 0 && <LimitedWish number={wishValue} />}
-                    </span>
-                  </Label>
-                </div>
+                <CheckboxWithLabel
+                  key={sourceKey}
+                  id={sourceKey}
+                  checked={accountStatus.primogemSources[sourceKey]}
+                  onCheckedChange={(checked) =>
+                    handlePrimogemSourceChange(sourceKey, checked === true)
+                  }
+                  label={
+                    <>
+                      <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
+                      <span className="text-sm text-muted-foreground flex items-center">
+                        {primoValue > 0 && <Primogem number={primoValue} />}
+                        {wishValue > 0 && <LimitedWish number={wishValue} />}
+                      </span>
+                    </>
+                  }
+                />
               );
             })}
           </div>
@@ -221,12 +218,25 @@ export const EstimatedFutureWishes = ({
       </div>
 
       <div className="bg-void-1 rounded-md p-3 border border-void-2 mt-4">
-        <div className="text-sm flex gap-1 items-baseline justify-center font-medium text-gold-1">
+        <div className="text-sm flex gap-1 items-center justify-center font-medium text-gold-1">
           <span className=" font-bold">
             <LimitedWish number={estimatedNewWishesPerBanner} />
           </span>
           gained each banner
         </div>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id={"exclude-current"}
+          checked={accountStatus.excludeCurrentBannerPrimogemSources}
+          onCheckedChange={handleExcludeCurrentBannerPrimogemSourcesChange}
+        />
+        <Label
+          htmlFor={"exclude-current"}
+          className="text-xs cursor-pointer flex justify-between items-center w-full"
+        >
+          Exclude wishes earned during the current banner
+        </Label>
       </div>
     </div>
   );

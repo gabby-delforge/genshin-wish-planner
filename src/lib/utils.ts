@@ -1,5 +1,14 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { VersionId } from "./types";
+
+const COLORS = {
+  gold: "#feca57",
+  purple: "#9c88ff",
+  blue: "#70a1ff",
+  red: "#ff6b6b",
+  teal: "#1dd1a1",
+};
 
 /**
  * Utility function for conditional class names with Tailwind
@@ -21,6 +30,19 @@ export function getCharacterRarityColor(rarity: number): string {
     default:
       return "text-[#70a1ff]"; // Blue for 3-star
   }
+}
+
+export function hash(s: string): number {
+  let hash = 0,
+    i,
+    chr;
+  if (s.length === 0) return hash;
+  for (i = 0; i < s.length; i++) {
+    chr = s.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
 }
 
 /**
@@ -59,6 +81,12 @@ export function formatDate(dateString: string): string {
     month: "short",
     day: "numeric",
   });
+}
+
+export function getBannerColor(versionId: VersionId): string {
+  const h = hash(versionId);
+  const colorsArr = Object.values(COLORS);
+  return colorsArr[h % colorsArr.length];
 }
 
 /**

@@ -27,45 +27,47 @@ export default function WishOptimizer() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 mb-6">
         <AccountStatus />
 
         <div className="lg:col-span-3 h-full">
           <Card className="bg-bg-dark-2/80 border-void-2 backdrop-blur-sm h-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="h4 flex items-center gap-2">
-                <Sparkles className="w-h4 h-h4" />{" "}
-                {/* TODO: This size isn't working properly */}
-                Simulation
-              </CardTitle>
-              <Separator className="bg-void-2/50 mb-2" />
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                defaultValue="playground"
-                value={mode}
-                onValueChange={(value) => switchMode(value as AppMode)}
-                className="w-full"
-              >
-                <TabsList className="grid grid-cols-2 mb-6 bg-void-1">
-                  <TabsTrigger
-                    value="playground"
-                    className="data-[state=active]:bg-void-2"
-                  >
+            <Tabs
+              defaultValue="playground"
+              value={mode}
+              onValueChange={(value) => switchMode(value as AppMode)}
+            >
+              <CardHeader className="pb-2">
+                <CardTitle className="h4 flex items-center justify-between gap-2">
+                  <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">Playground</span>
+                      <Sparkles className="w-h4 h-h4" />{" "}
+                      {/* TODO: This size isn't working properly */}
+                      Simulation
                     </div>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="strategy"
-                    className="data-[state=active]:bg-void-2"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">Strategy</span>
-                    </div>
-                  </TabsTrigger>
-                </TabsList>
-
+                  </div>
+                  <TabsList className="grid grid-cols-2  bg-void-1">
+                    <TabsTrigger
+                      value="playground"
+                      className="data-[state=active]:bg-void-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-md">Playground</span>
+                      </div>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="strategy"
+                      className="data-[state=active]:bg-void-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-md">Strategy</span>
+                      </div>
+                    </TabsTrigger>
+                  </TabsList>
+                </CardTitle>
+                <Separator className="bg-void-2/50 mb-2" />
+              </CardHeader>
+              <CardContent>
                 <TabsContent value="playground" className="mt-0">
                   <PlaygroundMode />
                 </TabsContent>
@@ -73,8 +75,8 @@ export default function WishOptimizer() {
                 <TabsContent value="strategy" className="mt-0">
                   <StrategyMode />
                 </TabsContent>
-              </Tabs>
-            </CardContent>
+              </CardContent>
+            </Tabs>
           </Card>
         </div>
       </div>

@@ -21,12 +21,10 @@ export default function StrategyMode() {
     <div className="space-y-6">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">
-          Set your character priorities and let the strategy suggest the best
+          Set your character priorities and let the simulator suggest the best
           wish allocation strategy.
         </p>
       </div>
-
-      <Separator className="bg-void-2/50" />
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gold-1">

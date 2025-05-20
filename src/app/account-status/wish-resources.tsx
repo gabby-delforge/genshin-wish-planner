@@ -22,17 +22,20 @@ const ResourceInput = ({
   type: ResourceType;
 }) => {
   const resourceIcon = {
-    primogem: <Primogem />,
-    starglitter: <Starglitter />,
-    limitedWish: <LimitedWish />,
-    standardWish: <StandardWish />,
-    stardust: <Stardust />,
-    genesisCrystal: <GenesisCrystal />,
+    primogem: <Primogem size={20} />,
+    starglitter: <Starglitter size={20} />,
+    limitedWishes: <LimitedWish size={20} />,
+    standardWish: <StandardWish size={20} />,
+    stardust: <Stardust size={20} />,
+    genesisCrystal: <GenesisCrystal size={20} />,
   }[type];
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor={type} className="text-xs">
+    <div className="flex flex-col justify-between gap-1">
+      <Label
+        htmlFor={type}
+        className="text-xs block leading-none align-text-bottom h-full"
+      >
         {label}
       </Label>
       <div className="flex flex-row gap-1">
@@ -44,8 +47,8 @@ const ResourceInput = ({
           value={amount}
           onChange={handleChange}
           className="bg-void-1 border-void-2"
+          unit={resourceIcon}
         />
-        {resourceIcon}
       </div>
     </div>
   );
@@ -60,12 +63,12 @@ export const WishResources = ({
   handleResourceChange,
 }: WishResourcesProps) => {
   return (
-    <div className="space-y-1">
-      <Label className="text-sm text-gold-1">Wishes</Label>
-      <div className="grid grid-cols-3 gap-4">
+    <div className="space-y-3">
+      <Label className="text-sm text-gold-1 block">Wishes</Label>
+      <div className="grid grid-cols-2 gap-4">
         <ResourceInput
           label="Primogems"
-          amount={accountStatus.ownedWishResources.primogems}
+          amount={accountStatus.ownedWishResources.primogem}
           handleChange={handleResourceChange}
           type="primogem"
         />
@@ -73,11 +76,11 @@ export const WishResources = ({
           label="Intertwined Fate"
           amount={accountStatus.ownedWishResources.limitedWishes}
           handleChange={handleResourceChange}
-          type="limitedWish"
+          type="limitedWishes"
         />
         <ResourceInput
           label="Acquaint Fate"
-          amount={accountStatus.ownedWishResources.standardWishes}
+          amount={accountStatus.ownedWishResources.standardWish}
           handleChange={handleResourceChange}
           type="standardWish"
         />

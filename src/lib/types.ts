@@ -2,6 +2,15 @@
 
 import { GENSHIN_CHARACTERS } from "./data";
 
+// User's account status
+export interface AccountStatus {
+  currentPity: number;
+  isNextFiftyFiftyGuaranteed: boolean;
+  ownedWishResources: WishResources;
+  primogemSources: PrimogemSourcesEnabled;
+  excludeCurrentBannerPrimogemSources: boolean;
+}
+
 export type VersionId = `${number}.${number}v${number}`;
 
 export type CharacterId = (typeof GENSHIN_CHARACTERS)[number];
@@ -92,13 +101,10 @@ export interface CharacterSimulationResult {
   constellation: number;
 }
 
-// Success rate for each character involved in the simulation
-type CharacterSuccessRates = Partial<Record<CharacterId, number>>;
-
 // Result of a simulation for a single banner phase
 export interface BannerSimulationResult {
   bannerId: VersionId;
-  characterResults: Partial<Record<CharacterId, CharacterSimulationResult>>;
+  characterResults: CharacterSimulationResult[];
   wishesUsed: number;
   endPity: number;
   endGuaranteed: boolean;
@@ -128,12 +134,19 @@ export interface ScenarioResult {
 // The result for a single simulation run.
 export type SimulationResult = Record<VersionId, BannerSimulationResult>;
 
+export type CharacterSuccessRate = {
+  versionId: VersionId;
+  characterId: CharacterId;
+  constellation: number;
+  successPercent: number;
+};
+
 // Complete simulation results
 export interface SimulationResults {
   // Full detailed results by banner version
   bannerResults: Record<VersionId, BannerSimulationResult[]>;
   // Success rates for each character that was wished forin each banner
-  characterSuccessRates: Record<VersionId, CharacterSuccessRates>;
+  characterSuccessRates: CharacterSuccessRate[];
   // Common scenario patterns
   topScenarios: ScenarioResult[];
 }
@@ -144,27 +157,12 @@ export type OptimizationResults = Allocations[];
 // --------------
 
 // User's wish resources
-export interface WishResources {
-  primogems: number;
-  starglitter: number;
-  stardust: number;
-  genesisCrystal: number;
-  limitedWishes: number;
-  standardWishes: number;
-}
-
-// User's account status
-export interface AccountStatus {
-  currentPity: number;
-  isNextFiftyFiftyGuaranteed: boolean;
-  ownedWishResources: WishResources;
-  primogemSources: PrimogemSourcesEnabled;
-}
+export type WishResources = Record<ResourceType, number>;
 
 export type ResourceType =
   | "primogem"
   | "starglitter"
-  | "limitedWish"
+  | "limitedWishes"
   | "standardWish"
   | "stardust"
   | "genesisCrystal";
@@ -204,18 +202,18 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   gameUpdateCompensation: { value: 600, type: "primogem" },
   dailyCommissions: { value: 2520, type: "primogem" },
   paimonBargain: [
-    { value: 5, type: "limitedWish" },
+    { value: 5, type: "limitedWishes" },
     { value: 5, type: "standardWish" },
   ],
   abyssAndTheater: { value: 2400, type: "primogem" },
   battlePass: { value: 5, type: "standardWish" },
   battlePassGnostic: [
-    { value: 4, type: "limitedWish" },
+    { value: 4, type: "limitedWishes" },
     { value: 680, type: "primogem" },
   ],
   blessingOfWelkin: { value: 3780, type: "primogem" },
   archonQuest: [
-    { value: 2, type: "limitedWish" },
+    { value: 2, type: "limitedWishes" },
     { value: 620, type: "primogem" },
   ],
   storyQuests: { value: 120, type: "primogem" },
@@ -230,7 +228,7 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   newVersionCode: { value: 60, type: "primogem" },
   limitedExplorationRewards: { value: 400, type: "primogem" },
   thankYouGift: [
-    { value: 10, type: "limitedWish" },
+    { value: 10, type: "limitedWishes" },
     { value: 1600, type: "primogem" },
   ],
 };

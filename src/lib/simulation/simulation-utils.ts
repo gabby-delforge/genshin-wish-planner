@@ -27,13 +27,13 @@ export const get5StarProbability = (pity: number): number => {
 };
 
 /**
- * Calculate total available wishes from primogems and other resources
+ * Calculate total available wishes from user's account, including primogems, stardust, and limited wishes.
  */
 export const calculateTotalAvailableWishes = (
   accountStatus: AccountStatus
 ): number => {
   const primoWishes = Math.floor(
-    accountStatus.ownedWishResources.primogems / 160
+    accountStatus.ownedWishResources.primogem / 160
   );
   const starglitterWishes = Math.floor(
     accountStatus.ownedWishResources.starglitter / 5
@@ -45,6 +45,13 @@ export const calculateTotalAvailableWishes = (
     accountStatus.ownedWishResources.genesisCrystal / 10
   );
   const limitedWishes = accountStatus.ownedWishResources.limitedWishes;
+  console.log(
+    primoWishes +
+      starglitterWishes +
+      limitedWishes +
+      stardustWishes +
+      genesisCrystalWishes
+  );
   return (
     primoWishes +
     starglitterWishes +
@@ -223,7 +230,7 @@ export const calculateEstimatedWishes = (
       sourceValue.forEach((resource) => {
         if (resource.type === "primogem") {
           totalPrimogems += resource.value;
-        } else if (resource.type === "limitedWish") {
+        } else if (resource.type === "limitedWishes") {
           totalLimitedWishes += resource.value;
         }
       });
@@ -231,7 +238,7 @@ export const calculateEstimatedWishes = (
       // Handle single resource value
       if (sourceValue.type === "primogem") {
         totalPrimogems += sourceValue.value;
-      } else if (sourceValue.type === "limitedWish") {
+      } else if (sourceValue.type === "limitedWishes") {
         totalLimitedWishes += sourceValue.value;
       }
     }

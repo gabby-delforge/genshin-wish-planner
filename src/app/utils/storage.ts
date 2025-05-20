@@ -122,11 +122,15 @@ export const loadState = (): StorableState => {
       currentPity: 0,
       isNextFiftyFiftyGuaranteed: false,
       ownedWishResources: {
-        primogems: 0,
+        primogem: 0,
         starglitter: 0,
         limitedWishes: 0,
+        stardust: 0,
+        genesisCrystal: 0,
+        standardWish: 0,
       },
       primogemSources: DEFAULT_PRIMOGEM_SOURCES_ENABLED,
+      excludeCurrentBannerPrimogemSources: true,
     }),
     banners: loadFromStorage<Banner[]>(STORAGE_KEYS.BANNERS, []),
     simulationResults: loadFromStorage<SimulationResults | null>(

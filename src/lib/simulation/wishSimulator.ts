@@ -76,9 +76,7 @@ export class WishSimulator {
     }
 
     // Create a separate result for each character in the banner
-    const characterResults: Partial<
-      Record<CharacterId, CharacterSimulationResult>
-    > = {};
+    const characterResults: CharacterSimulationResult[] = [];
 
     // For each character that has wishes allocated, simulate separately
     for (const targetChar of charactersWithWishes) {
@@ -93,36 +91,22 @@ export class WishSimulator {
       );
 
       // Record the results for this character
-      characterResults[targetChar.id] = {
+      characterResults.push({
         character: targetChar.id,
         obtained: charResult.obtained,
         hasWishesAllocated: true,
         lostFiftyFifty: charResult.lostFiftyFifty,
         wishesUsed: charResult.wishesUsed,
         constellation: charResult.constellation,
-      };
+      });
 
       // Update the pity/guaranteed state for the next character or banner
       currentPity = charResult.pity;
       isGuaranteed = charResult.guaranteed;
     }
 
-    // For characters without wishes allocated, add them to results with obtained=false
-    for (const char of banner.characters) {
-      if (!charactersWithWishes.some((c) => c.id === char.id)) {
-        characterResults[char.id] = {
-          character: char.id,
-          obtained: false,
-          hasWishesAllocated: false,
-          lostFiftyFifty: false,
-          wishesUsed: 0,
-          constellation: 0,
-        };
-      }
-    }
-
     // Calculate total wishes used across all characters
-    const totalWishesUsed = Object.values(characterResults).reduce(
+    const totalWishesUsed = characterResults.reduce(
       (sum, r) => sum + r.wishesUsed,
       0
     );

@@ -2,44 +2,60 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, onChange, value, ...props }, ref) => {
-    const [inputValue, setInputValue] = React.useState(value || "0");
+const Input = React.forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<"input"> & { unit?: React.ReactElement }
+>(({ className, type, onChange, value, unit, ...props }, ref) => {
+  const [inputValue, setInputValue] = React.useState(value || "0");
 
-    const handleBlur = () => {
-      if (inputValue === "" || inputValue === "0") {
-        setInputValue("0");
-      }
-    };
+  const handleBlur = () => {
+    if (inputValue === "" || inputValue === "0") {
+      setInputValue("0");
+    }
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      setInputValue(newValue);
-      if (onChange) {
-        onChange(e);
-      }
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
-    React.useEffect(() => {
-      setInputValue(value !== undefined ? value.toString() : "0");
-    }, [value]);
+  React.useEffect(() => {
+    setInputValue(value !== undefined ? value.toString() : "0");
+  }, [value]);
 
-    return (
+  const c = cn(
+    "flex h-7 w-full rounded-md border border-input bg-transparent px-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+    className
+  );
+
+  return unit ? (
+    <div className={`${c} justify-between pl-1`}>
+      {unit}
       <input
         type={type}
-        className={cn(
-          "flex h-7 w-full rounded-md border border-input bg-transparent px-2  text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          className
-        )}
+        className="focus-visible:outline-none text-right min-w-0"
         ref={ref}
         value={inputValue}
         onBlur={handleBlur}
         onChange={handleChange}
         {...props}
       />
-    );
-  }
-);
+    </div>
+  ) : (
+    <input
+      type={type}
+      className={c}
+      ref={ref}
+      value={inputValue}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      {...props}
+    />
+  );
+});
 Input.displayName = "Input";
 
 export { Input };

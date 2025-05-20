@@ -96,36 +96,33 @@ const initialBannerAllocations: Allocations = initialBanners.reduce(
   {} as Record<VersionId, BannerAllocation>
 );
 
-initialBannerAllocations["5.6v1"]["escoffier"] = {
-  wishesAllocated: 81,
-  pullPriority: 0 as Priority,
-  maxConstellation: 0,
-};
 initialBannerAllocations["5.7v1"]["skirk"] = {
-  wishesAllocated: 81,
+  wishesAllocated: 429,
   pullPriority: 2 as Priority,
   maxConstellation: 6,
 };
 initialBannerAllocations["5.7v1"]["mavuika"] = {
-  wishesAllocated: 81,
+  wishesAllocated: 0,
   pullPriority: 3 as Priority,
   maxConstellation: 0,
 };
 initialBannerAllocations["5.7v2"]["raiden"] = {
-  wishesAllocated: 81,
+  wishesAllocated: 0,
   pullPriority: 2 as Priority,
   maxConstellation: 0,
 };
 
-// Initial state should only include the data portion
 export const initialStateData: GenshinState = {
   accountStatus: {
     currentPity: 0,
     isNextFiftyFiftyGuaranteed: false,
     ownedWishResources: {
-      primogems: 40,
+      primogem: 40,
       starglitter: 78,
-      limitedWishes: 61,
+      limitedWishes: 78,
+      stardust: 0,
+      genesisCrystal: 0,
+      standardWish: 0,
     },
     primogemSources: {
       gameUpdateCompensation: true,
@@ -147,6 +144,7 @@ export const initialStateData: GenshinState = {
       limitedExplorationRewards: true,
       thankYouGift: true,
     },
+    excludeCurrentBannerPrimogemSources: true,
   },
   banners: initialBanners,
   simulationCount: 10000,
@@ -154,7 +152,7 @@ export const initialStateData: GenshinState = {
   simulationProgress: 0,
   totalAvailableWishes: 0,
   availableWishes: {},
-  estimatedNewWishesPerBanner: 0,
+  estimatedNewWishesPerBanner: 100,
   remainingWishes: 0,
   unallocatedWishes: 0,
   areWishesOverAllocated: false,

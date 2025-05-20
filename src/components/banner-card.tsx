@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import CharacterIcon from "@/lib/components/CharacterIcon";
 import {
   DEFAULT_PRIORITY,
   PriorityValueToText,
@@ -18,8 +19,11 @@ import {
   type Priority,
   type VersionId,
 } from "@/lib/types";
-import { getCharacterElementColor, getCharacterRarityColor } from "@/lib/utils";
+import { getCharacterRarityColor } from "@/lib/utils";
 import { useMemo } from "react";
+import { BannerVersion } from "./banner-version";
+import { LimitedWish } from "./resource";
+import { Pill } from "./ui/pill";
 interface BannerCardProps {
   banner: Banner;
   mode: AppMode;
@@ -71,12 +75,27 @@ export default function BannerCard({
     )?.[0] as unknown as Priority;
   };
 
+  console.log(banner.version);
+  console.log("start: ", new Date(banner.startDate));
+  console.log("end: ", new Date(banner.endDate));
+
+  console.log("now: ", new Date());
+
+  const startDate = new Date(banner.startDate).getTime();
+  const endDate = new Date(banner.endDate).getTime();
+  const now = new Date().getTime();
+  const isCurrentBanner = startDate < now && endDate > now;
+  console.log(isCurrentBanner);
+
   return (
     <Card className="bg-bg-dark/80 border-void-2 overflow-hidden">
       <div className="h-2 bg-gradient-to-r from-[#7b68ee] to-[#9370db]"></div>
       <CardHeader className="pb-2">
         <CardTitle className="text-md font-medium flex justify-between">
-          <span className="text-gold-1">Banner: {banner.name}</span>
+          <div className="flex flex-row gap-1">
+            <BannerVersion version={banner.version} />
+            {isCurrentBanner && <Pill text="Current banner" />}
+          </div>
           <span className="text-sm text-white">{wishesAvailable}</span>
         </CardTitle>
         <p className="text-sm text-white opacity-50">
@@ -92,17 +111,11 @@ export default function BannerCard({
             <>
               <div></div>
               <div></div>
-              <div>{mode === "playground" ? "Wishes" : "Priority"}</div>
-              <div>Stop at</div>
+              <div></div>
+              <div></div>
             </>
             <div className="col-span-2 flex items-center gap-2">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${getCharacterElementColor(
-                  character.element
-                )}`}
-              >
-                {character.element.charAt(0)}
-              </div>
+              <CharacterIcon name={character.name} />
               <div>
                 <p
                   className={`text-sm font-medium ${getCharacterRarityColor(
@@ -122,6 +135,9 @@ export default function BannerCard({
                 updateBannerConfiguration &&
                 allocation && (
                   <div className="space-y-1">
+                    <div className="text-xs text-gray-400/70">
+                      Wishes allocated
+                    </div>
                     <Input
                       id={`wishes-${banner.id}-${character.id}`}
                       type="number"
@@ -137,13 +153,15 @@ export default function BannerCard({
                           },
                         })
                       }
-                      className="h-8 bg-bg-dark-2 border-void-2"
+                      className="h-8 bg-void-1 border-void-2"
+                      unit={<LimitedWish />}
                     />
                   </div>
                 )}
 
               {mode === "strategy" && allocation && (
                 <div className="space-y-1">
+                  <div className="text-xs text-gray-400/70">Priority</div>
                   <Select
                     value={priorityToStringRepresentation(
                       allocation[character.id]?.pullPriority || DEFAULT_PRIORITY
@@ -159,10 +177,10 @@ export default function BannerCard({
                       })
                     }
                   >
-                    <SelectTrigger className="h-8 bg-bg-dark-2 border-void-2">
+                    <SelectTrigger className="h-8 bg-void-1 border-void-2">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
-                    <SelectContent className="bg-bg-dark-2 border-void-2">
+                    <SelectContent className="bg-void-1 border-void-2">
                       <SelectItem value="must-have" className="text-[#ff6b6b]">
                         Must Have
                       </SelectItem>
@@ -187,7 +205,8 @@ export default function BannerCard({
               )}
             </div>
 
-            <div className="">
+            <div className="space-y-1">
+              <div className="text-xs text-gray-400/70">Max constellation</div>
               <Select
                 value={`C${allocation[character.id]?.maxConstellation || 0}`}
                 onValueChange={(value) =>
@@ -200,10 +219,10 @@ export default function BannerCard({
                   })
                 }
               >
-                <SelectTrigger className="h-8 bg-bg-dark-2 border-void-2">
+                <SelectTrigger className="h-8 bg-void-1 border-void-2">
                   <SelectValue placeholder="C0" />
                 </SelectTrigger>
-                <SelectContent className="bg-bg-dark-2 border-void-2">
+                <SelectContent className="bg-void-1 border-void-2">
                   {Array.from({ length: 7 }, (_, i) => (
                     <SelectItem
                       key={`C${i}`}

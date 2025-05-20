@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import React, { useState } from "react";
+import { API_CHARACTERS } from "../data";
+import { getCharacterElementColor } from "../utils";
 
 interface CharacterIconProps {
   name: string;
@@ -21,25 +23,23 @@ const CharacterIcon: React.FC<CharacterIconProps> = ({
   size = 48,
   className = "",
   alt,
-  useSquareIcon = false,
 }) => {
   const [imgError, setImgError] = useState(false);
 
   // For square icons, we use a different naming convention
-  const iconFilename = useSquareIcon
-    ? `UI_AvatarIcon_${name}.png`
-    : `UI_AvatarIcon_Side_${name.toLowerCase()}.png`;
+  const iconFilename = `UI_AvatarIcon_${name}.png`;
 
   const iconPath = `/images/characters/${iconFilename}`;
 
   // Fallback placeholder path
   const fallbackIcon = "/images/unknown_character.png";
 
-  const borderClass = useSquareIcon ? "rounded-md" : "rounded-full";
-
+  const backgroundColor = getCharacterElementColor(
+    API_CHARACTERS[name].element
+  );
   return (
     <div
-      className={`relative overflow-hidden ${borderClass} ${className}`}
+      className={`relative overflow-hidden rounded-full ${backgroundColor} ${className}`}
       style={{ width: size, height: size }}
     >
       <Image

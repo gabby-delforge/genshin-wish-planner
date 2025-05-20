@@ -33,25 +33,28 @@ const GenshinGetStateContext = createContext<GenshinGetStateType>(() => {
 export const GenshinProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  const onLoadFromLocalStorage = useCallback(
+    (success: boolean) => {
+      if (!success) {
+        console.error("Failed to load state from session storage");
+      }
+      setIsLoading(false);
+    },
+    [setIsLoading]
+  );
+
   const [state, dispatch] = useLocalStorageReducer(
     GenshinReducer,
     initialStateData,
     "genshin-state",
-    (success) => {
-      if (success) {
-        setIsLoading(false);
-      } else {
-        console.error("Failed to load state from session storage");
-        setIsLoading(false);
-      }
-    }
+    onLoadFromLocalStorage
   );
 
   // Use a ref to track current state for getState function

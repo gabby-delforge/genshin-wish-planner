@@ -137,6 +137,16 @@ export default function AccountStatus() {
     [accountStatus, updateAccountStatus]
   );
 
+  const handleExcludeCurrentBannerPrimogemSourcesChange = useCallback(
+    (checked: boolean) => {
+      updateAccountStatus({
+        ...accountStatus,
+        excludeCurrentBannerPrimogemSources: checked,
+      });
+    },
+    []
+  );
+
   if (isLoading) {
     return <SkeletonAccountStatus />;
   }
@@ -216,6 +226,9 @@ export default function AccountStatus() {
             estimatedNewWishesPerBanner={estimatedNewWishesPerBanner}
             accountStatus={accountStatus}
             handlePrimogemSourceChange={handlePrimogemSourceChange}
+            handleExcludeCurrentBannerPrimogemSourcesChange={
+              handleExcludeCurrentBannerPrimogemSourcesChange
+            }
           />
         </div>
       </CardContent>

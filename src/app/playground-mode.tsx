@@ -26,17 +26,15 @@ export default function PlaygroundMode() {
     <div className="space-y-6">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">
-          Allocate wishes to characters on upcoming banners and see your chances
-          of getting them. Perfect for planning your wish strategy.
+          Allocate wishes to characters on upcoming banners and simulate your
+          chances of getting them.
         </p>
       </div>
 
-      <Separator className="bg-void-2/50" />
-
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gold-1">Banner Setup</h3>
+        <h3 className="text-lg font-medium text-gold-1">Wish Allocation</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {banners.map((banner: Banner) => (
             <BannerCard
               key={banner.id}

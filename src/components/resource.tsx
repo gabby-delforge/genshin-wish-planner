@@ -11,7 +11,7 @@ type ResourceProps = {
 const resourceMap: Record<ResourceType, string> = {
   primogem:
     "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png",
-  limitedWish:
+  limitedWishes:
     "https://static.wikia.nocookie.net/gensin-impact/images/1/1f/Item_Intertwined_Fate.png",
   standardWish:
     "https://static.wikia.nocookie.net/gensin-impact/images/2/22/Item_Acquaint_Fate.png",
@@ -30,7 +30,6 @@ function Resource({
 }: ResourceProps & { type: ResourceType }) {
   return (
     <div className="flex items-center flex-shrink-0">
-      {number && <div>{number}</div>}
       <Image
         src={resourceMap[type]}
         alt={type}
@@ -38,6 +37,7 @@ function Resource({
         height={size}
         unoptimized
       />
+      {number && <div>{number}</div>}
     </div>
   );
 }
@@ -47,7 +47,7 @@ export function Primogem({ number, size = 24 }: ResourceProps) {
 }
 
 export function LimitedWish({ number, size = 24 }: ResourceProps) {
-  return <Resource number={number} size={size} type="limitedWish" />;
+  return <Resource number={number} size={size} type="limitedWishes" />;
 }
 
 export function StandardWish({ number, size = 24 }: ResourceProps) {
