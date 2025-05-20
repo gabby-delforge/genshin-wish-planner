@@ -29,10 +29,10 @@ const CharacterIcon: React.FC<CharacterIconProps> = ({
   // For square icons, we use a different naming convention
   const iconFilename = `UI_AvatarIcon_${name}.png`;
 
-  const iconPath = `/images/characters/${iconFilename}`;
+  const iconPath = `./images/characters/${iconFilename}`;
 
   // Fallback placeholder path
-  const fallbackIcon = "/images/unknown_character.png";
+  const fallbackIcon = "./images/unknown_character.png";
 
   const backgroundColor = getCharacterElementColor(
     API_CHARACTERS[name].element
