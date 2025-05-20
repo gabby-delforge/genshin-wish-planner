@@ -2,7 +2,6 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { API_CHARACTERS } from "../data";
-import { prefix } from "../prefix";
 import { getCharacterElementColor } from "../utils";
 
 interface CharacterIconProps {
@@ -29,10 +28,10 @@ const CharacterIcon: React.FC<CharacterIconProps> = ({
 
   const iconFilename = `UI_AvatarIcon_${name.toLowerCase()}.png`;
 
-  const iconPath = `${prefix}/images/characters/${iconFilename}`;
+  const iconPath = `/images/characters/${iconFilename}`;
 
   // Fallback placeholder path
-  const fallbackIcon = `${prefix}/images/unknown_character.png`;
+  const fallbackIcon = `$/images/unknown_character.png`;
 
   const backgroundColor = getCharacterElementColor(
     API_CHARACTERS[name].element
