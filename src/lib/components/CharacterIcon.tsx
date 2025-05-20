@@ -27,7 +27,7 @@ const CharacterIcon: React.FC<CharacterIconProps> = ({
 }) => {
   const [imgError, setImgError] = useState(false);
 
-  const iconFilename = `UI_AvatarIcon_${name}.png`;
+  const iconFilename = `UI_AvatarIcon_${name.toLowerCase()}.png`;
 
   const iconPath = `${prefix}/images/characters/${iconFilename}`;
 
