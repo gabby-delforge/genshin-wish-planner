@@ -26,13 +26,12 @@ const CharacterIcon: React.FC<CharacterIconProps> = ({
 }) => {
   const [imgError, setImgError] = useState(false);
 
-  // For square icons, we use a different naming convention
   const iconFilename = `UI_AvatarIcon_${name}.png`;
 
-  const iconPath = `./images/characters/${iconFilename}`;
+  const iconPath = `/images/characters/${iconFilename}`;
 
   // Fallback placeholder path
-  const fallbackIcon = "./images/unknown_character.png";
+  const fallbackIcon = "/images/unknown_character.png";
 
   const backgroundColor = getCharacterElementColor(
     API_CHARACTERS[name].element
@@ -49,6 +48,7 @@ const CharacterIcon: React.FC<CharacterIconProps> = ({
         height={size}
         className="object-cover"
         onError={() => setImgError(true)}
+        unoptimized
       />
     </div>
   );
