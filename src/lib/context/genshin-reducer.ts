@@ -1,7 +1,7 @@
 import {
+  calculateAccountCurrentPrimogemValue,
   calculateAvailableWishesForBanners,
   calculateEstimatedWishes,
-  calculateTotalAvailableWishes,
 } from "../simulation/simulation-utils";
 import { GenshinAction } from "./actions";
 import { GenshinState, initialStateData } from "./genshin-state";
@@ -31,21 +31,21 @@ export function GenshinReducer(
       return { ...state, ...action.payload };
     case "SET_ACCOUNT_STATUS": {
       const newAccountStatus = action.payload;
-      const newTotalAvailableWishes =
-        calculateTotalAvailableWishes(newAccountStatus);
+      const newAccountCurrentPrimogemValue =
+        calculateAccountCurrentPrimogemValue(newAccountStatus);
       const estimatedNewWishesPerBanner =
         calculateEstimatedWishes(newAccountStatus);
-      console.log(estimatedNewWishesPerBanner);
       return {
         ...state,
         accountStatus: newAccountStatus,
-        totalAvailableWishes: newTotalAvailableWishes,
+        accountCurrentPrimogemValue: newAccountCurrentPrimogemValue,
         estimatedNewWishesPerBanner: estimatedNewWishesPerBanner,
         availableWishes: calculateAvailableWishesForBanners(
           state.banners,
           state.bannerAllocations,
-          newTotalAvailableWishes,
-          estimatedNewWishesPerBanner
+          newAccountCurrentPrimogemValue,
+          estimatedNewWishesPerBanner,
+          newAccountStatus.excludeCurrentBannerPrimogemSources
         ),
       };
     }
@@ -56,8 +56,9 @@ export function GenshinReducer(
       const newAvailableWishes = calculateAvailableWishesForBanners(
         newBanners,
         state.bannerAllocations,
-        state.totalAvailableWishes,
-        state.estimatedNewWishesPerBanner
+        state.accountCurrentPrimogemValue,
+        state.estimatedNewWishesPerBanner,
+        state.accountStatus.excludeCurrentBannerPrimogemSources
       );
 
       return {
@@ -78,8 +79,9 @@ export function GenshinReducer(
         availableWishes: calculateAvailableWishesForBanners(
           state.banners,
           updatedBannerAllocation,
-          state.totalAvailableWishes,
-          state.estimatedNewWishesPerBanner
+          state.accountCurrentPrimogemValue,
+          state.estimatedNewWishesPerBanner,
+          state.accountStatus.excludeCurrentBannerPrimogemSources
         ),
       };
 

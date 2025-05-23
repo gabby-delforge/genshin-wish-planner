@@ -6,6 +6,5 @@ type BannerVersionProps = { version: VersionId };
 
 export const BannerVersion = ({ version }: BannerVersionProps) => {
   const color = getBannerColor(version);
-  console.log(color);
   return <Pill text={version} color={color} />;
 };

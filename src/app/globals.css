@@ -1,5 +1,9 @@
+@import url("./loading.css");
 @import "tailwindcss";
 
+html {
+  color: white;
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

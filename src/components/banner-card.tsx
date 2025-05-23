@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import CharacterIcon from "@/lib/components/CharacterIcon";
+import { useGenshinState } from "@/lib/context/genshin-context";
 import {
   DEFAULT_PRIORITY,
   PriorityValueToText,
@@ -19,11 +20,17 @@ import {
   type Priority,
   type VersionId,
 } from "@/lib/types";
-import { getCharacterRarityColor } from "@/lib/utils";
+import { getCharacterRarityColor, isCurrentBanner } from "@/lib/utils";
 import { useMemo } from "react";
 import { BannerVersion } from "./banner-version";
 import { LimitedWish } from "./resource";
 import { Pill } from "./ui/pill";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 interface BannerCardProps {
   banner: Banner;
   mode: AppMode;
@@ -44,30 +51,57 @@ export default function BannerCard({
   estimatedNewWishesPerBanner,
   updateBannerConfiguration,
 }: BannerCardProps) {
+  const { isLoading, accountStatus } = useGenshinState();
   const wishesAvailable = useMemo(() => {
     const totalWishes = availableWishes?.[banner.id] || 0;
-    const gainedWishes = estimatedNewWishesPerBanner;
-    const totalMinusGained = totalWishes - gainedWishes;
+
+    // TODO: Add a tooltip that explains how totalWishes was calculated
+    const gainedWishes =
+      isCurrentBanner(banner) &&
+      accountStatus.excludeCurrentBannerPrimogemSources
+        ? 0
+        : estimatedNewWishesPerBanner;
+    // This represents the wishes the user started with
+    let spentWishes = 0;
+    for (const alloc of Object.values(allocation)) {
+      spentWishes += alloc.wishesAllocated;
+    }
+    // totalWishes = earned + leftover - spent
+    // leftover = spent + totalWishes - earned
+    const leftover = spentWishes - gainedWishes + totalWishes;
 
     return (
-      <span className="text-sm text-white opacity-50">
-        <span className="font-bold">{totalWishes}</span> wishes available{" "}
-        {estimatedNewWishesPerBanner > 0 ? (
-          <span>
-            {`(${totalMinusGained}+`}
-            <span className="text-lime-300">{estimatedNewWishesPerBanner}</span>
-            )
-          </span>
-        ) : (
-          ""
-        )}
-      </span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <div className="flex items-center gap-1 text-sm text-white ">
+              <LimitedWish number={totalWishes} />
+              available
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="flex gap-1 items-center">
+            <LimitedWish number={leftover} />
+            <div>leftover</div>
+            {gainedWishes > 0 && (
+              <>
+                <div>+</div>
+                <LimitedWish number={gainedWishes} />
+                <div>earned</div>
+              </>
+            )}
+
+            {spentWishes > 0 && (
+              <>
+                <div>-</div>
+                <LimitedWish number={spentWishes} />
+                <div>spent</div>
+              </>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   }, [availableWishes, estimatedNewWishesPerBanner, banner.id]);
-
-  const priorityToStringRepresentation = (priority: Priority): string => {
-    return PriorityValueToText[priority];
-  };
 
   const priorityStringToValueRepresentation = (priority: string): Priority => {
     return Object.entries(PriorityValueToText).find(
@@ -75,17 +109,7 @@ export default function BannerCard({
     )?.[0] as unknown as Priority;
   };
 
-  console.log(banner.version);
-  console.log("start: ", new Date(banner.startDate));
-  console.log("end: ", new Date(banner.endDate));
-
-  console.log("now: ", new Date());
-
-  const startDate = new Date(banner.startDate).getTime();
-  const endDate = new Date(banner.endDate).getTime();
-  const now = new Date().getTime();
-  const isCurrentBanner = startDate < now && endDate > now;
-  console.log(isCurrentBanner);
+  const isCurrent = useMemo(() => isCurrentBanner(banner), [banner]);
 
   return (
     <Card className="bg-bg-dark/80 border-void-2 overflow-hidden">
@@ -94,7 +118,7 @@ export default function BannerCard({
         <CardTitle className="text-md font-medium flex justify-between">
           <div className="flex flex-row gap-1">
             <BannerVersion version={banner.version} />
-            {isCurrentBanner && <Pill text="Current banner" />}
+            {isCurrent && <Pill text="Current banner" />}
           </div>
           <span className="text-sm text-white">{wishesAvailable}</span>
         </CardTitle>
@@ -139,6 +163,7 @@ export default function BannerCard({
                       Wishes allocated
                     </div>
                     <Input
+                      isLoading={isLoading}
                       id={`wishes-${banner.id}-${character.id}`}
                       type="number"
                       min="0"
@@ -153,8 +178,8 @@ export default function BannerCard({
                           },
                         })
                       }
-                      className="h-8 bg-void-1 border-void-2"
                       unit={<LimitedWish />}
+                      showPlusMinus={true}
                     />
                   </div>
                 )}
@@ -163,9 +188,9 @@ export default function BannerCard({
                 <div className="space-y-1">
                   <div className="text-xs text-gray-400/70">Priority</div>
                   <Select
-                    value={priorityToStringRepresentation(
+                    value={(
                       allocation[character.id]?.pullPriority || DEFAULT_PRIORITY
-                    )}
+                    ).toString()}
                     onValueChange={(value: string) =>
                       updateBannerConfiguration(banner.id, {
                         ...allocation,
@@ -181,20 +206,17 @@ export default function BannerCard({
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent className="bg-void-1 border-void-2">
-                      <SelectItem value="must-have" className="text-[#ff6b6b]">
+                      <SelectItem value="3" className="text-[#ff6b6b]">
                         Must Have
                       </SelectItem>
-                      <SelectItem value="want" className="text-[#feca57]">
+                      <SelectItem value="2" className="text-[#feca57]">
                         Want
                       </SelectItem>
-                      <SelectItem
-                        value="nice-to-have"
-                        className="text-[#1dd1a1]"
-                      >
+                      <SelectItem value="1" className="text-[#1dd1a1]">
                         Nice to Have
                       </SelectItem>
                       <SelectItem
-                        value="skip"
+                        value={DEFAULT_PRIORITY.toString()}
                         className="text-muted-foreground"
                       >
                         Skip

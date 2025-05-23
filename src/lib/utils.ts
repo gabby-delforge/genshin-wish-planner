@@ -1,14 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { VersionId } from "./types";
-
-const COLORS = {
-  gold: "#feca57",
-  purple: "#9c88ff",
-  blue: "#70a1ff",
-  red: "#ff6b6b",
-  teal: "#1dd1a1",
-};
+import colors from "tailwindcss/colors";
+import { ELEMENT_COLORS, RARITY_COLORS } from "./colors";
+import { Banner, VersionId } from "./types";
 
 /**
  * Utility function for conditional class names with Tailwind
@@ -22,14 +16,9 @@ export function cn(...inputs: ClassValue[]) {
  * @param rarity Character rarity (5-star, 4-star, etc.)
  */
 export function getCharacterRarityColor(rarity: number): string {
-  switch (rarity) {
-    case 5:
-      return "text-[#feca57]"; // Gold for 5-star
-    case 4:
-      return "text-[#9c88ff]"; // Purple for 4-star
-    default:
-      return "text-[#70a1ff]"; // Blue for 3-star
-  }
+  return (
+    RARITY_COLORS[rarity as keyof typeof RARITY_COLORS] || RARITY_COLORS.default
+  );
 }
 
 export function hash(s: string): number {
@@ -50,24 +39,8 @@ export function hash(s: string): number {
  * @param element Character element (Pyro, Hydro, etc.)
  */
 export function getCharacterElementColor(element: string): string {
-  switch (element.toLowerCase()) {
-    case "pyro":
-      return "bg-[#ff6b6b]/80"; // Red
-    case "hydro":
-      return "bg-[#70a1ff]/80"; // Blue
-    case "anemo":
-      return "bg-[#1dd1a1]/80"; // Teal
-    case "electro":
-      return "bg-[#9c88ff]/80"; // Purple
-    case "dendro":
-      return "bg-[#7bed9f]/80"; // Green
-    case "cryo":
-      return "bg-[#70a1ff]/80"; // Light Blue
-    case "geo":
-      return "bg-[#feca57]/80"; // Yellow
-    default:
-      return "bg-gray-500/80"; // Default gray
-  }
+  const elementKey = element.toLowerCase() as keyof typeof ELEMENT_COLORS;
+  return ELEMENT_COLORS[elementKey] || ELEMENT_COLORS.default;
 }
 
 /**
@@ -85,8 +58,8 @@ export function formatDate(dateString: string): string {
 
 export function getBannerColor(versionId: VersionId): string {
   const h = hash(versionId);
-  const colorsArr = Object.values(COLORS);
-  return colorsArr[h % colorsArr.length];
+  //return BANNER_COLORS[h % BANNER_COLORS.length];
+  return colors.yellow[700];
 }
 
 /**
@@ -151,3 +124,10 @@ export function getCurrentBanner(
   // Default to the first banner if none are current or upcoming
   return 0;
 }
+
+export const isCurrentBanner = (banner: Banner): boolean => {
+  const startDate = new Date(banner.startDate).getTime();
+  const endDate = new Date(banner.endDate).getTime();
+  const now = new Date().getTime();
+  return startDate < now && endDate > now;
+};

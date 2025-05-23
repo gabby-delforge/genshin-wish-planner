@@ -1,0 +1,68 @@
+/* Subtle pulse animation for loading states */
+.shimmer {
+  /*position: relative;*/
+  background: rgba(255, 255, 255, 0.06); /* Very subtle light background */
+  animation: pulse 1.5s ease-in-out infinite;
+  border-color: transparent; /* Slightly brighter border */
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.09);
+  }
+}
+
+/* Alternative version that only pulses the border if you want an even more subtle effect */
+.shimmer-border-only {
+  position: relative;
+  animation: pulseBorder 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseBorder {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* Optional alternative that uses a very subtle gradient overlay instead of full opacity change */
+.shimmer-gradient {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-gradient::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.09),
+    rgba(255, 255, 255, 0.04)
+  );
+  pointer-events: none; /* Ensures clicks pass through to the underlying element */
+  animation: gradientPulse 3s ease-in-out infinite;
+}
+
+@keyframes gradientPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}

@@ -73,10 +73,6 @@ const wishForCharacter = (
   let pity = startingPity;
   let guaranteed = startingGuaranteed;
 
-  if (character === "skirk") {
-    console.log("skirk");
-  }
-
   // Simulate pulls for this specific character
   while (charPulls < maxWishes && constellationCount <= maxConst) {
     charPulls++;
@@ -305,8 +301,6 @@ export const finalizeResults = (
             }
             characterSuccessTotals[code] += 1;
           }
-        } else if (characterId === "skirk") {
-          console.log("Skirk missed!");
         }
       }
     }
@@ -346,8 +340,6 @@ export const finalizeResults = (
       count: s.count,
       percentage: s.count / numSimulations,
     }));
-
-  console.log(sortedScenarios);
 
   return {
     bannerResults,
@@ -812,8 +804,6 @@ export const runOptimization = async (
 
   const bestSimulation = bestScores.dequeue();
   if (bestSimulation) {
-    console.log("Best simulation score:", getSimulationScore(bestSimulation));
-    console.log("Allocations:");
     // Print the allocations like this: [Character name]: X wishes (56% chance to get)
     for (const bannerId in bestSimulation.allocation) {
       const bannerAllocations =

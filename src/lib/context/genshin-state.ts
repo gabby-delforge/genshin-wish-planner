@@ -27,7 +27,7 @@ export type GenshinState = {
   simulationProgress: number;
 
   // Global state
-  totalAvailableWishes: number;
+  accountCurrentPrimogemValue: number;
   availableWishes: Record<VersionId, number>;
   estimatedNewWishesPerBanner: number;
   remainingWishes: number;
@@ -112,6 +112,12 @@ initialBannerAllocations["5.7v2"]["raiden"] = {
   maxConstellation: 0,
 };
 
+export const STORAGE_OMIT_KEYS = ["mode"] as const;
+export type StorageGenshinState = Omit<
+  GenshinState,
+  (typeof STORAGE_OMIT_KEYS)[number]
+>;
+
 export const initialStateData: GenshinState = {
   accountStatus: {
     currentPity: 0,
@@ -150,7 +156,7 @@ export const initialStateData: GenshinState = {
   simulationCount: 10000,
   isSimulating: false,
   simulationProgress: 0,
-  totalAvailableWishes: 0,
+  accountCurrentPrimogemValue: 0,
   availableWishes: {},
   estimatedNewWishesPerBanner: 100,
   remainingWishes: 0,

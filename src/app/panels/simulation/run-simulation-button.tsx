@@ -2,8 +2,8 @@ import { useGenshinState } from "@/lib/context/genshin-context";
 import { useGenshinActions } from "@/lib/context/useGenshinActions";
 import { Label } from "@radix-ui/react-label";
 import { Loader2 } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 
 type RunSimulationButtonProps = {
   showSimulationCountInput?: boolean;
@@ -45,7 +45,7 @@ export default function RunSimulationButton({
         onChange={(e) =>
           setSimulationCount(Number.parseInt(e.target.value) || 10000)
         }
-        className="bg-void-1 border-void-2"
+        className="bg-void-1 border-void-2 w-full"
       />
     </>
   );

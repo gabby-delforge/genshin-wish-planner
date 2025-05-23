@@ -5,98 +5,78 @@ import {
   useCallback,
   useEffect,
   useReducer,
-  useState,
+  useRef,
 } from "react";
-import { GenshinState } from "./genshin-state";
 
 export const useLocalStorageReducer = <T extends object, A>(
   reducer: Reducer<T, A>,
   initialState: T,
   key: string,
-  onLoad?: (success: boolean) => void
+  onLoad?: (success: boolean) => void,
+  serializeState?: (state: T) => string
 ): [T, Dispatch<A>, VoidFunction] => {
-  // Use internal state for initialization
-  const [state, setState] = useState<T>(initialState);
-  const [isLoading, setIsLoading] = useState(true);
-
   // Safe check for client-side
   const isClient = typeof window !== "undefined";
 
-  const loadFromLocalStorage = useCallback(
-    (initialState: T) => {
-      if (!isClient) return;
-      try {
-        const stored = localStorage.getItem(key);
-        if (stored) {
-          onLoad?.(true);
-          return JSON.parse(stored);
-        }
-        onLoad?.(true);
-        return initialState;
-      } catch (error) {
-        console.error("Error loading from localStorage:", error);
-        onLoad?.(false);
-        return initialState;
-      }
-    },
-    [isClient, key, onLoad, setIsLoading]
-  );
-  // Only create reducer after client-side initialization
-  const [reducerState, dispatch] = useReducer(
-    reducer,
-    state,
-    loadFromLocalStorage
-  );
+  // Use a ref to track initialization
+  const isInitializedRef = useRef(false);
 
-  // Debug ----
-  useEffect(() => {
-    console.log("state changed:", state);
-  }, [state]);
-  useEffect(() => {
-    console.log("reducerState changed:", reducerState);
-  }, [reducerState]);
-  useEffect(() => {
-    console.log("isLoading changed:", isLoading);
-  }, [isLoading]);
-  //useEffect(() => {console.log(" changed:", state)}, [state]);
-
-  // ----------
-  // Initialize from localStorage only on client-side
-  useEffect(() => {
-    if (!isClient) return;
+  // Get initial state with a function to avoid execution during SSR
+  const getInitialState = () => {
+    // During SSR, return the initial state
+    if (!isClient) return initialState;
 
     try {
+      // Try to load from localStorage
       const stored = localStorage.getItem(key);
       if (stored) {
-        setState(() => {
-          console.log("set isLoading false");
-          setIsLoading(false);
-          return JSON.parse(stored);
-        });
+        const parsedState = JSON.parse(stored);
+        console.log("Initial state:", { ...initialState, ...parsedState });
+        return { ...initialState, ...parsedState };
       }
-      onLoad?.(true);
     } catch (error) {
       console.error("Error loading from localStorage:", error);
-      onLoad?.(false);
+      // Signal load failure asynchronously to avoid hydration mismatch
+      setTimeout(() => onLoad?.(false), 0);
     }
-  }, [isClient, key, onLoad, setIsLoading]);
+
+    return initialState;
+  };
+
+  // Initialize reducer with function initialization to handle SSR safely
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
+
+  // After mount, set initialized and signal loading complete
+  useEffect(() => {
+    if (!isClient || isInitializedRef.current) return;
+
+    isInitializedRef.current = true;
+
+    // Signal successful load after a short delay to ensure hydration is complete
+    setTimeout(() => onLoad?.(true), 0);
+  }, [isClient, onLoad]);
 
   // Save to localStorage when state changes (client-side only)
   useEffect(() => {
-    if (!isClient || isLoading || reducerState === initialState) return;
-    console.log((reducerState as GenshinState).estimatedNewWishesPerBanner);
+    if (!isClient || !isInitializedRef.current) return;
+
     try {
-      localStorage.setItem(key, JSON.stringify(reducerState));
+      if (serializeState) {
+        localStorage.setItem(key, serializeState(state));
+      } else {
+        localStorage.setItem(key, JSON.stringify(state));
+      }
     } catch (error) {
       console.error("Error saving to localStorage:", error);
     }
-  }, [reducerState, key, isClient, isLoading]);
+  }, [state, key, isClient]);
 
+  // Function to clear localStorage data
   const clearValue = useCallback(() => {
     if (isClient) {
       localStorage.removeItem(key);
     }
   }, [key, isClient]);
 
-  return [reducerState, dispatch, clearValue];
+  return [state, dispatch, clearValue];
 };
