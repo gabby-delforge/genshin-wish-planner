@@ -75,7 +75,7 @@ const BannerCard = observer(
 
       return (
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip delayDuration={300}>
             <TooltipTrigger>
               <div className="flex items-center gap-1 text-sm text-white ">
                 <LimitedWish number={totalWishes} />

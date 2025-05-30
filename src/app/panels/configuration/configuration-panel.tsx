@@ -38,7 +38,7 @@ const ConfigurationPanel = observer(
               showPlusMinus
               width={"w-full"}
               validate={(value) => [
-                !!value &&
+                value !== undefined &&
                   parseInt(value.toString()) >= 0 &&
                   parseInt(value.toString()) < 90,
                 "",
