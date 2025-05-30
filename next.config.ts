@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@phosphor-icons/react"],
   },
+  devIndicators: false,
 };
 
 export default nextConfig;
