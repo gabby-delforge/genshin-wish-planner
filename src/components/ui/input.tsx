@@ -10,6 +10,9 @@ type InputExtendedProps = {
   unit?: React.ReactElement;
   showPlusMinus?: boolean;
   width?: string;
+  validate?: (
+    value: string | number | readonly string[] | undefined
+  ) => [boolean, string];
 };
 
 const Input = React.forwardRef<
@@ -26,15 +29,25 @@ const Input = React.forwardRef<
       isLoading = false,
       showPlusMinus,
       width,
+      validate,
       ...props
     },
     ref
   ) => {
     const [isFocused, setIsFocused] = React.useState(false);
     const internalRef = React.useRef<HTMLInputElement>(null);
+    const [isValid, setIsValid] = React.useState(true);
+    const [errorHint, setErrorHint] = React.useState("");
 
     // Use the passed ref if available, otherwise use our internal ref
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
+
+    React.useEffect(() => {
+      if (!validate) return;
+      const [valid, error] = validate(value);
+      setIsValid(valid);
+      setErrorHint(error);
+    }, [value, validate]);
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       setIsFocused(true);
@@ -134,7 +147,7 @@ const Input = React.forwardRef<
           type={type}
           className={`focus-visible:outline-none text-right min-w-0 ${
             width ? width : ""
-          }`}
+          } ${!isValid ? "text-red-300" : ""}`}
           ref={inputRef}
           value={displayValue}
           onFocus={handleFocus}

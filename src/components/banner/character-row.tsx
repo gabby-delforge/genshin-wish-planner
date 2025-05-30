@@ -54,7 +54,9 @@ export const CharacterRow = observer(
         </div>
 
         <div className="flex flex-col mr-3 items-end">
-          <div className="text-sm text-gray-400/70 px-3">Pull until</div>
+          <div className="text-xs text-gray-400/70 text-right mr-4">
+            Pull until
+          </div>
           <Input
             isLoading={isLoading}
             id={`constellation-${character.Id}`}
@@ -64,14 +66,16 @@ export const CharacterRow = observer(
             onChange={(e) => setMaxConstellation(parseInt(e.target.value))}
             unit={<div className="text-white/50 pl-1 flex-initial">C</div>}
             showPlusMinus={true}
-            width={"w-4"}
+            width={"w-8"}
           />
         </div>
 
-        <div className="">
+        <>
           {mode === "playground" && (
             <div className="flex flex-col">
-              <div className="text-sm text-gray-400/70">Spend</div>
+              <div className="text-xs text-gray-400/70 text-right mr-4">
+                Spend
+              </div>
               <Input
                 isLoading={isLoading}
                 id={`wishes-${character.Id}`}
@@ -81,13 +85,16 @@ export const CharacterRow = observer(
                 onChange={(e) => setWishesAllocated(parseInt(e.target.value))}
                 unit={<LimitedWish />}
                 showPlusMinus={true}
+                width={"w-8"}
               />
             </div>
           )}
 
           {mode === "strategy" && (
             <div className="space-y-1">
-              <div className="text-sm text-gray-400/70">Priority</div>
+              <div className="text-xs text-gray-400/70 text-right mr-4">
+                Priority
+              </div>
               <Select
                 value={PriorityValueToText[currentPriority]}
                 onValueChange={(value: string) =>
@@ -117,7 +124,7 @@ export const CharacterRow = observer(
               </Select>
             </div>
           )}
-        </div>
+        </>
       </div>
     );
   }

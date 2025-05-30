@@ -17,7 +17,7 @@ const ConfigurationPanel = observer(
     return (
       <Panel title="Configuration" icon={<Cog className="w-h4 h-h4" />}>
         <div className="space-y-4 @container/config">
-          <div className="grid grid-cols-2 @sm/config:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 @sm/config:grid-cols-[auto_1fr_auto_1fr] gap-2 items-center">
             <Label htmlFor="currentPity" className="my-auto text-sm">
               Pity
             </Label>
@@ -37,8 +37,17 @@ const ConfigurationPanel = observer(
               }
               showPlusMinus
               width={"w-full"}
+              validate={(value) => [
+                !!value &&
+                  parseInt(value.toString()) >= 0 &&
+                  parseInt(value.toString()) < 90,
+                "",
+              ]}
             />
-            <Label htmlFor="isGuaranteed" className="my-auto text-sm">
+            <Label
+              htmlFor="isGuaranteed"
+              className="my-auto text-sm  @sm/config:ml-6"
+            >
               Last 50/50
             </Label>
             <ToggleGroup.Root

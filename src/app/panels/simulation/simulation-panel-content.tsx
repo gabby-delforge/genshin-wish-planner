@@ -10,14 +10,6 @@ import RunSimulationButton from "./run-simulation-button";
 
 export const SimulationPanelContent = observer(
   ({ genshinState }: { genshinState: GenshinState }) => {
-    const descriptionText = useMemo(() => {
-      if (genshinState.mode === "playground") {
-        return "Allocate wishes to characters on upcoming banners and simulate your chances of getting them.";
-      } else {
-        return "Set your character priorities and let the simulator suggest the best wish allocation strategy.";
-      }
-    }, [genshinState.mode]);
-
     const headerText = useMemo(() => {
       if (genshinState.mode === "playground") {
         return "Wish Allocation";
@@ -27,10 +19,6 @@ export const SimulationPanelContent = observer(
     }, [genshinState.mode]);
     return (
       <div className="space-y-6">
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">{descriptionText}</p>
-        </div>
-
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-gold-1">{headerText}</h3>
 

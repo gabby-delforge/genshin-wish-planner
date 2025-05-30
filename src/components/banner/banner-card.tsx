@@ -131,9 +131,7 @@ const BannerCard = observer(
                 {displayStartDate} - {displayEndDate}
               </p>
               {isCurrentBanner && (
-                <div className="text-sm text-white/40 italic">
-                  (Current banner)
-                </div>
+                <div className="text-sm text-white/40">(Current banner)</div>
               )}
             </div>
             <span className="text-sm text-white">{wishesAvailableLabel}</span>

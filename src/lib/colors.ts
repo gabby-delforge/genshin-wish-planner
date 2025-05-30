@@ -15,7 +15,7 @@ export const BANNER_COLORS = [
  * Element color mappings using Tailwind CSS classes
  */
 export const ELEMENT_COLORS = {
-  pyro: "bg-red-500/80", // Red
+  pyro: "bg-red-400/80", // Red
   hydro: "bg-blue-400/80", // Blue
   anemo: "bg-teal-500/80", // Teal
   electro: "bg-purple-500/80", // Purple
