@@ -1,5 +1,5 @@
 const env = process.env.NODE_ENV;
 
-const prefix = env == "production" ? "/genshin-wish-planner" : "";
+const prefix = env == "production" ? "" : "";
 
 export { prefix };
