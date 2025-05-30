@@ -151,3 +151,9 @@ export const clamp = (value: number, min: number, max: number): number => {
 export const logNotImplemented = (what: string) => {
   console.log("Not implemented: ", what);
 };
+
+export const toFriendlyDate = (date: Date) =>
+  new Date(date).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });

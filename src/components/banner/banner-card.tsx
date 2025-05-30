@@ -13,6 +13,7 @@ import {
   WeaponId,
   type BannerId,
 } from "@/lib/types";
+import { toFriendlyDate } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { LimitedWish } from "../resource";
@@ -105,6 +106,16 @@ const BannerCard = observer(
       );
     }, [wishesAvailable, estimatedWishesEarned, id]);
 
+    const displayStartDate = useMemo(
+      () => toFriendlyDate(new Date(bannerConfiguration.banner.startDate)),
+      [bannerConfiguration.banner.startDate]
+    );
+
+    const displayEndDate = useMemo(
+      () => toFriendlyDate(new Date(bannerConfiguration.banner.endDate)),
+      [bannerConfiguration.banner.endDate]
+    );
+
     return (
       <Card
         className={`${
@@ -123,7 +134,7 @@ const BannerCard = observer(
             <span className="text-sm text-white">{wishesAvailableLabel}</span>
           </CardTitle>
           <p className="text-sm text-white opacity-50">
-            {bannerData.startDate} - {bannerData.endDate}
+            {displayStartDate} - {displayEndDate}
           </p>
         </CardHeader>
         <CardContent className="space-y-2">

@@ -1,5 +1,4 @@
 import { LimitedWish, Primogem } from "@/components/resource";
-import { Checkbox } from "@/components/ui/checkbox";
 import { CheckboxWithLabel } from "@/components/ui/checkbox-with-label";
 import { Label } from "@/components/ui/label";
 import { PRIMOGEM_SOURCE_VALUES } from "@/lib/data";
@@ -10,18 +9,6 @@ import {
 } from "@/lib/types";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-
-type EstimatedFutureWishesProps = {
-  estimatedNewWishesPerBanner: number;
-  primogemSources: PrimogemSourcesEnabled;
-  handlePrimogemSourceChange: (
-    source: PrimogemSourceKey,
-    checked: boolean
-  ) => void;
-  excludeCurrentBannerPrimogems: boolean;
-
-  handleExcludeCurrentBannerPrimogemSourcesChange: (checked: boolean) => void;
-};
 
 // Helper function to get the primogem value from a source
 const getPrimogemValue = (sourceValue: PrimogemSourceValue): number => {
@@ -101,6 +88,17 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   newVersionCode: "New Version Code",
   limitedExplorationRewards: "Limited Exploration Rewards",
   thankYouGift: "Thank You Gift",
+};
+type EstimatedFutureWishesProps = {
+  estimatedNewWishesPerBanner: [number, number];
+  primogemSources: PrimogemSourcesEnabled;
+  handlePrimogemSourceChange: (
+    source: PrimogemSourceKey,
+    checked: boolean
+  ) => void;
+  excludeCurrentBannerPrimogems: boolean;
+
+  handleExcludeCurrentBannerPrimogemSourcesChange: (checked: boolean) => void;
 };
 
 export const EstimatedFutureWishes = observer(
@@ -236,24 +234,11 @@ export const EstimatedFutureWishes = observer(
 
         <div className="bg-void-1 rounded-md p-3 border border-void-2 mt-4">
           <div className="text-sm flex gap-1 items-center justify-center font-medium text-gold-1">
-            <span className=" font-bold">
-              <LimitedWish number={estimatedNewWishesPerBanner} />
-            </span>
+            <LimitedWish number={estimatedNewWishesPerBanner[0]} />
+            -
+            <LimitedWish number={estimatedNewWishesPerBanner[1]} />
             gained each banner
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id={"exclude-current"}
-            checked={excludeCurrentBannerPrimogems}
-            onCheckedChange={handleExcludeCurrentBannerPrimogemSourcesChange}
-          />
-          <Label
-            htmlFor={"exclude-current"}
-            className="text-xs cursor-pointer flex justify-between items-center w-full"
-          >
-            Exclude wishes earned during the current banner
-          </Label>
         </div>
       </div>
     );

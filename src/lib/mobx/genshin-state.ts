@@ -19,7 +19,12 @@ import {
   WeaponId,
   WishResources,
 } from "../types";
-import { getCurrentBanner, isPastDate, logNotImplemented } from "../utils";
+import {
+  clamp,
+  getCurrentBanner,
+  isPastDate,
+  logNotImplemented,
+} from "../utils";
 import { initializeBannerConfigurations } from "./initializers";
 import { makeLocalStorage } from "./make-local-storage";
 export class GenshinState {
@@ -225,7 +230,7 @@ export class GenshinState {
     const bannerConfig =
       this.bannerConfiguration[bannerId].characters[characterId];
     if (!bannerConfig) return;
-    bannerConfig.maxConstellation = value;
+    bannerConfig.maxConstellation = clamp(value, 0, 6);
   }
 
   setBannerConfiguration(
@@ -271,7 +276,7 @@ export class GenshinState {
       this.accountStatusCurrentPity,
       this.accountStatusIsNextFiftyFiftyGuaranteed,
       this.accountCurrentWishValue,
-      this.estimatedNewWishesPerBanner,
+      this.estimatedNewWishesPerBanner[0], // TODO: Use the more granular option; we just use the low estimate for now
       this.setOptimizerSimulationResults,
       this.setIsSimulating,
       this.setSimulationProgress
@@ -339,7 +344,7 @@ export class GenshinState {
       carryOverWishes = calculateAvailableWishesForBanner(
         banner,
         spentWishes,
-        excludeEarnedWishes ? 0 : this.estimatedNewWishesPerBanner,
+        excludeEarnedWishes ? 0 : this.estimatedNewWishesMap[banner.id],
         carryOverWishes
       );
 
@@ -491,7 +496,12 @@ export class GenshinState {
     return bannerMap;
   }
 
-  get estimatedNewWishesPerBanner(): number {
+  // Returns a range of estimated wishes to be earned each banner: [low, high]
+  // Banners can span 1 or 2 abyss cycles and 1 or 2 imaginarium cycles.
+  get estimatedNewWishesPerBanner(): [number, number] {
+    let lowPrimogemEstimate = 0;
+    let highPrimogemEstimate = 0;
+
     let totalPrimogems = 0;
     let totalLimitedWishes = 0;
 
@@ -502,6 +512,30 @@ export class GenshinState {
 
         const sourceKey = key as keyof PrimogemSourceValues;
         const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
+        // Handle abyss and theater specially since they have differing schedules
+        if (sourceKey === "abyss" || sourceKey === "imaginarium") {
+          // Apply abyss rewards for the calculated number of seasons
+          if (Array.isArray(sourceValue)) {
+            sourceValue.forEach((resource) => {
+              if (resource.type === "primogem") {
+                lowPrimogemEstimate += resource.value; // 1 season
+                highPrimogemEstimate += resource.value * 2; // 2 seasons
+              } else if (resource.type === "limitedWishes") {
+                lowPrimogemEstimate += resource.value * 160; // 1 season
+                highPrimogemEstimate += resource.value * 160 * 2; // 2 seasons
+              }
+            });
+          } else {
+            if (sourceValue.type === "primogem") {
+              lowPrimogemEstimate += sourceValue.value;
+              highPrimogemEstimate += sourceValue.value * 2;
+            } else if (sourceValue.type === "limitedWishes") {
+              lowPrimogemEstimate += sourceValue.value * 160;
+              highPrimogemEstimate += sourceValue.value * 160 * 2;
+            }
+          }
+          return;
+        }
 
         if (Array.isArray(sourceValue)) {
           // Handle array of resource values
@@ -524,10 +558,13 @@ export class GenshinState {
     );
 
     // Convert primogems to wishes (160 primogems per wish)
-    const primogemWishes = Math.floor(totalPrimogems / 160);
+    const baseWishes = Math.floor(totalPrimogems / 160) + totalLimitedWishes;
 
     // Return total wishes (only count limited wishes for banner pulls)
-    return primogemWishes + totalLimitedWishes;
+    return [
+      baseWishes + Math.floor(lowPrimogemEstimate / 160),
+      baseWishes + Math.floor(highPrimogemEstimate / 160),
+    ];
   }
 
   get currentBannerId(): BannerId {

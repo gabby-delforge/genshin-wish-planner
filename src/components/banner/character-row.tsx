@@ -64,7 +64,7 @@ export const CharacterRow = observer(
         </div>
 
         <div className="flex flex-col mr-3 items-end">
-          <div className="text-xs text-gray-400/70">Pull until</div>
+          <div className="text-xs text-gray-400/70 px-3">Pull until</div>
           <Input
             isLoading={isLoading}
             id={`constellation-${character.Id}`}

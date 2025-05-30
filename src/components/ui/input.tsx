@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -29,29 +30,52 @@ const Input = React.forwardRef<
     },
     ref
   ) => {
-    const [inputValue, setInputValue] = React.useState(value || "0");
+    const [isFocused, setIsFocused] = React.useState(false);
     const internalRef = React.useRef<HTMLInputElement>(null);
 
     // Use the passed ref if available, otherwise use our internal ref
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
 
-    const handleBlur = () => {
-      if (inputValue === "" || inputValue === "0") {
-        setInputValue("0");
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true);
+      props.onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+
+      // Normalize empty or invalid values on blur
+      if (e.target.value === "" || e.target.value === "0") {
+        const syntheticEvent = {
+          ...e,
+          target: { ...e.target, value: "0" },
+          currentTarget: e.currentTarget,
+        } as React.ChangeEvent<HTMLInputElement>;
+
+        onChange?.(syntheticEvent);
       }
+
+      props.onBlur?.(e);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      setInputValue(newValue);
-      if (onChange) {
-        onChange(e);
+
+      // Normalize leading zeros (but allow empty while focused)
+      if (newValue !== "" && newValue !== "0" && /^0+\d/.test(newValue)) {
+        const normalized = newValue.replace(/^0+/, "");
+        const syntheticEvent = {
+          ...e,
+          target: { ...e.target, value: normalized },
+        };
+        onChange?.(syntheticEvent);
+      } else {
+        onChange?.(e);
       }
     };
 
     const handlePlusMinusChange = (newValue: number) => {
       if (onChange) {
-        // Create a synthetic event that mimics a real input change event
         const target =
           inputRef.current ||
           ({
@@ -65,14 +89,23 @@ const Input = React.forwardRef<
           currentTarget: target,
         } as React.ChangeEvent<HTMLInputElement>;
 
-        setInputValue(newValue.toString());
         onChange(syntheticEvent);
       }
     };
 
-    React.useEffect(() => {
-      setInputValue(value !== undefined ? value.toString() : "0");
-    }, [value]);
+    // Determine what to display
+    const displayValue = (() => {
+      if (isLoading) return "";
+
+      const stringValue = value?.toString() || "0";
+
+      // If focused and the value would be "0", allow it to be empty for typing
+      if (isFocused && stringValue === "0") {
+        return ""; // This allows user to see empty field when they clear it
+      }
+
+      return stringValue;
+    })();
 
     // Class that emulates an "input"-like aesthetic, for the wrapper div
     const c = cn(
@@ -103,7 +136,8 @@ const Input = React.forwardRef<
             width ? width : ""
           }`}
           ref={inputRef}
-          value={isLoading ? "" : inputValue}
+          value={displayValue}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleChange}
           {...props}
