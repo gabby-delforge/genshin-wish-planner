@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "Genshin Impact Wish Planner",
 };
 
-const RootLayout = observer(function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -37,6 +37,4 @@ const RootLayout = observer(function RootLayout({
       </body>
     </html>
   );
-});
-
-export default RootLayout;
+}
