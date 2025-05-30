@@ -76,7 +76,7 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   imaginarium: "Imaginarium",
   battlePass: "Battle Pass",
   battlePassGnostic: "Battle Pass (Gnostic Hymn)",
-  welkinMoon: "Blessing of Welkin",
+  welkinMoon: "Welkin Moon",
   archonQuest: "Archon Quest",
   storyQuests: "Story Quests",
   newAchievements: "New Achievements",
@@ -167,6 +167,7 @@ export const EstimatedFutureWishes = observer(
 
                 return (
                   <CheckboxWithLabel
+                    className="text-white/80 hover:text-white"
                     key={sourceKey}
                     id={sourceKey}
                     checked={primogemSources[sourceKey]}
@@ -212,6 +213,7 @@ export const EstimatedFutureWishes = observer(
 
                 return (
                   <CheckboxWithLabel
+                    className="text-white/80 hover:text-white"
                     key={sourceKey}
                     id={sourceKey}
                     checked={primogemSources[sourceKey]}

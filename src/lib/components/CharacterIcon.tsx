@@ -37,7 +37,7 @@ const CharacterIcon: React.FC<CharacterIconProps> = observer(
     );
     return (
       <div
-        className={`relative overflow-hidden rounded-full ${backgroundColor} ${className}`}
+        className={`relative overflow-hidden rounded-full border-gold-1 border-1 shadow-lg ${backgroundColor} ${className}`}
         style={{ width: size, height: size }}
       >
         <Image

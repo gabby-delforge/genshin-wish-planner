@@ -43,20 +43,21 @@ export const CharacterRow = observer(
     return (
       <div
         key={character.Name}
-        className="grid gap-2 items-center text-sm"
+        className="grid gap-2 items-center text-sm bg-void-3 p-3 relative"
         style={{ gridTemplateColumns: "1fr auto auto" }}
       >
-        <div className="flex items-center gap-2">
+        <div className="absolute inset-1 border-[1px] border-white/50 rounded pointer-events-none"></div>
+        <div className="flex items-center gap-4">
           <CharacterIcon id={characterId} className="shrink-0" />
           <div>
-            <p className={`text-xs font-genshin`}>{character.Name}</p>
+            <p className={`text-sm font-genshin text-gold-1`}>
+              {character.Name}
+            </p>
           </div>
         </div>
 
         <div className="flex flex-col mr-3 items-end">
-          <div className="text-xs text-gray-400/70 text-right mr-4">
-            Pull until
-          </div>
+          <div className="text-xs text-white text-right mr-4">Pull until</div>
           <Input
             isLoading={isLoading}
             id={`constellation-${character.Id}`}
@@ -73,9 +74,7 @@ export const CharacterRow = observer(
         <>
           {mode === "playground" && (
             <div className="flex flex-col">
-              <div className="text-xs text-gray-400/70 text-right mr-4">
-                Spend
-              </div>
+              <div className="text-xs text-white text-right mr-4">Spend</div>
               <Input
                 isLoading={isLoading}
                 id={`wishes-${character.Id}`}
@@ -92,9 +91,7 @@ export const CharacterRow = observer(
 
           {mode === "strategy" && (
             <div className="space-y-1">
-              <div className="text-xs text-gray-400/70 text-right mr-4">
-                Priority
-              </div>
+              <div className="text-xs text-white text-right mr-4">Priority</div>
               <Select
                 value={PriorityValueToText[currentPriority]}
                 onValueChange={(value: string) =>

@@ -118,12 +118,14 @@ const BannerCard = observer(
 
     return (
       <Card
-        className={`${
+        className={`bg-void-3/30 ${
           isOldBanner ? "opacity-40" : "opacity-100"
         } border-void-2 overflow-hidden shadow`}
       >
         <div className="h-2 bg-gradient-to-r from-[#7b68ee] to-[#9370db]"></div>
-        <CardHeader className="pb-2">
+        <div className="h-[1px]  bg-gradient-to-r from-gold-1/50 via-gold-1 to-gold-1/50"></div>
+
+        <CardHeader className="pb-6">
           <CardTitle className="text-md font-medium flex justify-between">
             <div className="flex flex-row gap-2 items-center">
               <BannerVersion version={id} />
@@ -134,10 +136,12 @@ const BannerCard = observer(
                 <div className="text-sm text-white/40">(Current banner)</div>
               )}
             </div>
-            <span className="text-sm text-white">{wishesAvailableLabel}</span>
+            <div className=" flex flex-row items-center text-sm text-white">
+              {wishesAvailableLabel}
+            </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-4">
           {bannerConfiguration.banner.characters.map((characterId) => {
             const character = API_CHARACTERS[characterId];
             if (!character) return null;

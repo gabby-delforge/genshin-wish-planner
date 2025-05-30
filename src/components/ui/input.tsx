@@ -125,8 +125,8 @@ const Input = React.forwardRef<
       `flex items-center
         h-7 min-w-0
         rounded-md
-        border border-white/12
-        bg-white/3 
+        border border-white/12 hover:border-white/25
+        bg-white/3 focus-within:bg-white/10
         px-2 py-1
         text-base 
         shadow-sm 
@@ -159,7 +159,7 @@ const Input = React.forwardRef<
     );
 
     const plusMinus = (
-      <div className="flex flex-col">
+      <div className="flex flex-col justify-around items-center">
         <IconButton
           icon={CaretUpIcon}
           size={12}
