@@ -1,4 +1,5 @@
 import { FlatCompat } from "@eslint/eslintrc";
+import pluginMobx from "eslint-plugin-mobx";
 import unusedImports from "eslint-plugin-unused-imports";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -15,8 +16,13 @@ const eslintConfig = [
   {
     plugins: {
       "unused-imports": unusedImports,
+      mobx: pluginMobx,
     },
     rules: {
+      "mobx/exhaustive-make-observable": "warn",
+      "mobx/unconditional-make-observable": "error",
+      "mobx/missing-make-observable": "error",
+      "mobx/missing-observer": "warn",
       "@typescript-eslint/no-unused-vars": "off",
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "warn",

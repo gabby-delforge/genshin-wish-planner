@@ -1,7 +1,7 @@
 // app/safe-client-provider.tsx
 "use client";
 
-import { GenshinProvider } from "@/lib/context/genshin-context";
+import { GenshinProvider } from "@/lib/mobx/genshin-context";
 import { usePathname } from "next/navigation";
 
 export default function SafeClientProvider({

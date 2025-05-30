@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import colors from "tailwindcss/colors";
 import { ELEMENT_COLORS, RARITY_COLORS } from "./colors";
-import { Banner, VersionId } from "./types";
+import { ApiBanner, BannerId } from "./types";
 
 /**
  * Utility function for conditional class names with Tailwind
@@ -56,7 +56,7 @@ export function formatDate(dateString: string): string {
   });
 }
 
-export function getBannerColor(versionId: VersionId): string {
+export function getBannerColor(versionId: BannerId): string {
   const h = hash(versionId);
   //return BANNER_COLORS[h % BANNER_COLORS.length];
   return colors.yellow[700];
@@ -125,9 +125,29 @@ export function getCurrentBanner(
   return 0;
 }
 
-export const isCurrentBanner = (banner: Banner): boolean => {
+export const isCurrentBanner = (banner: ApiBanner): boolean => {
   const startDate = new Date(banner.startDate).getTime();
   const endDate = new Date(banner.endDate).getTime();
   const now = new Date().getTime();
   return startDate < now && endDate > now;
+};
+
+export const isOldBanner = (banner: ApiBanner): boolean => {
+  const endDate = new Date(banner.endDate).getTime();
+  const now = new Date().getTime();
+  return endDate < now;
+};
+
+export function assertExhaustive(value: never): never {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+}
+
+export const clamp = (value: number, min: number, max: number): number => {
+  return Math.max(min, Math.min(max, value));
+};
+
+export const logNotImplemented = (what: string) => {
+  console.log("Not implemented: ", what);
 };

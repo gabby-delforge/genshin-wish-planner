@@ -1,0 +1,29 @@
+[
+  {
+    "id": "5.6v2",
+    "version": "5.6v2",
+    "name": "5.6v2",
+    "startDate": "2025-05-27",
+    "endDate": "2025-06-17",
+    "characters": ["kinich", "raiden-shogun"],
+    "weapons": ["fang-of-the-mountain-king", "engulfing-lightning"]
+  },
+  {
+    "id": "5.7v1",
+    "version": "5.7v1",
+    "name": "5.7v1",
+    "startDate": "2025-06-17",
+    "endDate": "2025-06-27",
+    "characters": ["skirk", "emilie"],
+    "weapons": ["azurelight", "lumidouce-elegy"]
+  },
+  {
+    "id": "5.7v2",
+    "version": "5.7v2",
+    "name": "5.7v2",
+    "startDate": "2025-06-27",
+    "endDate": "2025-07-08",
+    "characters": ["mavuika", "shenhe"],
+    "weapons": ["a-thousand-blazing-suns", "calamity-queller"]
+  }
+]

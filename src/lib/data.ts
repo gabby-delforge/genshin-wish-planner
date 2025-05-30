@@ -1,228 +1,75 @@
+import Banners from "../../public/metadata/banners.json";
+import Characters from "../../public/metadata/characters.json";
+import Weapons from "../../public/metadata/weapons.json";
+
 import {
-  DEFAULT_PRIORITY,
+  ApiWeapon,
+  CharacterId,
+  PrimogemSourceValues,
   type ApiBanner,
   type ApiCharacter,
-  type Banner,
-  type Character,
 } from "./types";
 
-export const GENSHIN_CHARACTERS = [
-  "albedo",
-  "alhaitham",
-  "aloy",
-  "amber",
-  "itto",
-  "arlecchino",
-  "baizhu",
-  "barbara",
-  "beidou",
-  "bennett",
-  "candace",
-  "charlotte",
-  "chasca",
-  "chevreuse",
-  "chiori",
-  "chongyun",
-  "citlali",
-  "clorinde",
-  "collei",
-  "cyno",
-  "dehya",
-  "diluc",
-  "diona",
-  "dori",
-  "emilie",
-  "escoffier",
-  "eula",
-  "faruzan",
-  "fischl",
-  "freminet",
-  "furina",
-  "gaming",
-  "ganyu",
-  "gorou",
-  "hu tao",
-  "iansan",
-  "jean",
-  "kachina",
-  "kazuha",
-  "kaeya",
-  "ayaka",
-  "ayato",
-  "kaveh",
-  "keqing",
-  "kinich",
-  "kirara",
-  "klee",
-  "kujou sara",
-  "kuki shinobu",
-  "lan yan",
-  "layla",
-  "lisa",
-  "lynette",
-  "lyney",
-  "mavuika",
-  "mika",
-  "mona",
-  "mualani",
-  "nahida",
-  "navia",
-  "neuvillette",
-  "nilou",
-  "ningguang",
-  "noelle",
-  "ororon",
-  "qiqi",
-  "raiden",
-  "razor",
-  "rosaria",
-  "kokomi",
-  "sayu",
-  "sethos",
-  "shenhe",
-  "heizou",
-  "sigewinne",
-  "skirk",
-  "sucrose",
-  "tartaglia",
-  "thoma",
-  "tighnari",
-  "traveler",
-  "varesa",
-  "venti",
-  "wanderer",
-  "wriothesley",
-  "xiangling",
-  "xianyun",
-  "xiao",
-  "xilonen",
-  "xingqiu",
-  "xinyan",
-  "yae miko",
-  "yanfei",
-  "yaoyao",
-  "yelan",
-  "yoimiya",
-  "mizuki",
-  "yun jin",
-  "zhongli",
-] as const;
-
+export const GENSHIN_CHARACTERS = Characters.map((c) => c.Id);
+export const GENSHIN_WEAPONS = Weapons.map((c) => c.Id);
 // API Data (simulating data that would come from an external API)
 // --------------------------------------------------------------
 
 // API Character data
-export const API_CHARACTERS: Record<string, ApiCharacter> = {
-  Escoffier: {
-    id: "escoffier",
-    name: "Escoffier",
-    rarity: 5,
-    element: "Cryo",
-    weaponType: "Sword",
+export const API_CHARACTERS: Partial<Record<CharacterId, ApiCharacter>> =
+  Characters.reduce((prev, curr) => {
+    prev[curr.Id] = curr;
+    return prev; //
+  }, {} as Partial<Record<CharacterId, ApiCharacter>>);
+
+export const API_WEAPONS: Partial<Record<string, ApiWeapon>> = Weapons.reduce(
+  (prev, curr) => {
+    prev[curr.Id] = curr;
+    return prev;
   },
-  Navia: {
-    id: "navia",
-    name: "Navia",
-    rarity: 5,
-    element: "Geo",
-    weaponType: "Claymore",
-  },
-  Kinich: {
-    id: "kinich",
-    name: "Kinich",
-    rarity: 5,
-    element: "Dendro",
-    weaponType: "Claymore",
-  },
-  Raiden: {
-    id: "raiden",
-    name: "Raiden",
-    rarity: 5,
-    element: "Electro",
-    weaponType: "Polearm",
-  },
-  Skirk: {
-    id: "skirk",
-    name: "Skirk",
-    rarity: 5,
-    element: "Cryo",
-    weaponType: "Sword",
-  },
-  Mavuika: {
-    id: "mavuika",
-    name: "Mavuika",
-    rarity: 5,
-    element: "Pyro",
-    weaponType: "Claymore",
-  },
-  Emilie: {
-    id: "emilie",
-    name: "Emilie",
-    rarity: 5,
-    element: "Dendro",
-    weaponType: "Sword",
-  },
-  Shenhe: {
-    id: "shenhe",
-    name: "Shenhe",
-    rarity: 5,
-    element: "Cryo",
-    weaponType: "Polearm",
-  },
-};
+  {} as Partial<Record<string, ApiWeapon>>
+);
 
 // API Banner data
-export const API_BANNERS: ApiBanner[] = [
-  {
-    id: "5.6v1",
-    version: "5.6v1",
-    name: "5.6v1",
-    startDate: "2025-05-07",
-    endDate: "2025-05-27",
-    characters: [API_CHARACTERS.Escoffier, API_CHARACTERS.Navia],
-  },
-  {
-    id: "5.6v2",
-    version: "5.6v2",
-    name: "5.6v2",
-    startDate: "2025-05-27",
-    endDate: "2025-06-17",
-    characters: [API_CHARACTERS.Kinich, API_CHARACTERS.Raiden],
-  },
-  {
-    id: "5.7v1",
-    version: "5.7v1",
-    name: "5.7v1",
-    startDate: "2025-06-17",
-    endDate: "2025-06-27",
-    characters: [API_CHARACTERS.Skirk, API_CHARACTERS.Emilie],
-  },
-  {
-    id: "5.7v2",
-    version: "5.7v2",
-    name: "5.7v2",
-    startDate: "2025-06-27",
-    endDate: "2025-07-08",
-    characters: [API_CHARACTERS.Mavuika, API_CHARACTERS.Shenhe],
-  },
-];
+export const API_BANNERS: ApiBanner[] = Banners;
 
 // Helper function to convert API data to application state
 // -------------------------------------------------------
 
-// Convert API character to application Character with state
-export const apiCharacterToCharacter = (apiChar: ApiCharacter): Character => ({
-  ...apiChar,
-  wishesToSpend: 0,
-  priority: DEFAULT_PRIORITY,
-  maxConst: 0,
-});
-
-// Convert API banner to application Banner with state
-export const apiBannerToBanner = (apiBanner: ApiBanner): Banner => ({
-  ...apiBanner,
-  characters: apiBanner.characters.map(apiCharacterToCharacter),
-});
-
 // Initial banners with application state for new users
-export const initialBanners: Banner[] = API_BANNERS.map(apiBannerToBanner);
+export const initialBanners: ApiBanner[] = API_BANNERS;
+
+export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
+  gameUpdateCompensation: { value: 600, type: "primogem" },
+  dailyCommissions: { value: 2520, type: "primogem" },
+  paimonBargain: [
+    { value: 5, type: "limitedWishes" },
+    { value: 5, type: "standardWish" },
+  ],
+  abyssAndTheater: { value: 2400, type: "primogem" },
+  battlePass: { value: 5, type: "standardWish" },
+  battlePassGnostic: [
+    { value: 4, type: "limitedWishes" },
+    { value: 680, type: "primogem" },
+  ],
+  blessingOfWelkin: { value: 3780, type: "primogem" },
+  archonQuest: [
+    { value: 2, type: "limitedWishes" },
+    { value: 620, type: "primogem" },
+  ],
+  storyQuests: { value: 120, type: "primogem" },
+  newAchievements: { value: 200, type: "primogem" },
+
+  // Time-Limited Contents
+  characterTestRuns: { value: 80, type: "primogem" },
+  eventActivities: { value: 1000, type: "primogem" },
+  hoyolabDailyCheckIn: { value: 100, type: "primogem" },
+  hoyolabWebEvents: { value: 100, type: "primogem" },
+  livestreamCodes: { value: 300, type: "primogem" },
+  newVersionCode: { value: 60, type: "primogem" },
+  limitedExplorationRewards: { value: 400, type: "primogem" },
+  thankYouGift: [
+    { value: 10, type: "limitedWishes" },
+    { value: 1600, type: "primogem" },
+  ],
+};

@@ -1,62 +1,116 @@
-// Core type definitions for Genshin Impact wish planning
+import Banners from "../../public/metadata/banners.json";
+import Characters from "../../public/metadata/characters.json";
+import Weapons from "../../public/metadata/weapons.json";
 
-import { GENSHIN_CHARACTERS } from "./data";
-
-// User's account status
-export interface AccountStatus {
-  currentPity: number;
-  isNextFiftyFiftyGuaranteed: boolean;
-  ownedWishResources: WishResources;
-  primogemSources: PrimogemSourcesEnabled;
-  excludeCurrentBannerPrimogemSources: boolean;
-}
-
-export type VersionId = `${number}.${number}v${number}`;
-
-export type CharacterId = (typeof GENSHIN_CHARACTERS)[number];
+// Application modes
+export type AppMode = "playground" | "strategy";
 
 // API Data Types (static data from external source)
 // ------------------------------------------------
 
 // API Character data
-export interface ApiCharacter {
-  id: CharacterId;
-  name: string;
-  rarity: number;
-  element: string;
-  weaponType: string;
-}
+export type ApiCharacter = (typeof Characters)[number];
+export type ApiWeapon = (typeof Weapons)[number];
+export type ApiBanner = (typeof Banners)[number];
 
-// API Banner data
-export interface ApiBanner {
-  id: VersionId;
-  version: VersionId;
-  name: string;
-  startDate: string;
-  endDate: string;
-  characters: ApiCharacter[];
-}
+// export type BannerId = `${number}.${number}v${number}`;
+export type BannerId = string;
 
-// Application State Types (data with user-specific state)
-// -------------------------------------------------------
-
-export type BannerCharacterAllocation = {
+export interface WeaponBannerConfig {
   wishesAllocated: number;
-  maxConstellation: number;
-  pullPriority: Priority;
+  epitomizedPath: WeaponId; // Which weapon to chart path for
+  strategy: "stop" | "continue"; // Stop after getting epitomized weapon, or continue for both
+}
+
+export type BannerConfiguration = {
+  banner: ApiBanner;
+
+  isCurrentBanner: boolean;
+  isOldBanner: boolean;
+
+  characters: Record<
+    CharacterId,
+    {
+      wishesAllocated: number;
+      maxConstellation: number;
+      priority: Priority;
+    }
+  >;
+
+  weapons: Record<
+    WeaponId,
+    {
+      wishesAllocated: number;
+      priority: Priority;
+    }
+  >;
+
+  weaponBanner: WeaponBannerConfig;
 };
 
-export type BannerAllocation = Partial<
-  Record<CharacterId, BannerCharacterAllocation>
->;
-export type Allocations = Record<VersionId, BannerAllocation>;
-export type PriorityAllocations = Record<
-  VersionId,
-  Partial<Record<CharacterId, Priority>>
->;
+export type CharacterId = (typeof Characters)[number]["Id"];
+export type WeaponId = (typeof Weapons)[number]["Id"];
 
-export type Priority = number & {
-  __brand: "Priority";
+export type CharacterSuccessRate = {
+  versionId: BannerId;
+  characterId: CharacterId;
+  constellation: number;
+  successPercent: number;
+};
+
+// Result of simulating pulls for a single character
+export type CharacterSimulationResult = {
+  character: CharacterId;
+  obtained: boolean;
+  hasWishesAllocated: boolean;
+  lostFiftyFifty: boolean;
+  wishesUsed: number;
+  constellation: number;
+};
+
+export interface WeaponBannerSimulationResult {
+  obtainedWeapons: WeaponId[];
+  primaryWeaponObtained: boolean; // Did we get the epitomized path weapon?
+  secondaryWeaponObtained: boolean; // Did we get the other featured weapon?
+  wishesUsed: number;
+  pathSwitched: boolean; // Did we have to switch epitomized path?
+  endPity: number;
+  endGuaranteed: boolean;
+  // Note: fate points always reset to 0 at banner end
+}
+
+// Example of how to create a default state with all sources enabled
+export const DEFAULT_PRIMOGEM_SOURCES_ENABLED: PrimogemSourcesEnabled = {
+  // Permanent Contents
+  gameUpdateCompensation: true,
+  dailyCommissions: true,
+  paimonBargain: true,
+  abyssAndTheater: true,
+  battlePass: true,
+  battlePassGnostic: true,
+  blessingOfWelkin: true,
+  archonQuest: true,
+  storyQuests: true,
+  newAchievements: true,
+
+  // Time-Limited Contents
+  characterTestRuns: true,
+  eventActivities: true,
+  hoyolabDailyCheckIn: true,
+  hoyolabWebEvents: true,
+  livestreamCodes: true,
+  newVersionCode: true,
+  limitedExplorationRewards: true,
+  thankYouGift: true,
+};
+
+export const DEFAULT_PRIORITY = 4 as Priority;
+
+export const priorityTargets: Record<Priority, number> = {
+  [1 as Priority]: 0.99, // 99% success rate
+  [2 as Priority]: 0.9, // 90% success rate
+  [3 as Priority]: 0.7, // 70% success rate
+  [4 as Priority]: 0, // 0% success rate
 };
 
 export const PriorityValueToText = {
@@ -66,111 +120,16 @@ export const PriorityValueToText = {
   [4 as Priority]: "Skip",
 };
 
-export const DEFAULT_PRIORITY = 3 as Priority;
-
-// Character with user-specific state
-export interface Character extends ApiCharacter {
-  wishesToSpend: number;
-  priority: Priority;
-  maxConst: number;
-}
-
-// Banner with user-specific state
-export type Banner = ApiBanner;
-
-// Simulation Result Types
-// ----------------------
-
-export type WishForCharacterResult = {
-  character: CharacterId;
-  obtained: boolean;
-  lostFiftyFifty: boolean;
-  wishesUsed: number;
-  pity: number;
-  guaranteed: boolean;
-  constellation: number;
+export const PriorityTextToPriority: Record<string, Priority> = {
+  "Must Have": 1 as Priority,
+  Want: 2 as Priority,
+  "Nice to Have": 3 as Priority,
+  Skip: 4 as Priority,
 };
 
-// Result of simulating pulls for a single character
-export interface CharacterSimulationResult {
-  character: CharacterId;
-  obtained: boolean;
-  hasWishesAllocated: boolean;
-  lostFiftyFifty: boolean;
-  wishesUsed: number;
-  constellation: number;
-}
+export type PrimogemSourceKey = keyof PrimogemSourceValues;
 
-// Result of a simulation for a single banner phase
-export interface BannerSimulationResult {
-  bannerId: VersionId;
-  characterResults: CharacterSimulationResult[];
-  wishesUsed: number;
-  endPity: number;
-  endGuaranteed: boolean;
-}
-
-export type ResultType = CharacterId | "-" | "Standard 5*" | "Missed";
-// Outcome of a specific banner in a scenario
-export interface ScenarioOutcome {
-  banner: VersionId;
-  result: [ResultType, ResultType];
-  constellation: [number, number];
-}
-
-// A possible scenario with probability
-export interface Scenario {
-  outcomes: Record<VersionId, ScenarioOutcome>;
-  probability: number;
-}
-
-// Scenario result for display - update to use BannerSimulationResult directly
-export interface ScenarioResult {
-  bannerResults: Record<VersionId, BannerSimulationResult>;
-  count: number;
-  percentage: number;
-}
-
-// The result for a single simulation run.
-export type SimulationResult = Record<VersionId, BannerSimulationResult>;
-
-export type CharacterSuccessRate = {
-  versionId: VersionId;
-  characterId: CharacterId;
-  constellation: number;
-  successPercent: number;
-};
-
-// Complete simulation results
-export interface SimulationResults {
-  // Full detailed results by banner version
-  bannerResults: Record<VersionId, BannerSimulationResult[]>;
-  // Success rates for each character that was wished forin each banner
-  characterSuccessRates: CharacterSuccessRate[];
-  // Common scenario patterns
-  topScenarios: ScenarioResult[];
-}
-
-export type OptimizationResults = Allocations[];
-
-// User Data Types
-// --------------
-
-// User's wish resources
-export type WishResources = Record<ResourceType, number>;
-
-export type ResourceType =
-  | "primogem"
-  | "starglitter"
-  | "limitedWishes"
-  | "standardWish"
-  | "stardust"
-  | "genesisCrystal";
-
-export type ResourceValue = {
-  value: number;
-  type: ResourceType;
-};
+export type PrimogemSourcesEnabled = Record<PrimogemSourceKey, boolean>;
 
 export type PrimogemSourceValue = ResourceValue | ResourceValue[];
 
@@ -198,71 +157,92 @@ export interface PrimogemSourceValues {
   thankYouGift: PrimogemSourceValue;
 }
 
-export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
-  gameUpdateCompensation: { value: 600, type: "primogem" },
-  dailyCommissions: { value: 2520, type: "primogem" },
-  paimonBargain: [
-    { value: 5, type: "limitedWishes" },
-    { value: 5, type: "standardWish" },
-  ],
-  abyssAndTheater: { value: 2400, type: "primogem" },
-  battlePass: { value: 5, type: "standardWish" },
-  battlePassGnostic: [
-    { value: 4, type: "limitedWishes" },
-    { value: 680, type: "primogem" },
-  ],
-  blessingOfWelkin: { value: 3780, type: "primogem" },
-  archonQuest: [
-    { value: 2, type: "limitedWishes" },
-    { value: 620, type: "primogem" },
-  ],
-  storyQuests: { value: 120, type: "primogem" },
-  newAchievements: { value: 200, type: "primogem" },
+// TODO: Refactor priority so it's less annoying
 
-  // Time-Limited Contents
-  characterTestRuns: { value: 80, type: "primogem" },
-  eventActivities: { value: 1000, type: "primogem" },
-  hoyolabDailyCheckIn: { value: 100, type: "primogem" },
-  hoyolabWebEvents: { value: 100, type: "primogem" },
-  livestreamCodes: { value: 300, type: "primogem" },
-  newVersionCode: { value: 60, type: "primogem" },
-  limitedExplorationRewards: { value: 400, type: "primogem" },
-  thankYouGift: [
-    { value: 10, type: "limitedWishes" },
-    { value: 1600, type: "primogem" },
-  ],
+export type Priority = number & {
+  __brand: "Priority";
 };
 
-// Extract the keys as a string literal union type
-export type PrimogemSourceKey = keyof PrimogemSourceValues;
+export type ResourceType =
+  | "primogem"
+  | "starglitter"
+  | "limitedWishes"
+  | "standardWish"
+  | "stardust"
+  | "genesisCrystal";
 
-// You can now use this type for your boolean mapping
-export type PrimogemSourcesEnabled = Record<PrimogemSourceKey, boolean>;
-
-// Example of how to create a default state with all sources enabled
-export const DEFAULT_PRIMOGEM_SOURCES_ENABLED: PrimogemSourcesEnabled = {
-  // Permanent Contents
-  gameUpdateCompensation: true,
-  dailyCommissions: true,
-  paimonBargain: true,
-  abyssAndTheater: true,
-  battlePass: true,
-  battlePassGnostic: true,
-  blessingOfWelkin: true,
-  archonQuest: true,
-  storyQuests: true,
-  newAchievements: true,
-
-  // Time-Limited Contents
-  characterTestRuns: true,
-  eventActivities: true,
-  hoyolabDailyCheckIn: true,
-  hoyolabWebEvents: true,
-  livestreamCodes: true,
-  newVersionCode: true,
-  limitedExplorationRewards: true,
-  thankYouGift: true,
+export type ResourceValue = {
+  value: number;
+  type: ResourceType;
 };
 
-// Application modes
-export type AppMode = "playground" | "strategy";
+export type ResultType = CharacterId | "-" | "Standard 5*" | "Missed";
+
+// Outcome of a specific banner in a scenario
+export interface ScenarioOutcome {
+  banner: BannerId;
+  result: [ResultType, ResultType];
+  constellation: [number, number];
+}
+
+// A possible scenario with probability
+export interface Scenario {
+  outcomes: Record<BannerId, ScenarioOutcome>;
+  probability: number;
+}
+
+// Scenario result for display - update to use BannerSimulationResult directly
+export interface ScenarioResult {
+  bannerResults: Record<BannerId, BannerSimulationResult>;
+  count: number;
+  percentage: number;
+}
+
+// Simulation Result Types
+// ----------------------
+
+// Result of a simulation for a single banner phase
+export type BannerSimulationResult = {
+  bannerId: BannerId;
+  characterResults: CharacterSimulationResult[];
+  weaponResults: WishForWeaponResult[];
+  wishesUsed: number;
+  endPity: number;
+  endGuaranteed: boolean;
+  endWeaponPity: number;
+  endWeaponGuaranteed: boolean;
+  endWeaponFatePoints: number;
+};
+
+// The result for a single simulation run.
+export type SimulationResult = Record<BannerId, BannerSimulationResult>;
+
+// Complete simulation results
+export interface SimulationResults {
+  // Full detailed results by banner version
+  bannerResults: Record<BannerId, BannerSimulationResult[]>;
+  // Success rates for each character that was wished forin each banner
+  characterSuccessRates: CharacterSuccessRate[];
+  // Common scenario patterns
+  topScenarios: ScenarioResult[];
+}
+
+export type WishForCharacterResult = {
+  character: CharacterId;
+  obtained: boolean;
+  lostFiftyFifty: boolean;
+  wishesUsed: number;
+  pity: number;
+  guaranteed: boolean;
+  constellation: number;
+};
+
+export type WishForWeaponResult = {
+  weapon: WeaponId;
+  obtained: boolean;
+  lostSeventyFive: boolean;
+  wishesUsed: number;
+  hasWishesAllocated: boolean;
+};
+
+export type WishResources = Record<ResourceType, number>;

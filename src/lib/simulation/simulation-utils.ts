@@ -1,22 +1,17 @@
 import {
-  AccountStatus,
-  Allocations,
-  Banner,
+  ApiBanner,
+  BannerId,
   BannerSimulationResult,
-  PRIMOGEM_SOURCE_VALUES,
-  PrimogemSourceValues,
   ResultType,
   Scenario,
   ScenarioOutcome,
-  VersionId,
 } from "../types";
-import { isCurrentBanner } from "../utils";
 
 /**
  * Calculate the probability of getting a 5-star based on current pity
  * Implements Genshin Impact's soft and hard pity system
  */
-export const get5StarProbability = (pity: number): number => {
+export const getCharacter5StarProbability = (pity: number): number => {
   if (pity < 73) {
     return 0.006; // Base rate
   } else if (pity < 89) {
@@ -27,34 +22,15 @@ export const get5StarProbability = (pity: number): number => {
   }
 };
 
-/**
- * Calculate total available wishes from user's account at the /present moment/,
- * including primogems, stardust, and limited wishes.
- */
-export const calculateAccountCurrentPrimogemValue = (
-  accountStatus: AccountStatus
-): number => {
-  const primoWishes = Math.floor(
-    accountStatus.ownedWishResources.primogem / 160
-  );
-  const starglitterWishes = Math.floor(
-    accountStatus.ownedWishResources.starglitter / 5
-  );
-  const stardustWishes = Math.floor(
-    accountStatus.ownedWishResources.stardust / 10
-  );
-  const genesisCrystalWishes = Math.floor(
-    accountStatus.ownedWishResources.genesisCrystal / 10
-  );
-  const limitedWishes = accountStatus.ownedWishResources.limitedWishes;
-
-  return (
-    primoWishes +
-    starglitterWishes +
-    limitedWishes +
-    stardustWishes +
-    genesisCrystalWishes
-  );
+export const getWeapon5StarProbability = (pity: number): number => {
+  if (pity < 63) {
+    return 0.007; // Base rate (0.7%)
+  } else if (pity < 79) {
+    // Soft pity - increases with each pull from 63 onwards
+    return 0.007 + (pity - 62) * 0.07;
+  } else {
+    return 1.0; // Hard pity (80th pull)
+  }
 };
 
 /**
@@ -64,8 +40,8 @@ export const calculateAccountCurrentPrimogemValue = (
  * and when any banner changes, all future banners should be re-calculated too.
  */
 export const calculateAvailableWishesForBanner = (
-  banner: Banner,
-  bannerAllocations: Allocations,
+  banner: ApiBanner,
+  wishesAllocated: number,
   estimatedNewWishes: number,
   carryOverWishes: number
 ): number => {
@@ -75,210 +51,14 @@ export const calculateAvailableWishesForBanner = (
   // Add estimated wishes
   availableWishes += estimatedNewWishes;
 
-  // Calculate total spent in this banner
-  let bannerSpent = 0;
-
-  // Sum all wishes allocated to characters in this banner
-  const versionAllocation = bannerAllocations[banner.version] || {};
-  if (versionAllocation) {
-    for (const character of banner.characters) {
-      bannerSpent += versionAllocation[character.id]?.wishesAllocated || 0;
-    }
-  }
-
   // Subtract spent wishes
-  availableWishes -= bannerSpent;
+  availableWishes -= wishesAllocated;
 
   // Never return a negative value
   return Math.max(0, availableWishes);
 };
 
-export const calculateAvailableWishesForBanners = (
-  banners: Banner[],
-  bannerAllocations: Allocations,
-  totalAvailableWishes: number,
-  estimatedNewWishesPerBanner: number,
-  excludeCurrent: boolean
-): Record<VersionId, number> => {
-  const availableWishes: Record<VersionId, number> = {};
-
-  // First banner starts with however many wishes are in the user's account
-  let carryOverWishes = totalAvailableWishes;
-
-  for (const banner of banners) {
-    const excludeEarnedWishes = excludeCurrent && isCurrentBanner(banner);
-    carryOverWishes = calculateAvailableWishesForBanner(
-      banner,
-      bannerAllocations,
-      excludeEarnedWishes ? 0 : estimatedNewWishesPerBanner,
-      carryOverWishes
-    );
-
-    availableWishes[banner.id] = carryOverWishes;
-  }
-  return availableWishes;
-};
-
-/**
- * Calculate the remaining wishes after allocations
- */
-export const calculateWishesRemaining = (
-  banners: Banner[],
-  totalAvailableWishes: number,
-  estimatedNewWishes: number,
-  bannerAllocations: Allocations
-): number => {
-  let totalAvailable = totalAvailableWishes;
-
-  // Process each banner in sequence
-  for (let i = 0; i < banners.length; i++) {
-    const banner = banners[i];
-    // Add new wishes from this banner
-    totalAvailable += estimatedNewWishes;
-
-    // Calculate total wishes spent in this banner
-    const bannerSpend = sumBannerWishAllocation(
-      bannerAllocations,
-      banner.version
-    );
-
-    // Subtract from available
-    totalAvailable -= Math.min(bannerSpend, totalAvailable);
-  }
-
-  return totalAvailable;
-};
-
-/**
- * Sum all wish allocations for a specific banner version
- */
-export const sumBannerWishAllocation = (
-  bannerAllocations: Allocations,
-  bannerVersion: VersionId
-): number => {
-  const versionAllocation = bannerAllocations[bannerVersion];
-  if (!versionAllocation) return 0;
-
-  return Object.values(versionAllocation).reduce(
-    (sum, wishesAllocated) => sum + (wishesAllocated?.wishesAllocated || 0),
-    0
-  );
-};
-
-/**
- * Checks if wishes exceed what's available at any point during the banner progression
- * This takes into account wishes accumulated during each banner
- */
-export const calculateWishesExceedAvailable = (
-  bannerAllocations: Allocations,
-  totalAvailableWishes: number,
-  estimatedNewWishesPerBanner: number
-): boolean => {
-  if (totalAvailableWishes <= 0) return false;
-
-  let availableWishes = totalAvailableWishes;
-
-  // Process each banner in sequence
-  for (const version in bannerAllocations) {
-    const bannerId = version as VersionId;
-
-    // Add estimated wishes from this banner phase first
-    availableWishes += estimatedNewWishesPerBanner;
-
-    // Calculate total wishes allocated for this banner
-    const bannerWishesAllocated = sumBannerWishAllocation(
-      bannerAllocations,
-      bannerId
-    );
-
-    // Check if wishes for this banner exceed what's available at this point
-    if (bannerWishesAllocated > availableWishes) {
-      return true;
-    }
-
-    // Subtract spent wishes from available
-    availableWishes -= bannerWishesAllocated;
-  }
-
-  // If we get here, no banner exceeded its available wishes
-  return false;
-};
-
-/**
- * Calculate estimated wishes that will be gained each banner, from all sources that are enabled.
- */
-export const calculateEstimatedWishes = (
-  accountStatus: AccountStatus
-): number => {
-  let totalPrimogems = 0;
-  let totalLimitedWishes = 0;
-
-  // Process each primogem source
-  Object.entries(accountStatus.primogemSources).forEach(([key, isEnabled]) => {
-    if (!isEnabled) return;
-
-    const sourceKey = key as keyof PrimogemSourceValues;
-    const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
-
-    if (Array.isArray(sourceValue)) {
-      // Handle array of resource values
-      sourceValue.forEach((resource) => {
-        if (resource.type === "primogem") {
-          totalPrimogems += resource.value;
-        } else if (resource.type === "limitedWishes") {
-          totalLimitedWishes += resource.value;
-        }
-      });
-    } else {
-      // Handle single resource value
-      if (sourceValue.type === "primogem") {
-        totalPrimogems += sourceValue.value;
-      } else if (sourceValue.type === "limitedWishes") {
-        totalLimitedWishes += sourceValue.value;
-      }
-    }
-  });
-
-  // Convert primogems to wishes (160 primogems per wish)
-  const primogemWishes = Math.floor(totalPrimogems / 160);
-
-  // Return total wishes (only count limited wishes for banner pulls)
-  return primogemWishes + totalLimitedWishes;
-};
-
-/**
- * Calculates the total number of unallocated wishes including all estimated future wishes
- */
-export const calculateTotalUnallocatedWishes = (
-  banners: Banner[],
-  totalInitialWishes: number,
-  addEstimatedWishes: boolean,
-  estimatedNewWishes: number,
-  bannerAllocations: Allocations
-): number => {
-  // Start with initial wishes
-  let totalWishes = isNaN(totalInitialWishes) ? 0 : totalInitialWishes;
-
-  // Add up all estimated wishes from all banners if enabled
-  if (addEstimatedWishes) {
-    totalWishes += banners.length * estimatedNewWishes;
-  }
-
-  // Subtract all allocated wishes
-  let totalAllocatedWishes = 0;
-  for (const banner of banners) {
-    totalAllocatedWishes += sumBannerWishAllocation(
-      bannerAllocations,
-      banner.version
-    );
-  }
-
-  // Calculate remaining wishes - ensure it's never negative
-  const remainingWishes = totalWishes - totalAllocatedWishes;
-  return isNaN(remainingWishes) ? 0 : Math.max(0, remainingWishes);
-};
-
-export const bannerResultToOutcome = (
+const bannerResultToOutcome = (
   bannerResult: BannerSimulationResult
 ): ScenarioOutcome => {
   // Extract results for up to two featured characters
@@ -315,17 +95,17 @@ export const bannerResultToOutcome = (
 
 // New function to directly convert BannerSimulationResult[] to Scenario
 export const simulationResultsToScenario = (
-  bannerResults: Record<VersionId, BannerSimulationResult>,
+  bannerResults: Record<BannerId, BannerSimulationResult>,
   probability: number,
-  allBanners: Banner[]
+  allBanners: ApiBanner[]
 ): Scenario => {
   // Create outcomes for all banners, including those not in the simulation results
-  const outcomes: Record<VersionId, ScenarioOutcome> = {};
+  const outcomes: Record<BannerId, ScenarioOutcome> = {};
 
   // First set default outcomes for all banners
   allBanners.forEach((banner) => {
-    outcomes[banner.id as VersionId] = {
-      banner: banner.id as VersionId,
+    outcomes[banner.id] = {
+      banner: banner.id,
       result: ["-", "-"],
       constellation: [0, 0],
     };

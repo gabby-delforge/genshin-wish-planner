@@ -3,12 +3,13 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { IconButton } from "./icon-button";
+
 type InputExtendedProps = {
   isLoading?: boolean;
   unit?: React.ReactElement;
   showPlusMinus?: boolean;
-  onClickPlusMinus?: (change: -1 | 1) => void;
 };
+
 const Input = React.forwardRef<
   HTMLInputElement,
   React.ComponentProps<"input"> & InputExtendedProps
@@ -22,12 +23,15 @@ const Input = React.forwardRef<
       unit,
       isLoading = false,
       showPlusMinus,
-      onClickPlusMinus,
       ...props
     },
     ref
   ) => {
     const [inputValue, setInputValue] = React.useState(value || "0");
+    const internalRef = React.useRef<HTMLInputElement>(null);
+
+    // Use the passed ref if available, otherwise use our internal ref
+    const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
 
     const handleBlur = () => {
       if (inputValue === "" || inputValue === "0") {
@@ -43,6 +47,27 @@ const Input = React.forwardRef<
       }
     };
 
+    const handlePlusMinusChange = (newValue: number) => {
+      if (onChange) {
+        // Create a synthetic event that mimics a real input change event
+        const target =
+          inputRef.current ||
+          ({
+            value: newValue.toString(),
+            name: props.name || "",
+            type: type || "text",
+          } as HTMLInputElement);
+
+        const syntheticEvent = {
+          target: { ...target, value: newValue.toString() },
+          currentTarget: target,
+        } as React.ChangeEvent<HTMLInputElement>;
+
+        setInputValue(newValue.toString());
+        onChange(syntheticEvent);
+      }
+    };
+
     React.useEffect(() => {
       setInputValue(value !== undefined ? value.toString() : "0");
     }, [value]);
@@ -50,6 +75,7 @@ const Input = React.forwardRef<
     // Class that emulates an "input"-like aesthetic, for the wrapper div
     const c = cn(
       `flex
+      grow-1
         h-7 min-w-0
         rounded-md
         border border-white/12
@@ -73,7 +99,7 @@ const Input = React.forwardRef<
         <input
           type={type}
           className={`focus-visible:outline-none text-right min-w-0 w-full`}
-          ref={ref}
+          ref={inputRef}
           value={isLoading ? "" : inputValue}
           onBlur={handleBlur}
           onChange={handleChange}
@@ -87,14 +113,20 @@ const Input = React.forwardRef<
         <IconButton
           icon={CaretUpIcon}
           size={12}
-          onClick={() => onClickPlusMinus && onClickPlusMinus(1)}
+          onClick={() => {
+            const currentValue = Number(value) || 0;
+            handlePlusMinusChange(currentValue + 1);
+          }}
           weight="bold"
           className="text-white/30"
         />
         <IconButton
           icon={CaretDownIcon}
           size={12}
-          onClick={() => onClickPlusMinus && onClickPlusMinus(-1)}
+          onClick={() => {
+            const currentValue = Number(value) || 0;
+            handlePlusMinusChange(Math.max(0, currentValue - 1));
+          }}
           weight="bold"
           className="text-white/30"
         />

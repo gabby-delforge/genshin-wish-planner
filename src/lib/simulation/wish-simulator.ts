@@ -1,23 +1,21 @@
 import {
-  Allocations,
+  BannerConfiguration,
+  BannerId,
   CharacterSuccessRate,
-  DEFAULT_PRIORITY,
-  OptimizationResults,
-  Priority,
-  PriorityAllocations,
   SimulationResult,
   SimulationResults,
-  VersionId,
+  WeaponBannerConfig,
+  WeaponBannerSimulationResult,
+  WeaponId,
+  WishForWeaponResult,
 } from "../types";
-import { get5StarProbability } from "./simulation-utils";
+import {
+  getCharacter5StarProbability,
+  getWeapon5StarProbability,
+} from "./simulation-utils";
 
 import {
-  IGetCompareValue,
-  MaxPriorityQueue,
-} from "@datastructures-js/priority-queue";
-import {
-  ApiCharacter,
-  Banner,
+  ApiBanner,
   BannerSimulationResult,
   CharacterId,
   CharacterSimulationResult,
@@ -25,36 +23,36 @@ import {
 } from "../types";
 
 /**
- * Simulate a single wish
+ * Simulate a single character wish
  * @returns "featured" if the featured 5-star was pulled, "standard" if a standard 5-star, or "non-5-star" otherwise
  */
-const wish = (
+const characterWish = (
   pity: number,
   guaranteed: boolean
-): "featured" | "standard" | "non-5-star" => {
-  pity++;
-  const prob = get5StarProbability(pity);
+): {
+  result: "featured" | "standard" | "non-5-star";
+  newPity: number;
+  newGuaranteed: boolean;
+} => {
+  const newPity = pity + 1;
+  const prob = getCharacter5StarProbability(newPity);
 
   if (Math.random() < prob) {
-    // Reset pity after getting a 5-star
-    pity = 0;
-
-    // Check if guaranteed
+    // Got a 5-star, reset pity
     if (guaranteed) {
-      guaranteed = false;
-      return "featured";
+      // Guaranteed featured character
+      return { result: "featured", newPity: 0, newGuaranteed: false };
     } else {
-      // 50/50 chance
+      // 50/50 chance (55% with capturing radiance, but we'll use 50% for now)
       if (Math.random() < 0.5) {
-        return "featured";
+        return { result: "featured", newPity: 0, newGuaranteed: false };
       } else {
-        guaranteed = true;
-        return "standard";
+        return { result: "standard", newPity: 0, newGuaranteed: true };
       }
     }
   }
 
-  return "non-5-star";
+  return { result: "non-5-star", newPity, newGuaranteed: guaranteed };
 };
 
 const wishForCharacter = (
@@ -77,33 +75,28 @@ const wishForCharacter = (
   while (charPulls < maxWishes && constellationCount <= maxConst) {
     charPulls++;
 
-    const result = wish(pity, guaranteed);
+    const wishResult = characterWish(pity, guaranteed);
+    pity = wishResult.newPity;
+    guaranteed = wishResult.newGuaranteed;
 
-    if (result === "featured") {
+    if (wishResult.result === "featured") {
       // Successfully got the featured character
       obtained = true;
       gotFeatured5Star = true;
       constellationCount++;
-      pity = 0;
-      guaranteed = false;
 
       // If we've reached the desired constellation, break
       if (constellationCount > maxConst) {
         break;
       }
-    } else if (result === "standard") {
+    } else if (wishResult.result === "standard") {
       // Got a standard 5-star
       gotStandard5Star = true;
-      pity = 0;
-      guaranteed = true;
-    } else {
-      pity += 1;
     }
   }
 
   // We only consider the 50/50 as "lost" if the player got a standard 5* character
-  // but didn't get any copies of the featured character. If they got at least one
-  // copy of the featured character, we don't consider it a lost 50/50 for display purposes.
+  // but didn't get any copies of the featured character.
   lostFiftyFifty = gotStandard5Star && !gotFeatured5Star;
 
   return {
@@ -117,47 +110,216 @@ const wishForCharacter = (
   };
 };
 
+// Updated weaponWish function to work with your existing structure
+const weaponWish = (
+  pity: number,
+  guaranteed: boolean,
+  fatePoints: number,
+  targetWeapon: WeaponId,
+  featuredWeapons: [WeaponId, WeaponId]
+): {
+  result: "desired" | "other" | "standard" | "non-5-star";
+  weaponObtained?: WeaponId;
+  newPity: number;
+  newGuaranteed: boolean;
+  newFatePoints: number;
+} => {
+  const newPity = pity + 1;
+  const prob = getWeapon5StarProbability(newPity);
+
+  if (Math.random() < prob) {
+    // Got a 5-star weapon, reset pity
+
+    // Epitomized path guarantee: if we have 1+ fate points, guaranteed target weapon
+    if (fatePoints >= 1) {
+      return {
+        result: "desired",
+        weaponObtained: targetWeapon,
+        newPity: 0,
+        newGuaranteed: false,
+        newFatePoints: 0, // Reset after getting epitomized weapon
+      };
+    }
+
+    if (guaranteed) {
+      // Guaranteed featured weapon (50/50 between the two featured)
+      const weaponObtained =
+        Math.random() < 0.5 ? featuredWeapons[0] : featuredWeapons[1];
+      const newFatePoints =
+        weaponObtained === targetWeapon ? 0 : fatePoints + 1;
+
+      return {
+        result: weaponObtained === targetWeapon ? "desired" : "other",
+        weaponObtained,
+        newPity: 0,
+        newGuaranteed: false,
+        newFatePoints,
+      };
+    } else {
+      // 75% featured, 25% standard
+      if (Math.random() < 0.75) {
+        // Got featured weapon (50/50 between the two)
+        const weaponObtained =
+          Math.random() < 0.5 ? featuredWeapons[0] : featuredWeapons[1];
+        const newFatePoints =
+          weaponObtained === targetWeapon ? 0 : fatePoints + 1;
+
+        return {
+          result: weaponObtained === targetWeapon ? "desired" : "other",
+          weaponObtained,
+          newPity: 0,
+          newGuaranteed: false,
+          newFatePoints,
+        };
+      } else {
+        // Got standard weapon - you'd need to implement getRandomStandardWeapon()
+        return {
+          result: "standard",
+          weaponObtained: "standard_weapon" as WeaponId, // Placeholder
+          newPity: 0,
+          newGuaranteed: true,
+          newFatePoints: fatePoints + 1,
+        };
+      }
+    }
+  }
+
+  // Didn't get 5-star
+  return {
+    result: "non-5-star",
+    newPity,
+    newGuaranteed: guaranteed,
+    newFatePoints: fatePoints,
+  };
+};
+
+// New function to simulate weapon banner with your sentence-based approach
+const wishForWeapon = (
+  config: WeaponBannerConfig,
+  featuredWeapons: [WeaponId, WeaponId],
+  startingPity: number,
+  startingGuaranteed: boolean
+): WeaponBannerSimulationResult => {
+  let pity = startingPity;
+  let guaranteed = startingGuaranteed;
+  let fatePoints = 0; // Always starts at 0 for new banner
+  let wishesUsed = 0;
+  let pathSwitched = false;
+
+  const obtainedWeapons: WeaponId[] = [];
+  let currentTarget = config.epitomizedPath;
+
+  const otherFeaturedWeapon = featuredWeapons.find(
+    (w) => w !== config.epitomizedPath
+  )!;
+
+  while (wishesUsed < config.wishesAllocated) {
+    wishesUsed++;
+
+    const wishResult = weaponWish(
+      pity,
+      guaranteed,
+      fatePoints,
+      currentTarget,
+      featuredWeapons
+    );
+    pity = wishResult.newPity;
+    guaranteed = wishResult.newGuaranteed;
+    fatePoints = wishResult.newFatePoints;
+
+    // If we got a 5-star weapon, add it to obtained list
+    if (wishResult.weaponObtained) {
+      obtainedWeapons.push(wishResult.weaponObtained);
+    }
+
+    // Check if we should stop or switch strategy
+    const gotPrimaryWeapon = obtainedWeapons.includes(config.epitomizedPath);
+    const gotSecondaryWeapon = obtainedWeapons.includes(otherFeaturedWeapon);
+
+    if (config.strategy === "stop" && gotPrimaryWeapon) {
+      // Stop strategy: we got our target weapon, we're done
+      break;
+    }
+
+    if (config.strategy === "continue" && gotPrimaryWeapon && !pathSwitched) {
+      // Continue strategy: got primary weapon, now switch to secondary
+      currentTarget = otherFeaturedWeapon;
+      fatePoints = 0; // Reset fate points when switching path
+      pathSwitched = true;
+    }
+
+    if (
+      config.strategy === "continue" &&
+      gotPrimaryWeapon &&
+      gotSecondaryWeapon
+    ) {
+      // Continue strategy: got both weapons, we're done
+      break;
+    }
+  }
+
+  return {
+    obtainedWeapons,
+    primaryWeaponObtained: obtainedWeapons.includes(config.epitomizedPath),
+    secondaryWeaponObtained: obtainedWeapons.includes(otherFeaturedWeapon),
+    wishesUsed,
+    pathSwitched,
+    endPity: pity,
+    endGuaranteed: guaranteed,
+  };
+};
+
+// Updated wishForBanner function to handle the new weapon banner approach
 const wishForBanner = (
-  banner: Banner,
-  allocations: Allocations,
+  banner: ApiBanner,
+  bannerConfiguration: Record<string, BannerConfiguration>,
   currentPity: number,
-  isGuaranteed: boolean
+  isGuaranteed: boolean,
+  currentWeaponPity: number = 0,
+  isWeaponGuaranteed: boolean = false,
+  weaponFatePoints: number = 0
 ): BannerSimulationResult | undefined => {
   const bannerVersion = banner.version;
-  const versionAllocation = allocations[bannerVersion as VersionId] || {};
+  const versionAllocation = bannerConfiguration[bannerVersion] || {};
 
-  // Get characters with allocated wishes
-  const charactersWithWishes: ApiCharacter[] = banner.characters.filter(
-    (char: ApiCharacter) =>
-      versionAllocation[char.id] &&
-      versionAllocation[char.id]!.wishesAllocated > 0
+  // Get characters with allocated wishes (existing logic)
+  const charactersWithWishes: string[] = banner.characters.filter(
+    (charId: string) =>
+      versionAllocation.characters[charId] &&
+      versionAllocation.characters[charId]!.wishesAllocated > 0
   );
 
+  // Check if weapon banner has wishes allocated
+  const hasWeaponWishes =
+    versionAllocation.weaponBanner &&
+    versionAllocation.weaponBanner.wishesAllocated > 0;
+
   // Skip banner if no wishes allocated
-  if (charactersWithWishes.length === 0) {
+  if (charactersWithWishes.length === 0 && !hasWeaponWishes) {
     return;
   }
 
-  // Create a separate result for each character in the banner
+  // CHARACTERS (your existing logic)
   const characterResults: CharacterSimulationResult[] = [];
+  let charPity = currentPity;
+  let charGuaranteed = isGuaranteed;
 
-  // For each character that has wishes allocated, simulate separately
-  for (const targetChar of charactersWithWishes) {
+  for (const targetCharId of charactersWithWishes) {
     const wishesToSpend =
-      versionAllocation[targetChar.id]!.wishesAllocated || 0;
-    const maxConst = versionAllocation[targetChar.id]!.maxConstellation || 0;
-    // Use a new simulator instance with the current pity/guaranteed state
+      versionAllocation.characters[targetCharId]!.wishesAllocated || 0;
+    const maxConst =
+      versionAllocation.characters[targetCharId]!.maxConstellation || 0;
+
     const charResult = wishForCharacter(
-      targetChar.id,
+      targetCharId,
       wishesToSpend,
       maxConst,
-      currentPity,
-      isGuaranteed
+      charPity,
+      charGuaranteed
     );
 
-    // Record the results for this character
     characterResults.push({
-      character: targetChar.id,
+      character: targetCharId,
       obtained: charResult.obtained,
       hasWishesAllocated: true,
       lostFiftyFifty: charResult.lostFiftyFifty,
@@ -165,71 +327,139 @@ const wishForBanner = (
       constellation: charResult.constellation,
     });
 
-    // Update the pity/guaranteed state for the next character or banner
-    currentPity = charResult.pity;
-    isGuaranteed = charResult.guaranteed;
+    charPity = charResult.pity;
+    charGuaranteed = charResult.guaranteed;
   }
 
-  // Calculate total wishes used across all characters
-  const totalWishesUsed = Object.values(characterResults).reduce(
+  // WEAPONS (new approach using sentence-based strategy)
+  let weaponBannerResult: WeaponBannerSimulationResult | undefined;
+
+  if (hasWeaponWishes) {
+    weaponBannerResult = wishForWeapon(
+      versionAllocation.weaponBanner!,
+      banner.weapons as [WeaponId, WeaponId], // Assuming exactly 2 featured weapons
+      currentWeaponPity,
+      isWeaponGuaranteed
+    );
+  }
+
+  // Convert weapon banner result to individual weapon results for compatibility
+  const weaponResults: WishForWeaponResult[] = [];
+  if (weaponBannerResult) {
+    // Create results for each featured weapon
+    banner.weapons.forEach((weaponId: WeaponId) => {
+      weaponResults.push({
+        weapon: weaponId,
+        obtained: weaponBannerResult!.obtainedWeapons.includes(weaponId),
+        hasWishesAllocated:
+          weaponId === versionAllocation.weaponBanner!.epitomizedPath,
+        lostSeventyFive:
+          weaponId === versionAllocation.weaponBanner!.epitomizedPath
+            ? !weaponBannerResult!.primaryWeaponObtained
+            : false,
+        wishesUsed:
+          weaponId === versionAllocation.weaponBanner!.epitomizedPath
+            ? weaponBannerResult!.wishesUsed
+            : 0,
+      });
+    });
+  }
+
+  const totalCharWishes = characterResults.reduce(
     (sum, r) => sum + r.wishesUsed,
     0
   );
+  const totalWeaponWishes = weaponBannerResult?.wishesUsed || 0;
 
-  // Create banner simulation result
-  const bannerResult: BannerSimulationResult = {
+  return {
     bannerId: bannerVersion,
     characterResults,
-    wishesUsed: totalWishesUsed,
-    endPity: currentPity,
-    endGuaranteed: isGuaranteed,
+    weaponResults,
+    wishesUsed: totalCharWishes + totalWeaponWishes,
+    endPity: charPity,
+    endGuaranteed: charGuaranteed,
+    endWeaponPity: weaponBannerResult?.endPity || currentWeaponPity,
+    endWeaponGuaranteed:
+      weaponBannerResult?.endGuaranteed || isWeaponGuaranteed,
+    endWeaponFatePoints: 0, // Always reset to 0 at banner end
   };
-
-  return bannerResult;
 };
 
-// Runs an entire simulation across all banners, keeping track of the pity and guaranteed status as
-// they change across banners.
+// Updated runSimulationOnce to pass weapon parameters
 const runSimulationOnce = (
-  banners: Banner[],
-  allocations: Allocations,
+  banners: ApiBanner[],
+  bannerConfiguration: Record<string, BannerConfiguration>,
   pity: number,
-  guaranteed: boolean
+  guaranteed: boolean,
+  weaponPity: number = 0,
+  weaponGuaranteed: boolean = false
 ) => {
-  // Initialize the simulation results
   const simulationResults: SimulationResult = banners.reduce((acc, banner) => {
-    acc[banner.version as VersionId] = {
+    acc[banner.version] = {
       bannerId: banner.version,
       characterResults: [],
+      weaponResults: [],
       wishesUsed: 0,
       endPity: 0,
       endGuaranteed: false,
+      endWeaponPity: 0,
+      endWeaponGuaranteed: false,
+      endWeaponFatePoints: 0,
     };
     return acc;
   }, {} as SimulationResult);
 
+  let currentPity = pity;
+  let currentGuaranteed = guaranteed;
+  let currentWeaponPity = weaponPity;
+  let currentWeaponGuaranteed = weaponGuaranteed;
+
   for (const banner of banners) {
-    const bannerResult = wishForBanner(banner, allocations, pity, guaranteed);
+    const bannerResult = wishForBanner(
+      banner,
+      bannerConfiguration,
+      currentPity,
+      currentGuaranteed,
+      currentWeaponPity,
+      currentWeaponGuaranteed,
+      0 // Fate points always start at 0 for each banner
+    );
+
     if (bannerResult) {
-      simulationResults[banner.version as VersionId] = bannerResult;
+      simulationResults[banner.version] = bannerResult;
+
+      // Update state for next banner
+      currentPity = bannerResult.endPity;
+      currentGuaranteed = bannerResult.endGuaranteed;
+      currentWeaponPity = bannerResult.endWeaponPity;
+      currentWeaponGuaranteed = bannerResult.endWeaponGuaranteed;
+      // Weapon fate points always reset between banners
     }
   }
 
   return simulationResults;
 };
 
-// Runs a batch of simulations and returns the results.
-const runSimulationBatch = (
-  banners: Banner[],
-  allocations: Allocations,
+// Update runSimulationBatch to include weapon parameters
+export const runSimulationBatch = (
+  banners: ApiBanner[],
+  bannerConfiguration: Record<string, BannerConfiguration>,
   pity: number,
   guaranteed: boolean,
-  batchSize: number
+  batchSize: number,
+  weaponPity: number = 0,
+  weaponGuaranteed: boolean = false
 ) => {
-  // Run a batch of simulations
   const batchResults: SimulationResult[] = [];
   for (let i = 0; i < batchSize; i++) {
-    const results = runSimulationOnce(banners, allocations, pity, guaranteed);
+    const results = runSimulationOnce(
+      banners,
+      bannerConfiguration,
+      pity,
+      guaranteed,
+      weaponPity,
+      weaponGuaranteed
+    );
     batchResults.push(results);
   }
 
@@ -263,9 +493,9 @@ const scenarioToScenarioString = (
 export const finalizeResults = (
   allSimulationResults: SimulationResult[]
 ): SimulationResults => {
-  const bannerResults: Record<VersionId, BannerSimulationResult[]> = {};
+  const bannerResults: Record<BannerId, BannerSimulationResult[]> = {};
   const characterSuccessTotals: Record<
-    `${CharacterId}${VersionId}C${number}`,
+    `${CharacterId}${BannerId}C${number}`,
     number
   > = {};
 
@@ -279,7 +509,7 @@ export const finalizeResults = (
     const simulationResult = allSimulationResults[i];
     for (const bannerId in simulationResult) {
       // Add to banner results
-      const bannerVersion = bannerId as VersionId;
+      const bannerVersion = bannerId;
       const bannerResult = simulationResult[bannerVersion];
       if (!bannerResults[bannerVersion]) {
         bannerResults[bannerVersion] = [];
@@ -288,14 +518,14 @@ export const finalizeResults = (
 
       // Add to character success totals
       for (const c of bannerResult.characterResults) {
-        const characterId = c.character as CharacterId;
+        const characterId = c.character;
         const characterResult = bannerResult.characterResults.find(
           (c) => c.character === characterId
         );
         if (characterResult && characterResult.obtained) {
           const constellation = characterResult.constellation;
           for (let i = 0; i <= constellation; i++) {
-            const code: `${CharacterId}${VersionId}C${number}` = `${characterId}${bannerVersion}C${i}`;
+            const code: `${CharacterId}${BannerId}C${number}` = `${characterId}${bannerVersion}C${i}`;
             if (!(code in characterSuccessTotals)) {
               characterSuccessTotals[code] = 0;
             }
@@ -319,12 +549,12 @@ export const finalizeResults = (
     const result: string[] | null = regexLiteral.exec(code);
     if (result) {
       characterSuccessRates.push({
-        versionId: result[2] as VersionId,
-        characterId: result[1] as CharacterId,
+        versionId: result[2],
+        characterId: result[1],
         constellation: parseInt(result[3].slice(1)),
         successPercent:
           characterSuccessTotals[
-            code as `${CharacterId}${VersionId}C${number}`
+            code as `${CharacterId}${BannerId}C${number}`
           ] / numSimulations,
       });
     } else {
@@ -348,39 +578,9 @@ export const finalizeResults = (
   };
 };
 
-export const runSimulationFunction = async (
-  banners: Banner[],
-  allocations: Allocations,
-  pity: number,
-  guaranteed: boolean,
-  simulations: number,
-  setSimulationResults: (results: SimulationResults) => void,
-  setIsSimulating: (simulating: boolean) => void,
-  setSimulationProgress: (progress: number) => void
-) => {
-  // Start simulation progress
-  setIsSimulating(true);
-  setSimulationProgress(0);
-
-  const results = await runSimulation(
-    banners,
-    allocations,
-    pity,
-    guaranteed,
-    simulations,
-    setSimulationProgress
-  );
-
-  setSimulationProgress(1);
-  setSimulationResults(results);
-  setIsSimulating(false);
-
-  return results;
-};
-
 export const runSimulation = async (
-  banners: Banner[],
-  allocations: Allocations,
+  banners: ApiBanner[],
+  bannerConfiguration: Record<string, BannerConfiguration>,
   pity: number,
   guaranteed: boolean,
   simulations: number,
@@ -399,7 +599,7 @@ export const runSimulation = async (
     for (let i = 0; i < totalSimulations; i += batchSize) {
       const batchResults = runSimulationBatch(
         banners,
-        allocations,
+        bannerConfiguration,
         pity,
         guaranteed,
         batchSize
@@ -414,453 +614,4 @@ export const runSimulation = async (
 
     resolve(finalizeResults(allSimulationResults));
   });
-};
-
-// Score the results of a simulation based on how closely it matches the player's desired outcome.
-const scoreSimulation = (
-  simulationResults: SimulationResults,
-  allocation: PriorityAllocations
-): number => {
-  let score = 0;
-  let allMustHavesGuaranteed = true;
-  const mustHaveScores: number[] = [];
-
-  // First pass: check if all must-haves are guaranteed
-  for (const s of simulationResults.characterSuccessRates) {
-    const { successPercent, versionId, characterId, constellation } = s;
-    const priority = allocation[versionId]?.[characterId] || DEFAULT_PRIORITY;
-
-    if (priority === 0) {
-      mustHaveScores.push(successPercent);
-      // Consider a must-have guaranteed if success rate is 99% or higher
-      if (successPercent < 0.99) {
-        allMustHavesGuaranteed = false;
-      }
-    }
-  }
-
-  // If there are no must-haves, we can consider them all guaranteed
-  if (mustHaveScores.length === 0) {
-    allMustHavesGuaranteed = true;
-  }
-
-  // Second pass: calculate scores with priority weighting using powers of 10
-  for (const s of simulationResults.characterSuccessRates) {
-    const { successPercent, versionId, characterId, constellation } = s;
-
-    const priority = allocation[versionId]?.[characterId] || DEFAULT_PRIORITY;
-
-    // Score based on priority and success rate using powers of 10
-    switch (priority) {
-      case 0:
-        // 10^3 = 1000 points for must-have characters
-        score += successPercent >= 0.99 ? 1000 : successPercent * 900;
-        break;
-      case 1:
-        // 10^2 = 100 points for want characters
-        score += successPercent >= 0.8 ? 100 : successPercent * 80;
-        break;
-      case 2:
-        // 10^1 = 10 points for nice-to-have characters
-        if (allMustHavesGuaranteed) {
-          score += successPercent >= 0.7 ? 10 : successPercent * 8;
-        }
-        break;
-      case 3:
-        // 10^0 = 0 points for skipped characters
-        break;
-    }
-  }
-
-  return score;
-};
-
-// Randomly generate different unique allocations of wishes to test.
-// We use a simple algorithm:
-// 1. Determine how many banners we might need to allocate wishes to (this is the number of banners
-//    that have at least one non-skip character).
-// 2. Pick a banner at random, banner i.
-// 3. Allocate a random number of wishes, A, for that banner, where 1 <= A <= N_i and N_i <= X, where N_i is the number of wishes available for banner i and X is the total number of wishes available.
-// 4. Repeat steps 2 and 3 until we have allocated the total number of wishes.
-const generateAllocations = (
-  banners: Banner[],
-  allocations: PriorityAllocations,
-  numAllocations: number,
-  availableWishes: Record<VersionId, number> = {}
-): Allocations[] => {
-  const result: Allocations[] = [];
-
-  // Calculate total wishes available across all banners
-  const totalWishesAvailable = Object.values(availableWishes).reduce(
-    (sum, wishes) => sum + wishes,
-    0
-  );
-
-  // Find banners with at least one non-skip character
-  const relevantBanners = banners.filter((banner) => {
-    const bannerAllocation = allocations[banner.id as VersionId];
-    if (!bannerAllocation) return false;
-
-    return Object.values(bannerAllocation).some(
-      (priority) => priority !== DEFAULT_PRIORITY
-    );
-  });
-
-  if (relevantBanners.length === 0) return result;
-
-  // Generate the requested number of unique allocations
-  for (let i = 0; i < numAllocations; i++) {
-    const newAllocation: Allocations = {};
-
-    // Initialize allocation structure
-    for (const banner of banners) {
-      newAllocation[banner.id as VersionId] = {};
-
-      // Copy the priority and constellation settings from the original allocation
-      if (allocations[banner.id as VersionId]) {
-        for (const [charId, priority] of Object.entries(
-          allocations[banner.id as VersionId] || {}
-        )) {
-          newAllocation[banner.id as VersionId][charId as CharacterId] = {
-            wishesAllocated: 0,
-            pullPriority: priority,
-            maxConstellation: 0, // Default to C0
-          };
-        }
-      }
-    }
-
-    // Create a copy of available wishes to track remaining wishes
-    const remainingWishes = { ...availableWishes };
-    let totalRemaining = totalWishesAvailable;
-
-    // Randomly allocate wishes to banners
-    while (totalRemaining > 0 && relevantBanners.length > 0) {
-      // Pick a random banner
-      const randomIndex = Math.floor(Math.random() * relevantBanners.length);
-      const randomBanner = relevantBanners[randomIndex];
-      const bannerId = randomBanner.id as VersionId;
-
-      // Determine how many wishes we can allocate to this banner
-      const maxForBanner = Math.min(
-        remainingWishes[bannerId] || 0,
-        totalRemaining
-      );
-
-      if (maxForBanner <= 0) {
-        // Remove this banner from consideration if no wishes available
-        relevantBanners.splice(randomIndex, 1);
-        continue;
-      }
-
-      // Allocate a random number of wishes to this banner
-      const wishesToAllocate = Math.floor(Math.random() * maxForBanner) + 1;
-
-      // Find characters with non-skip priority in this banner
-      const eligibleCharacters = Object.entries(allocations[bannerId] || {})
-        .filter(([, priority]) => priority !== DEFAULT_PRIORITY)
-        .map(([charId]) => charId as CharacterId);
-
-      if (eligibleCharacters.length > 0) {
-        // Randomly select a character to allocate wishes to
-        const randomCharId =
-          eligibleCharacters[
-            Math.floor(Math.random() * eligibleCharacters.length)
-          ];
-
-        // Update the allocation
-        if (newAllocation[bannerId][randomCharId]) {
-          newAllocation[bannerId][randomCharId]!.wishesAllocated +=
-            wishesToAllocate;
-        } else {
-          newAllocation[bannerId][randomCharId] = {
-            wishesAllocated: wishesToAllocate,
-            pullPriority:
-              allocations[bannerId]?.[randomCharId] || DEFAULT_PRIORITY,
-            maxConstellation: 0,
-          };
-        }
-
-        // Update remaining wishes
-        remainingWishes[bannerId] =
-          (remainingWishes[bannerId] || 0) - wishesToAllocate;
-        totalRemaining -= wishesToAllocate;
-      } else {
-        // No eligible characters in this banner, remove it from consideration
-        relevantBanners.splice(randomIndex, 1);
-      }
-    }
-
-    result.push(newAllocation);
-  }
-
-  return result;
-};
-
-// Determine the optimal wish allocation that meets the player's goal.
-// This approach iteratively adjusts wish allocations based on simulation results
-// until all characters meet their target success rates or we reach the maximum iterations.
-const determineOptimalAllocations = async (
-  banners: Banner[],
-  allocations: Allocations,
-  pity: number,
-  guaranteed: boolean
-): Promise<Allocations[]> => {
-  const result: Allocations[] = [];
-  const priorityTargets: Record<Priority, number> = {
-    [0 as Priority]: 0.99, // 99% success rate
-    [1 as Priority]: 0.9, // 90% success rate
-    [2 as Priority]: 0.7, // 70% success rate
-    [3 as Priority]: 0, // 0% success rate
-  };
-
-  // Create a deep copy of the allocations to work with
-  const baseAllocation: Allocations = JSON.parse(JSON.stringify(allocations));
-
-  // Reset all wish allocations to 0
-  for (const bannerId in baseAllocation) {
-    for (const charId in baseAllocation[bannerId as VersionId]) {
-      baseAllocation[bannerId as VersionId][
-        charId as CharacterId
-      ]!.wishesAllocated = 0;
-    }
-  }
-
-  // Get all characters with non-skip priority
-  const priorityCharacters: Array<{
-    bannerId: VersionId;
-    charId: CharacterId;
-    priority: Priority;
-    maxConstellation: number;
-  }> = [];
-
-  for (const bannerId in allocations) {
-    for (const charId in allocations[bannerId as VersionId]) {
-      const allocation =
-        allocations[bannerId as VersionId][charId as CharacterId];
-      if (allocation && allocation.pullPriority !== DEFAULT_PRIORITY) {
-        priorityCharacters.push({
-          bannerId: bannerId as VersionId,
-          charId: charId as CharacterId,
-          priority: allocation.pullPriority,
-          maxConstellation: allocation.maxConstellation,
-        });
-      }
-    }
-  }
-
-  // Sort characters by priority (must-have first)
-  priorityCharacters.sort((a, b) => {
-    return a.priority - b.priority;
-  });
-
-  // Create a new allocation with initial wish distribution
-  const newAllocation = JSON.parse(JSON.stringify(baseAllocation));
-
-  // Initial distribution - start with a baseline number of wishes per character
-  for (const character of priorityCharacters) {
-    const { bannerId, charId, priority } = character;
-    // Initial allocation based on priority
-    const initialWishes = priority === 0 ? 90 : priority === 1 ? 60 : 30;
-    newAllocation[bannerId][charId].wishesAllocated = initialWishes;
-  }
-
-  // Iteratively adjust allocations based on simulation results
-  const MAX_ITERATIONS = 10;
-  const CONVERGENCE_THRESHOLD = 0.05; // 5% difference
-  const SIMULATION_COUNT = 1000;
-
-  for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
-    // Run simulations with current allocation
-    const simResults = await runSimulation(
-      banners,
-      newAllocation,
-      pity,
-      guaranteed,
-      SIMULATION_COUNT
-    );
-
-    // Check if all characters meet their target rates within threshold
-    let allMeetTargets = true;
-    const adjustments: Array<{
-      bannerId: VersionId;
-      charId: CharacterId;
-      successRate: number;
-      targetRate: number;
-      adjustment: number;
-    }> = [];
-
-    for (const { bannerId, charId, priority } of priorityCharacters) {
-      const targetRate = priorityTargets[priority];
-      // Extract success rate from simulation results
-      const successRate =
-        simResults.characterSuccessRates.find((c) => c.characterId === charId)
-          ?.successPercent || 0;
-
-      const difference = targetRate - successRate;
-
-      if (Math.abs(difference) > CONVERGENCE_THRESHOLD) {
-        allMeetTargets = false;
-
-        // Calculate adjustment based on difference
-        // Larger adjustment for bigger differences
-        const adjustmentFactor = Math.abs(difference) > 0.2 ? 0.3 : 0.15;
-        const adjustment = Math.ceil(
-          difference *
-            newAllocation[bannerId][charId].wishesAllocated *
-            adjustmentFactor
-        );
-
-        adjustments.push({
-          bannerId,
-          charId,
-          successRate,
-          targetRate,
-          adjustment,
-        });
-      }
-    }
-
-    if (allMeetTargets) {
-      break; // Convergence achieved
-    }
-
-    // Apply adjustments
-    for (const { bannerId, charId, adjustment } of adjustments) {
-      if (adjustment > 0) {
-        // Need more wishes
-        newAllocation[bannerId][charId].wishesAllocated += adjustment;
-      } else if (adjustment < 0) {
-        // Can reduce wishes
-        const reduction = Math.min(
-          Math.abs(adjustment),
-          newAllocation[bannerId][charId].wishesAllocated - 1
-        );
-        newAllocation[bannerId][charId].wishesAllocated -= reduction;
-      }
-    }
-  }
-
-  result.push(newAllocation);
-  return result;
-};
-
-// In optimization mode, we want to run a simulation for each possible allocation of wishes
-// and return the results.
-// Since an allocation that meets the player's goal might not be possible, we prioritize the
-// characters that the player wants most:
-// 1. "Must have" -> Target 99% probability
-// 2. "Want" -> Target 90% probability
-// 3. "Would be nice" -> Target 70% probability
-// 4. "Not interested" -> Target 0% probability
-// We run a randomized algorithm that tries various allocations (within reasonable limits)
-// and returns the best result.
-export const runOptimization = async (
-  banners: Banner[],
-  allocations: Allocations,
-  pity: number,
-  guaranteed: boolean,
-  availableWishes: Record<VersionId, number>,
-  setSimulationResults: (results: Allocations[]) => void,
-  setIsSimulating: (simulating: boolean) => void,
-  setSimulationProgress: (progress: number) => void
-): Promise<OptimizationResults> => {
-  const priorityAllocations: PriorityAllocations = {};
-  for (const bannerId in allocations) {
-    const bannerAllocations = allocations[bannerId as VersionId];
-    for (const charId in bannerAllocations) {
-      if (!priorityAllocations[bannerId as VersionId]) {
-        priorityAllocations[bannerId as VersionId] = {};
-      }
-      priorityAllocations[bannerId as VersionId][charId as CharacterId] =
-        bannerAllocations[charId as CharacterId]!.pullPriority;
-    }
-  }
-  const getSimulationScore: IGetCompareValue<{
-    allocation: Allocations;
-    results: SimulationResults;
-  }> = ({ results }) => scoreSimulation(results, priorityAllocations);
-
-  const bestScores = new MaxPriorityQueue<{
-    allocation: Allocations;
-    results: SimulationResults;
-  }>(getSimulationScore);
-
-  const randomAllocations = generateAllocations(
-    banners,
-    priorityAllocations,
-    100000,
-    availableWishes
-  );
-
-  for (let i = 0; i < randomAllocations.length; i++) {
-    const a = randomAllocations[i];
-    setSimulationProgress(i / randomAllocations.length);
-    const results = finalizeResults(
-      runSimulationBatch(banners, a, pity, guaranteed, 100)
-    );
-    bestScores.enqueue({ allocation: a, results });
-  }
-
-  const bestSimulation = bestScores.dequeue();
-  if (bestSimulation) {
-    // Print the allocations like this: [Character name]: X wishes (56% chance to get)
-    for (const bannerId in bestSimulation.allocation) {
-      const bannerAllocations =
-        bestSimulation.allocation[bannerId as VersionId];
-      for (const charId in bannerAllocations) {
-        const charAllocations = bannerAllocations[charId as CharacterId];
-        const successRate =
-          bestSimulation.results.characterSuccessRates.find(
-            (c) => c.characterId === charId
-          )?.successPercent || 0;
-        if (charAllocations) {
-          console.log(
-            `${charId}: ${charAllocations.wishesAllocated} wishes (${
-              successRate * 100
-            }% chance to get)`
-          );
-        }
-      }
-    }
-  }
-
-  const optimalAllocations = await determineOptimalAllocations(
-    banners,
-    allocations,
-    pity,
-    guaranteed
-  );
-  console.log("Optimal allocations:");
-  for (let i = 0; i < optimalAllocations.length; i++) {
-    const a = optimalAllocations[i];
-    const results = finalizeResults(
-      runSimulationBatch(banners, a, pity, guaranteed, 100)
-    );
-    console.log(
-      "Simulation score:",
-      getSimulationScore({ allocation: a, results })
-    );
-    for (const bannerId in a) {
-      const bannerAllocations = a[bannerId as VersionId];
-      for (const charId in bannerAllocations) {
-        const charAllocations = bannerAllocations[charId as CharacterId];
-        const successRate =
-          results.characterSuccessRates.find((c) => c.characterId === charId)
-            ?.successPercent || 0;
-        if (charAllocations) {
-          console.log(
-            `${charId}: ${charAllocations.wishesAllocated} wishes (${
-              successRate * 100
-            }% chance to get)`
-          );
-        }
-      }
-    }
-  }
-  if (bestSimulation) {
-    setSimulationResults([bestSimulation.allocation]);
-  }
-  setIsSimulating(false);
-  return optimalAllocations;
 };

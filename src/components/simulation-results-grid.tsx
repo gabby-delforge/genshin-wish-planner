@@ -1,6 +1,7 @@
 import { SimulationResults } from "@/lib/types";
 import { getCharacterRarityColor } from "@/lib/utils";
-import { BannerVersion } from "./banner-version";
+import { BannerVersion } from "./banner/banner-version";
+import { ProgressBar } from "./ui/progress-bar";
 
 type SimulationResultsGridProps = {
   simulationResults: SimulationResults | null;
@@ -44,12 +45,7 @@ export const SimulationResultsGrid = ({
                 </div>
               )}
             </div>
-            <div className="w-full bg-bg-dark-2 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-[#7b68ee] to-[#9370db] h-2 rounded-full"
-                style={{ width: `${result.successPercent * 100}%` }}
-              ></div>
-            </div>
+            <ProgressBar percent={result.successPercent} />
             {/* <div className="text-sm text-muted-foreground mt-1">
               Average wishes needed: {result.averageWishes}
             </div> */}

@@ -1,19 +1,16 @@
 import { LimitedWish } from "@/components/resource";
 import { Label } from "@/components/ui/label";
-import { useGenshinState } from "@/lib/context/genshin-context";
-import { AccountStatus as AccountStatusType, ResourceType } from "@/lib/types";
+import { useGenshinState } from "@/lib/mobx/genshin-context";
+import { observer } from "mobx-react-lite";
 import { ResourceInput } from "./resource-input";
 
-type WishResourcesProps = {
-  accountStatus: AccountStatusType;
-  handleResourceChange: (name: ResourceType, amount: number) => void;
-};
-export const WishResources = ({
-  accountStatus,
-  handleResourceChange,
-}: WishResourcesProps) => {
-  const { isLoading, accountCurrentPrimogemValue: totalAvailableWishes } =
-    useGenshinState();
+export const WishResources = observer(() => {
+  const {
+    isLoading,
+    accountCurrentWishValue: totalAvailableWishes,
+    setAccountStatusOwnedWishResources,
+    accountStatusOwnedWishResources,
+  } = useGenshinState();
   return (
     <div className="space-y-3">
       <Label className="text-sm text-gold-1 block">Wishes</Label>
@@ -21,43 +18,43 @@ export const WishResources = ({
         <ResourceInput
           label="Primogems"
           isLoading={isLoading}
-          amount={accountStatus.ownedWishResources.primogem}
-          handleChange={handleResourceChange}
+          amount={accountStatusOwnedWishResources.primogem}
+          handleChange={setAccountStatusOwnedWishResources}
           type="primogem"
         />
         <ResourceInput
           label="Intertwined Fate"
           isLoading={isLoading}
-          amount={accountStatus.ownedWishResources.limitedWishes}
-          handleChange={handleResourceChange}
+          amount={accountStatusOwnedWishResources.limitedWishes}
+          handleChange={setAccountStatusOwnedWishResources}
           type="limitedWishes"
         />
         <ResourceInput
           label="Acquaint Fate"
           isLoading={isLoading}
-          amount={accountStatus.ownedWishResources.standardWish}
-          handleChange={handleResourceChange}
+          amount={accountStatusOwnedWishResources.standardWish}
+          handleChange={setAccountStatusOwnedWishResources}
           type="standardWish"
         />
         <ResourceInput
           label="Starglitter"
           isLoading={isLoading}
-          amount={accountStatus.ownedWishResources.starglitter}
-          handleChange={handleResourceChange}
+          amount={accountStatusOwnedWishResources.starglitter}
+          handleChange={setAccountStatusOwnedWishResources}
           type="starglitter"
         />
         <ResourceInput
           label="Stardust"
           isLoading={isLoading}
-          amount={accountStatus.ownedWishResources.stardust}
-          handleChange={handleResourceChange}
+          amount={accountStatusOwnedWishResources.stardust}
+          handleChange={setAccountStatusOwnedWishResources}
           type="stardust"
         />
         <ResourceInput
           label="Genesis Crystals"
           isLoading={isLoading}
-          amount={accountStatus.ownedWishResources.genesisCrystal}
-          handleChange={handleResourceChange}
+          amount={accountStatusOwnedWishResources.genesisCrystal}
+          handleChange={setAccountStatusOwnedWishResources}
           type="genesisCrystal"
         />
       </div>
@@ -71,4 +68,4 @@ export const WishResources = ({
       </div>
     </div>
   );
-};
+});

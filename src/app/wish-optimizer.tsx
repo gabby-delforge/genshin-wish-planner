@@ -1,10 +1,11 @@
 "use client";
 
 import ConfigurationPanel from "@/app/panels/configuration/configuration-panel";
-import SimulationResultsPanel from "@/app/panels/results/simulation-results-panel";
+import { genshinState } from "@/lib/mobx/genshin-state";
+import { observer } from "mobx-react-lite";
 import { SimulationPanel } from "./panels/simulation/simulation-panel";
 
-export default function WishOptimizer() {
+const WishOptimizer = observer(() => {
   return (
     <div className="container mx-auto py-8 px-4 max-w-8xl">
       <div className="flex justify-center mb-8">
@@ -19,13 +20,14 @@ export default function WishOptimizer() {
       {/* <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 mb-6"> */}
       <div className="flex flex-col xl:flex-row justify-center align-center gap-6">
         <div className="overflow-auto grow-1">
-          <ConfigurationPanel />
+          <ConfigurationPanel genshinState={genshinState} />
         </div>
-        <div className="flex flex-col gap-6 grow-2">
-          <SimulationPanel />
-          <SimulationResultsPanel />
+        <div className="flex flex-col gap-6 grow-4">
+          <SimulationPanel genshinState={genshinState} />
         </div>
       </div>
     </div>
   );
-}
+});
+
+export default WishOptimizer;

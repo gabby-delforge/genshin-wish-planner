@@ -2,21 +2,24 @@ import { LimitedWish, Primogem } from "@/components/resource";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckboxWithLabel } from "@/components/ui/checkbox-with-label";
 import { Label } from "@/components/ui/label";
+import { PRIMOGEM_SOURCE_VALUES } from "@/lib/data";
 import {
-  AccountStatus as AccountStatusType,
-  PRIMOGEM_SOURCE_VALUES,
   PrimogemSourceKey,
+  PrimogemSourcesEnabled,
   PrimogemSourceValue,
 } from "@/lib/types";
+import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
 type EstimatedFutureWishesProps = {
   estimatedNewWishesPerBanner: number;
-  accountStatus: AccountStatusType;
+  primogemSources: PrimogemSourcesEnabled;
   handlePrimogemSourceChange: (
     source: PrimogemSourceKey,
     checked: boolean
   ) => void;
+  excludeCurrentBannerPrimogems: boolean;
+
   handleExcludeCurrentBannerPrimogemSourcesChange: (checked: boolean) => void;
 };
 
@@ -95,149 +98,152 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   thankYouGift: "Thank You Gift",
 };
 
-export const EstimatedFutureWishes = ({
-  estimatedNewWishesPerBanner,
-  accountStatus,
-  handlePrimogemSourceChange,
-  handleExcludeCurrentBannerPrimogemSourcesChange,
-}: EstimatedFutureWishesProps) => {
-  // Calculate totals for each category
-  const categoryTotals = useMemo(() => {
-    const freeToPlayTotal = PRIMOGEM_SOURCE_CATEGORIES.freeToPlay.reduce(
-      (total, key) => {
-        if (accountStatus.primogemSources[key]) {
+export const EstimatedFutureWishes = observer(
+  ({
+    estimatedNewWishesPerBanner,
+    primogemSources,
+    handlePrimogemSourceChange,
+    excludeCurrentBannerPrimogems,
+    handleExcludeCurrentBannerPrimogemSourcesChange,
+  }: EstimatedFutureWishesProps) => {
+    // Calculate totals for each category
+    const categoryTotals = useMemo(() => {
+      const freeToPlayTotal = PRIMOGEM_SOURCE_CATEGORIES.freeToPlay.reduce(
+        (total, key) => {
+          if (primogemSources[key]) {
+            const primoValue = getPrimogemValue(PRIMOGEM_SOURCE_VALUES[key]);
+            const wishValue = getLimitedWishValue(PRIMOGEM_SOURCE_VALUES[key]);
+            return total + Math.floor(primoValue / 160) + wishValue;
+          }
+          return total;
+        },
+        0
+      );
+
+      const paidTotal = PRIMOGEM_SOURCE_CATEGORIES.paid.reduce((total, key) => {
+        if (primogemSources[key]) {
           const primoValue = getPrimogemValue(PRIMOGEM_SOURCE_VALUES[key]);
           const wishValue = getLimitedWishValue(PRIMOGEM_SOURCE_VALUES[key]);
           return total + Math.floor(primoValue / 160) + wishValue;
         }
         return total;
-      },
-      0
+      }, 0);
+
+      return {
+        freeToPlayTotal,
+        paidTotal,
+        grandTotal: freeToPlayTotal + paidTotal,
+      };
+    }, [primogemSources]);
+
+    return (
+      <div className="space-y-2">
+        <div className="mt-4">
+          <Label className="text-sm text-gold-1">Estimated Future Wishes</Label>
+        </div>
+
+        {/* Primogem Sources Section */}
+        <div className="flex flex-col space-y-4">
+          {/* Free-to-Play Category */}
+          <div>
+            <div className="flex items-center space-x-2">
+              <Label className="flex items-center text-sm font-medium text-gold-1">
+                {`Free-to-play: `}
+                <LimitedWish number={categoryTotals.freeToPlayTotal} />
+              </Label>
+            </div>
+
+            {/* Free-to-Play Detailed Sources */}
+            <div className="grid grid-cols-1 ml-1">
+              {PRIMOGEM_SOURCE_CATEGORIES.freeToPlay.map((sourceKey) => {
+                const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
+                const primoValue = getPrimogemValue(sourceValue);
+                const wishValue = getLimitedWishValue(sourceValue);
+
+                return (
+                  <CheckboxWithLabel
+                    key={sourceKey}
+                    id={sourceKey}
+                    checked={primogemSources[sourceKey]}
+                    onCheckedChange={(checked) =>
+                      handlePrimogemSourceChange(sourceKey, checked === true)
+                    }
+                    label={
+                      <>
+                        <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
+                        <span className="text-sm text-muted-foreground flex items-center">
+                          {primoValue > 0 && <Primogem number={primoValue} />}
+                          {wishValue > 0 && <LimitedWish number={wishValue} />}
+                        </span>
+                      </>
+                    }
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Paid Sources */}
+          <div>
+            <div className="flex items-center space-x-2">
+              <Label className="flex items-center text-sm font-medium text-gold-1">
+                {`Premium: `}
+                <LimitedWish number={categoryTotals.paidTotal} />
+              </Label>
+            </div>
+
+            <div className="grid grid-cols-1 ml-1">
+              {PRIMOGEM_SOURCE_CATEGORIES.paid.map((sourceKey) => {
+                const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
+                const primoValue = getPrimogemValue(sourceValue);
+                const wishValue = getLimitedWishValue(sourceValue);
+
+                return (
+                  <CheckboxWithLabel
+                    key={sourceKey}
+                    id={sourceKey}
+                    checked={primogemSources[sourceKey]}
+                    onCheckedChange={(checked) =>
+                      handlePrimogemSourceChange(sourceKey, checked === true)
+                    }
+                    label={
+                      <>
+                        <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
+                        <span className="text-sm text-muted-foreground flex items-center">
+                          {primoValue > 0 && <Primogem number={primoValue} />}
+                          {wishValue > 0 && <LimitedWish number={wishValue} />}
+                        </span>
+                      </>
+                    }
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-void-1 rounded-md p-3 border border-void-2 mt-4">
+          <div className="text-sm flex gap-1 items-center justify-center font-medium text-gold-1">
+            <span className=" font-bold">
+              <LimitedWish number={estimatedNewWishesPerBanner} />
+            </span>
+            gained each banner
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={"exclude-current"}
+            checked={excludeCurrentBannerPrimogems}
+            onCheckedChange={handleExcludeCurrentBannerPrimogemSourcesChange}
+          />
+          <Label
+            htmlFor={"exclude-current"}
+            className="text-xs cursor-pointer flex justify-between items-center w-full"
+          >
+            Exclude wishes earned during the current banner
+          </Label>
+        </div>
+      </div>
     );
-
-    const paidTotal = PRIMOGEM_SOURCE_CATEGORIES.paid.reduce((total, key) => {
-      if (accountStatus.primogemSources[key]) {
-        const primoValue = getPrimogemValue(PRIMOGEM_SOURCE_VALUES[key]);
-        const wishValue = getLimitedWishValue(PRIMOGEM_SOURCE_VALUES[key]);
-        return total + Math.floor(primoValue / 160) + wishValue;
-      }
-      return total;
-    }, 0);
-
-    return {
-      freeToPlayTotal,
-      paidTotal,
-      grandTotal: freeToPlayTotal + paidTotal,
-    };
-  }, [accountStatus.primogemSources]);
-
-  return (
-    <div className="space-y-2">
-      <div className="mt-4">
-        <Label className="text-sm text-gold-1">Estimated Future Wishes</Label>
-      </div>
-
-      {/* Primogem Sources Section */}
-      <div className="flex flex-col space-y-4">
-        {/* Free-to-Play Category */}
-        <div>
-          <div className="flex items-center space-x-2">
-            <Label className="flex items-center text-sm font-medium text-gold-1">
-              {`Free-to-play: `}
-              <LimitedWish number={categoryTotals.freeToPlayTotal} />
-            </Label>
-          </div>
-
-          {/* Free-to-Play Detailed Sources */}
-          <div className="grid grid-cols-1 ml-1">
-            {PRIMOGEM_SOURCE_CATEGORIES.freeToPlay.map((sourceKey) => {
-              const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
-              const primoValue = getPrimogemValue(sourceValue);
-              const wishValue = getLimitedWishValue(sourceValue);
-
-              return (
-                <CheckboxWithLabel
-                  key={sourceKey}
-                  id={sourceKey}
-                  checked={accountStatus.primogemSources[sourceKey]}
-                  onCheckedChange={(checked) =>
-                    handlePrimogemSourceChange(sourceKey, checked === true)
-                  }
-                  label={
-                    <>
-                      <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
-                      <span className="text-sm text-muted-foreground flex items-center">
-                        {primoValue > 0 && <Primogem number={primoValue} />}
-                        {wishValue > 0 && <LimitedWish number={wishValue} />}
-                      </span>
-                    </>
-                  }
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Paid Sources */}
-        <div>
-          <div className="flex items-center space-x-2">
-            <Label className="flex items-center text-sm font-medium text-gold-1">
-              {`Premium: `}
-              <LimitedWish number={categoryTotals.paidTotal} />
-            </Label>
-          </div>
-
-          <div className="grid grid-cols-1 ml-1">
-            {PRIMOGEM_SOURCE_CATEGORIES.paid.map((sourceKey) => {
-              const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
-              const primoValue = getPrimogemValue(sourceValue);
-              const wishValue = getLimitedWishValue(sourceValue);
-
-              return (
-                <CheckboxWithLabel
-                  key={sourceKey}
-                  id={sourceKey}
-                  checked={accountStatus.primogemSources[sourceKey]}
-                  onCheckedChange={(checked) =>
-                    handlePrimogemSourceChange(sourceKey, checked === true)
-                  }
-                  label={
-                    <>
-                      <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
-                      <span className="text-sm text-muted-foreground flex items-center">
-                        {primoValue > 0 && <Primogem number={primoValue} />}
-                        {wishValue > 0 && <LimitedWish number={wishValue} />}
-                      </span>
-                    </>
-                  }
-                />
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-void-1 rounded-md p-3 border border-void-2 mt-4">
-        <div className="text-sm flex gap-1 items-center justify-center font-medium text-gold-1">
-          <span className=" font-bold">
-            <LimitedWish number={estimatedNewWishesPerBanner} />
-          </span>
-          gained each banner
-        </div>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id={"exclude-current"}
-          checked={accountStatus.excludeCurrentBannerPrimogemSources}
-          onCheckedChange={handleExcludeCurrentBannerPrimogemSourcesChange}
-        />
-        <Label
-          htmlFor={"exclude-current"}
-          className="text-xs cursor-pointer flex justify-between items-center w-full"
-        >
-          Exclude wishes earned during the current banner
-        </Label>
-      </div>
-    </div>
-  );
-};
+  }
+);
