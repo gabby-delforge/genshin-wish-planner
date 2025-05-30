@@ -34,7 +34,7 @@ export const SimulationPanelContent = observer(
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-gold-1">{headerText}</h3>
 
-          <div className="grid grid-cols-1   gap-4">
+          <div className="grid grid-cols-1  @4xl/sim:grid-cols-2 gap-4">
             {genshinState.banners.map((banner: ApiBanner) => (
               <BannerCard
                 key={banner.id}
@@ -46,8 +46,8 @@ export const SimulationPanelContent = observer(
                 wishesAvailable={genshinState.availableWishes}
                 isCurrentBanner={isCurrentBanner(banner)}
                 isOldBanner={isPastDate(banner.endDate)}
-                estimatedNewWishesPerBanner={
-                  genshinState.estimatedNewWishesPerBanner
+                estimatedWishesEarned={
+                  genshinState.estimatedNewWishesMap[banner.id]
                 }
               />
             ))}

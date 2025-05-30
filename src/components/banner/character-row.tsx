@@ -44,9 +44,10 @@ export const CharacterRow = observer(
     return (
       <div
         key={character.Name}
-        className="grid grid-cols-4 gap-2 items-center text-sm"
+        className="grid gap-2 items-center text-sm"
+        style={{ gridTemplateColumns: "1fr auto auto" }}
       >
-        <div className="col-span-2 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <CharacterIcon id={characterId} />
           <div>
             <p
@@ -62,29 +63,19 @@ export const CharacterRow = observer(
           </div>
         </div>
 
-        <div className="flex flex-col mr-3">
+        <div className="flex flex-col mr-3 items-end">
           <div className="text-xs text-gray-400/70">Pull until</div>
-          <Select
-            value={`C${currentMaxConstellation}`}
-            onValueChange={(value: string) =>
-              setMaxConstellation(parseInt(value))
-            }
-          >
-            <SelectTrigger className="h-7 bg-void-1 border-void-2">
-              <SelectValue placeholder="C0" />
-            </SelectTrigger>
-            <SelectContent className="bg-void-1 border-void-2">
-              {Array.from({ length: 7 }, (_, i) => (
-                <SelectItem
-                  key={`C${i}`}
-                  value={`C${i}`}
-                  className="text-white"
-                >
-                  C{i}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input
+            isLoading={isLoading}
+            id={`constellation-${character.Id}`}
+            type="number"
+            min="0"
+            value={currentMaxConstellation}
+            onChange={(e) => setMaxConstellation(parseInt(e.target.value))}
+            unit={<div className="text-white/50 pl-1 flex-initial">C</div>}
+            showPlusMinus={true}
+            width={"w-4"}
+          />
         </div>
 
         <div className="">

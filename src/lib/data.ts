@@ -46,13 +46,14 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
     { value: 5, type: "limitedWishes" },
     { value: 5, type: "standardWish" },
   ],
-  abyssAndTheater: { value: 2400, type: "primogem" },
+  abyss: { value: 800, type: "primogem" },
+  imaginarium: { value: 800, type: "primogem" },
   battlePass: { value: 5, type: "standardWish" },
   battlePassGnostic: [
     { value: 4, type: "limitedWishes" },
     { value: 680, type: "primogem" },
   ],
-  blessingOfWelkin: { value: 3780, type: "primogem" },
+  welkinMoon: { value: 3780, type: "primogem" },
   archonQuest: [
     { value: 2, type: "limitedWishes" },
     { value: 620, type: "primogem" },

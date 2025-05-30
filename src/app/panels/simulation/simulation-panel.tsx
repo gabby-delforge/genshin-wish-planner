@@ -3,7 +3,7 @@ import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PanelBasic } from "@/components/ui/panel-basic";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { STRATEGY_MODE } from "@/lib/feature-flags";
+import { FLAGS } from "@/lib/feature-flags";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import { GenshinState } from "@/lib/mobx/genshin-state";
 import { AppMode } from "@/lib/types";
@@ -22,7 +22,7 @@ export const SimulationPanel = observer(
       >
         <PanelBasic>
           <div className="absolute top-0 right-0 mr-3 mt-3">
-            {STRATEGY_MODE ? (
+            {FLAGS.STRATEGY_MODE ? (
               <TabsList className="grid grid-cols-2 bg-void-1 items-center justify-center rounded-lg p-1 text-muted-foreground">
                 <TabsTrigger
                   value="playground"

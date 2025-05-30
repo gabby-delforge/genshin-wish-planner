@@ -25,6 +25,9 @@ type EstimatedFutureWishesProps = {
 
 // Helper function to get the primogem value from a source
 const getPrimogemValue = (sourceValue: PrimogemSourceValue): number => {
+  if (!sourceValue) {
+    debugger;
+  }
   if (Array.isArray(sourceValue)) {
     return sourceValue.reduce((total, resource) => {
       if (resource.type === "primogem") {
@@ -59,7 +62,8 @@ const PRIMOGEM_SOURCE_CATEGORIES = {
     "gameUpdateCompensation",
     "dailyCommissions",
     "paimonBargain",
-    "abyssAndTheater",
+    "abyss",
+    "imaginarium",
     "archonQuest",
     "storyQuests",
     "newAchievements",
@@ -73,7 +77,7 @@ const PRIMOGEM_SOURCE_CATEGORIES = {
     "thankYouGift",
     "battlePass",
   ] as PrimogemSourceKey[],
-  paid: ["battlePassGnostic", "blessingOfWelkin"] as PrimogemSourceKey[],
+  paid: ["battlePassGnostic", "welkinMoon"] as PrimogemSourceKey[],
 };
 
 // Source display names for UI
@@ -81,10 +85,11 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   gameUpdateCompensation: "Game Update Compensation",
   dailyCommissions: "Daily Commissions",
   paimonBargain: "Paimon's Bargain",
-  abyssAndTheater: "Abyss & Theater",
+  abyss: "Abyss",
+  imaginarium: "Imaginarium",
   battlePass: "Battle Pass",
   battlePassGnostic: "BP (Gnostic Hymn)",
-  blessingOfWelkin: "Blessing of Welkin",
+  welkinMoon: "Blessing of Welkin",
   archonQuest: "Archon Quest",
   storyQuests: "Story Quests",
   newAchievements: "New Achievements",
@@ -171,9 +176,16 @@ export const EstimatedFutureWishes = observer(
                     label={
                       <>
                         <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
-                        <span className="text-sm text-muted-foreground flex items-center">
+
+                        <span className="text-sm text-muted-foreground flex items-center gap-2">
                           {primoValue > 0 && <Primogem number={primoValue} />}
                           {wishValue > 0 && <LimitedWish number={wishValue} />}
+                          {(sourceKey === "abyss" ||
+                            sourceKey === "imaginarium") && (
+                            <div className="text-white/40 italic">
+                              per season
+                            </div>
+                          )}
                         </span>
                       </>
                     }

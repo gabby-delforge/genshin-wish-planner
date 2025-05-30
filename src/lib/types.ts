@@ -85,10 +85,11 @@ export const DEFAULT_PRIMOGEM_SOURCES_ENABLED: PrimogemSourcesEnabled = {
   gameUpdateCompensation: true,
   dailyCommissions: true,
   paimonBargain: true,
-  abyssAndTheater: true,
+  abyss: true,
+  imaginarium: true,
   battlePass: true,
   battlePassGnostic: true,
-  blessingOfWelkin: true,
+  welkinMoon: true,
   archonQuest: true,
   storyQuests: true,
   newAchievements: true,
@@ -138,10 +139,11 @@ export interface PrimogemSourceValues {
   gameUpdateCompensation: PrimogemSourceValue;
   dailyCommissions: PrimogemSourceValue;
   paimonBargain: PrimogemSourceValue;
-  abyssAndTheater: PrimogemSourceValue;
+  abyss: PrimogemSourceValue;
+  imaginarium: PrimogemSourceValue;
   battlePass: PrimogemSourceValue;
   battlePassGnostic: PrimogemSourceValue;
-  blessingOfWelkin: PrimogemSourceValue;
+  welkinMoon: PrimogemSourceValue;
   archonQuest: PrimogemSourceValue;
   storyQuests: PrimogemSourceValue;
   newAchievements: PrimogemSourceValue;

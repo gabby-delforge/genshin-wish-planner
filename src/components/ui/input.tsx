@@ -8,6 +8,7 @@ type InputExtendedProps = {
   isLoading?: boolean;
   unit?: React.ReactElement;
   showPlusMinus?: boolean;
+  width?: string;
 };
 
 const Input = React.forwardRef<
@@ -23,6 +24,7 @@ const Input = React.forwardRef<
       unit,
       isLoading = false,
       showPlusMinus,
+      width,
       ...props
     },
     ref
@@ -75,7 +77,6 @@ const Input = React.forwardRef<
     // Class that emulates an "input"-like aesthetic, for the wrapper div
     const c = cn(
       `flex
-      grow-1
         h-7 min-w-0
         rounded-md
         border border-white/12
@@ -98,7 +99,9 @@ const Input = React.forwardRef<
 
         <input
           type={type}
-          className={`focus-visible:outline-none text-right min-w-0 w-full`}
+          className={`focus-visible:outline-none text-right min-w-0 ${
+            width ? width : ""
+          }`}
           ref={inputRef}
           value={isLoading ? "" : inputValue}
           onBlur={handleBlur}

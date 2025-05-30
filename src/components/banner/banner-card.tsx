@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { API_CHARACTERS, API_WEAPONS } from "@/lib/data";
+import { FLAGS } from "@/lib/feature-flags";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import {
   ApiBanner,
@@ -15,7 +16,6 @@ import {
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { LimitedWish } from "../resource";
-import { Pill } from "../ui/pill";
 import { Separator } from "../ui/separator";
 import {
   Tooltip,
@@ -34,7 +34,7 @@ export type BannerCardProps = {
   wishesAvailable: Record<BannerId, number>;
   isCurrentBanner: boolean;
   isOldBanner: boolean;
-  estimatedNewWishesPerBanner: number;
+  estimatedWishesEarned: number;
 };
 
 const BannerCard = observer(
@@ -45,7 +45,7 @@ const BannerCard = observer(
     wishesAvailable,
     isCurrentBanner,
     isOldBanner,
-    estimatedNewWishesPerBanner,
+    estimatedWishesEarned,
   }: BannerCardProps) => {
     const {
       accountStatusExcludeCurrentBannerPrimogemSources,
@@ -62,7 +62,7 @@ const BannerCard = observer(
       const gainedWishes =
         isCurrentBanner && accountStatusExcludeCurrentBannerPrimogemSources
           ? 0
-          : estimatedNewWishesPerBanner;
+          : estimatedWishesEarned;
       // This represents the wishes the user started with
       let spentWishes = 0;
       for (const char of Object.values(bannerConfiguration.characters)) {
@@ -103,7 +103,7 @@ const BannerCard = observer(
           </Tooltip>
         </TooltipProvider>
       );
-    }, [wishesAvailable, estimatedNewWishesPerBanner, id]);
+    }, [wishesAvailable, estimatedWishesEarned, id]);
 
     return (
       <Card
@@ -114,9 +114,11 @@ const BannerCard = observer(
         <div className="h-2 bg-gradient-to-r from-[#7b68ee] to-[#9370db]"></div>
         <CardHeader className="pb-2">
           <CardTitle className="text-md font-medium flex justify-between">
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row gap-2 items-center">
               <BannerVersion version={id} />
-              {isCurrentBanner && <Pill text="Current banner" />}
+              {isCurrentBanner && (
+                <div className="text-xs text-white/20">Current banner</div>
+              )}
             </div>
             <span className="text-sm text-white">{wishesAvailableLabel}</span>
           </CardTitle>
@@ -157,51 +159,31 @@ const BannerCard = observer(
               />
             );
           })}
-          <Separator />
-          <WeaponBannerRow
-            weapons={[
-              API_WEAPONS[bannerData.weapons[0]!]!, // Lol
-              API_WEAPONS[bannerData.weapons[1]!]!,
-            ]}
-            currentWishesAllocated={
-              bannerConfiguration.weaponBanner.wishesAllocated
-            }
-            setWishesAllocated={(value: number) =>
-              allocateWishesToWeaponBanner(id, value)
-            }
-            currentEpitomizedPath={""}
-            setEpitomizedPath={(weaponId: WeaponId) =>
-              setEpitomizedPath(id, weaponId)
-            }
-            currentStrategy={"stop"}
-            setStrategy={(strategy: "stop" | "continue") =>
-              setWeaponBannerStrategy(id, strategy)
-            }
-          />
-          {/* {bannerConfiguration.banner.weapons.map((weaponId) => {
-            const weapon = API_WEAPONS[weaponId];
-            if (!weapon) return null;
-            return (
-              <WeaponRow
-                key={weaponId}
-                weaponId={weaponId}
-                weapon={weapon}
+          {FLAGS.WEAPON_BANNER && (
+            <>
+              <Separator />
+              <WeaponBannerRow
+                weapons={[
+                  API_WEAPONS[bannerData.weapons[0]!]!, // Lol
+                  API_WEAPONS[bannerData.weapons[1]!]!,
+                ]}
                 currentWishesAllocated={
-                  bannerConfiguration.weapons[weaponId]?.wishesAllocated || 0
+                  bannerConfiguration.weaponBanner.wishesAllocated
                 }
                 setWishesAllocated={(value: number) =>
-                  allocateWishesToWeapon(id, weaponId, value)
+                  allocateWishesToWeaponBanner(id, value)
                 }
-                currentPriority={
-                  bannerConfiguration.weapons[weaponId]?.priority ||
-                  DEFAULT_PRIORITY
+                currentEpitomizedPath={""}
+                setEpitomizedPath={(weaponId: WeaponId) =>
+                  setEpitomizedPath(id, weaponId)
                 }
-                setCurrentPriority={(value: Priority) =>
-                  setWeaponPullPriority(id, weaponId, value)
+                currentStrategy={"stop"}
+                setStrategy={(strategy: "stop" | "continue") =>
+                  setWeaponBannerStrategy(id, strategy)
                 }
               />
-            );
-          })} */}
+            </>
+          )}
         </CardContent>
       </Card>
     );
