@@ -18,7 +18,7 @@ const ConfigurationPanel = observer(
       <Panel title="Configuration" icon={<Cog className="w-h4 h-h4" />}>
         <div className="space-y-4 @container/config">
           <div className="grid grid-cols-2 @sm/config:grid-cols-4 gap-2">
-            <Label htmlFor="currentPity" className="my-auto text-xs">
+            <Label htmlFor="currentPity" className="my-auto text-sm">
               Pity
             </Label>
             <Input
@@ -38,7 +38,7 @@ const ConfigurationPanel = observer(
               showPlusMinus
               width={"w-full"}
             />
-            <Label htmlFor="isGuaranteed" className="my-auto text-xs">
+            <Label htmlFor="isGuaranteed" className="my-auto text-sm">
               Last 50/50
             </Label>
             <ToggleGroup.Root

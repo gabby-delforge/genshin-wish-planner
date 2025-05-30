@@ -1,14 +1,17 @@
+import { observer } from "mobx-react-lite";
+
 type PillProps = {
   text: string;
   color?: string;
 };
-export const Pill = ({ text, color }: PillProps) => {
+export const Pill = observer(({ text, color }: PillProps) => {
   return (
     <div
-      className={`rounded-full border text-white bg-white/30 px-2 text-xs flex justify-center items-center`}
-      style={color ? { backgroundColor: color, borderColor: color } : {}}
+      className={`text-xs font-bold rounded-full text-white bg-white/30 px-3 py-[1px] flex justify-center items-center ${
+        color ? color : ""
+      }`}
     >
       {text}
     </div>
   );
-};
+});

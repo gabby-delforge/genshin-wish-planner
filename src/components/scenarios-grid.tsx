@@ -19,7 +19,7 @@ const GridSection = observer(
     className?: string;
   }) => {
     return (
-      <div className="text-xs">
+      <div className="text-sm">
         <div className="py-2">{label}:</div>
         <div
           className={`grid grid-cols-${

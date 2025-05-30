@@ -59,7 +59,7 @@ export function formatDate(dateString: string): string {
 export function getBannerColor(versionId: BannerId): string {
   const h = hash(versionId);
   //return BANNER_COLORS[h % BANNER_COLORS.length];
-  return colors.yellow[700];
+  return colors.pink[700];
 }
 
 /**

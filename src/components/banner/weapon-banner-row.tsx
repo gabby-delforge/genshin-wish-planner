@@ -110,7 +110,7 @@ export const WeaponBannerRow = observer(
 
         {/* Strategy sentence */}
         <div className="p-4">
-          <div className="text-xs flex flex-col items-center gap-2 leading-relaxed">
+          <div className="text-sm flex flex-col items-center gap-2 leading-relaxed">
             <div className="flex flex-row gap-1 items-center">
               <span>Allocate</span>
 
@@ -213,7 +213,7 @@ export const WeaponBannerRow = observer(
               </div>
               <div></div>
               <div>
-                <div className="text-xs text-gray-400/70">Priority</div>
+                <div className="text-sm text-gray-400/70">Priority</div>
                 <Select
                   value={PriorityValueToText[currentPriority]}
                   onValueChange={(value: string) =>

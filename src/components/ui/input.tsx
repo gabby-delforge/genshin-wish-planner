@@ -109,7 +109,7 @@ const Input = React.forwardRef<
 
     // Class that emulates an "input"-like aesthetic, for the wrapper div
     const c = cn(
-      `flex
+      `flex items-center
         h-7 min-w-0
         rounded-md
         border border-white/12

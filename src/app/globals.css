@@ -3,7 +3,20 @@
 
 html {
   color: white;
+  overflow: hidden;
+  height: 100%;
 }
+
+body {
+  overflow: auto;
+  height: 100%;
+}
+
+@font-face {
+  font-family: "GenshinImpact";
+  src: url("/fonts/zh-cn.ttf");
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -28,8 +41,7 @@ html {
 
   /* Other */
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.8rem;
+  --text-sm: 0.9rem;
   --text-md: 0.9rem;
   --text-lg: 1rem;
   --text-xl: 1.1rem;
@@ -43,24 +55,32 @@ html {
 
 /* Typography */
 @layer components {
+  .font-genshin {
+    font-family: "GenshinImpact";
+  }
   .h0 {
-    @apply text-6xl text-gold-1 lg:text-7xl font-bold tracking-tighter;
+    @apply text-6xl text-gold-1 lg:text-7xl  tracking-tighter;
+    font-family: "GenshinImpact";
   }
 
   .h1 {
-    @apply text-5xl lg:text-6xl font-bold tracking-tighter;
+    @apply text-5xl lg:text-6xl tracking-tighter;
+    font-family: "GenshinImpact";
   }
 
   .h2 {
-    @apply text-4xl lg:text-5xl font-bold tracking-tight;
+    @apply text-4xl lg:text-5xl  tracking-tight;
+    font-family: "GenshinImpact";
   }
 
   .h3 {
     @apply text-3xl lg:text-4xl font-bold;
+    font-family: "GenshinImpact";
   }
 
   .h4 {
-    @apply text-2xl lg:text-3xl font-semibold;
+    @apply text-2xl lg:text-3xl;
+    font-family: "GenshinImpact";
   }
 
   .h5 {
@@ -86,11 +106,11 @@ html {
 
   /* Additional text styles */
   .caption {
-    @apply text-xs leading-normal;
+    @apply text-sm leading-normal;
   }
 
   .overline {
-    @apply text-xs uppercase tracking-wider font-medium;
+    @apply text-sm uppercase tracking-wider font-medium;
   }
 }
 

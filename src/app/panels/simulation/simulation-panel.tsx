@@ -45,9 +45,9 @@ export const SimulationPanel = observer(
           </div>
 
           <CardHeader className="pb-2">
-            <CardTitle className="h4 pb-2">
+            <CardTitle className="pb-2">
               <div className="flex w-full justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 h4">
                   <Sparkles className="w-h4 h-h4" />
                   Simulation
                 </div>

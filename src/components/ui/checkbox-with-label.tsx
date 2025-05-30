@@ -18,7 +18,7 @@ export const CheckboxWithLabel = ({
       <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
       <Label
         htmlFor={id}
-        className="text-xs cursor-pointer flex justify-between items-center w-full"
+        className="text-sm cursor-pointer flex justify-between items-center w-full"
       >
         {label}
       </Label>

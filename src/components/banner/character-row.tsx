@@ -7,7 +7,6 @@ import {
   PriorityTextToPriority,
   PriorityValueToText,
 } from "@/lib/types";
-import { getCharacterRarityColor } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { LimitedWish } from "../resource";
 import { Input } from "../ui/input";
@@ -48,23 +47,14 @@ export const CharacterRow = observer(
         style={{ gridTemplateColumns: "1fr auto auto" }}
       >
         <div className="flex items-center gap-2">
-          <CharacterIcon id={characterId} />
+          <CharacterIcon id={characterId} className="shrink-0" />
           <div>
-            <p
-              className={`text-sm font-medium ${getCharacterRarityColor(
-                character.Quality || 0
-              )}`}
-            >
-              {character.Name}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {character.Quality}★ {character.Weapon}
-            </p>
+            <p className={`text-xs font-genshin`}>{character.Name}</p>
           </div>
         </div>
 
         <div className="flex flex-col mr-3 items-end">
-          <div className="text-xs text-gray-400/70 px-3">Pull until</div>
+          <div className="text-sm text-gray-400/70 px-3">Pull until</div>
           <Input
             isLoading={isLoading}
             id={`constellation-${character.Id}`}
@@ -81,7 +71,7 @@ export const CharacterRow = observer(
         <div className="">
           {mode === "playground" && (
             <div className="flex flex-col">
-              <div className="text-xs text-gray-400/70">Spend</div>
+              <div className="text-sm text-gray-400/70">Spend</div>
               <Input
                 isLoading={isLoading}
                 id={`wishes-${character.Id}`}
@@ -97,7 +87,7 @@ export const CharacterRow = observer(
 
           {mode === "strategy" && (
             <div className="space-y-1">
-              <div className="text-xs text-gray-400/70">Priority</div>
+              <div className="text-sm text-gray-400/70">Priority</div>
               <Select
                 value={PriorityValueToText[currentPriority]}
                 onValueChange={(value: string) =>

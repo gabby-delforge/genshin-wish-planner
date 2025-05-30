@@ -38,7 +38,7 @@ export const ResourceInput = observer(
       <div className="flex flex-col justify-between gap-1">
         <Label
           htmlFor={type}
-          className="text-xs block leading-none align-text-bottom h-full"
+          className="text-sm block leading-none align-text-bottom h-full"
         >
           {label}
         </Label>

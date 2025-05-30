@@ -75,7 +75,7 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   abyss: "Abyss",
   imaginarium: "Imaginarium",
   battlePass: "Battle Pass",
-  battlePassGnostic: "BP (Gnostic Hymn)",
+  battlePassGnostic: "Battle Pass (Gnostic Hymn)",
   welkinMoon: "Blessing of Welkin",
   archonQuest: "Archon Quest",
   storyQuests: "Story Quests",
@@ -162,6 +162,8 @@ export const EstimatedFutureWishes = observer(
                 const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
                 const primoValue = getPrimogemValue(sourceValue);
                 const wishValue = getLimitedWishValue(sourceValue);
+
+                if (primoValue === 0 && wishValue === 0) return null;
 
                 return (
                   <CheckboxWithLabel

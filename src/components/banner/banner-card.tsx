@@ -127,15 +127,17 @@ const BannerCard = observer(
           <CardTitle className="text-md font-medium flex justify-between">
             <div className="flex flex-row gap-2 items-center">
               <BannerVersion version={id} />
+              <p className=" text-white/80 uppercase font-bold text-xs">
+                {displayStartDate} - {displayEndDate}
+              </p>
               {isCurrentBanner && (
-                <div className="text-xs text-white/20">Current banner</div>
+                <div className="text-sm text-white/40 italic">
+                  (Current banner)
+                </div>
               )}
             </div>
             <span className="text-sm text-white">{wishesAvailableLabel}</span>
           </CardTitle>
-          <p className="text-sm text-white opacity-50">
-            {displayStartDate} - {displayEndDate}
-          </p>
         </CardHeader>
         <CardContent className="space-y-2">
           {bannerConfiguration.banner.characters.map((characterId) => {

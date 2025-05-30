@@ -61,7 +61,7 @@ export const WeaponRow = observer(
         <div className="">
           {mode === "playground" && (
             <div className="flex flex-col">
-              <div className="text-xs text-gray-400/70">Spend</div>
+              <div className="text-sm text-gray-400/70">Spend</div>
               <Input
                 isLoading={isLoading}
                 id={`wishes-${weapon.Id}`}
@@ -77,7 +77,7 @@ export const WeaponRow = observer(
 
           {mode === "strategy" && (
             <>
-              <div className="text-xs text-gray-400/70">Priority</div>
+              <div className="text-sm text-gray-400/70">Priority</div>
               <Select
                 value={PriorityValueToText[currentPriority]}
                 onValueChange={(value: string) =>
