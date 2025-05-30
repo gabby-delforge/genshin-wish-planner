@@ -178,7 +178,7 @@ export type ResourceValue = {
   type: ResourceType;
 };
 
-export type ResultType = CharacterId | "-" | "Standard 5*" | "Missed";
+export type ResultType = CharacterId | "Skipped" | "Standard 5*" | "Missed";
 
 // Outcome of a specific banner in a scenario
 export interface ScenarioOutcome {

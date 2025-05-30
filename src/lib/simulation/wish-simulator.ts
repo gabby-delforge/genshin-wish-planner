@@ -484,7 +484,7 @@ const scenarioToScenarioString = (
           s += "N";
         }
       } else {
-        s += "-";
+        s += "Skipped";
       }
     }
   }

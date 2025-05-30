@@ -120,14 +120,14 @@ const BannerCard = observer(
       <Card
         className={`bg-void-3/30 ${
           isOldBanner ? "opacity-40" : "opacity-100"
-        } border-void-2 overflow-hidden shadow`}
+        } border-void-2 overflow-hidden shadow @container/card`}
       >
         <div className="h-2 bg-gradient-to-r from-[#7b68ee] to-[#9370db]"></div>
         <div className="h-[1px]  bg-gradient-to-r from-gold-1/50 via-gold-1 to-gold-1/50"></div>
 
         <CardHeader className="pb-6">
           <CardTitle className="text-md font-medium flex justify-between">
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-col items-start @md/card:flex-row @md/card:items-center  gap-2 ">
               <BannerVersion version={id} />
               <p className=" text-white/80 uppercase font-bold text-xs">
                 {displayStartDate} - {displayEndDate}
@@ -141,7 +141,7 @@ const BannerCard = observer(
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-2 md:px-6">
           {bannerConfiguration.banner.characters.map((characterId) => {
             const character = API_CHARACTERS[characterId];
             if (!character) return null;

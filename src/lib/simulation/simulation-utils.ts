@@ -65,7 +65,7 @@ const bannerResultToOutcome = (
   const characterResults = Object.values(bannerResult.characterResults);
 
   // Initialize result and constellation arrays
-  const result: [ResultType, ResultType] = ["-", "-"];
+  const result: [ResultType, ResultType] = ["Skipped", "Skipped"];
   const constellation: [number, number] = [0, 0];
 
   // Process each character result (up to 2)
@@ -73,7 +73,7 @@ const bannerResultToOutcome = (
     const charResult = characterResults[i];
 
     if (!charResult.hasWishesAllocated) {
-      result[i] = "-";
+      result[i] = "Skipped";
     } else if (charResult.obtained) {
       if (charResult.lostFiftyFifty) {
         result[i] = "Standard 5*";
@@ -106,7 +106,7 @@ export const simulationResultsToScenario = (
   allBanners.forEach((banner) => {
     outcomes[banner.id] = {
       banner: banner.id,
-      result: ["-", "-"],
+      result: ["Skipped", "Skipped"],
       constellation: [0, 0],
     };
   });

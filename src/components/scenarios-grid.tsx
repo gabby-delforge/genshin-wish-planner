@@ -3,7 +3,7 @@ import { ApiBanner, Scenario, ScenarioResult } from "@/lib/types";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { BannerVersion } from "./banner/banner-version";
-import ScenarioCell from "./scenario-cell";
+import { ScenarioCell } from "./scenario-cell";
 import { ProgressBar } from "./ui/progress-bar";
 
 const GridSection = observer(
@@ -24,19 +24,19 @@ const GridSection = observer(
         <div
           className={`grid grid-cols-${
             banners.length + 1
-          } gap-x-6 gap-y-2 justify-center`}
+          } gap-4 px-2 justify-center`}
         >
           <>
             {banners.map((banner) => (
               <BannerVersion version={banner.version} key={banner.version} />
             ))}
-            <div className="col-span-5" />
+            <div className="w-full" />
           </>
         </div>
         <div
           className={`grid grid-cols-${
             banners.length + 1
-          } gap-x-6 gap-y-1 p-2 rounded-xl ${className}`}
+          } gap-4 p-2 ${className}`}
         >
           {scenarios.map((scenario, scenarioIndex) => (
             <>
@@ -89,7 +89,7 @@ const ScenariosGrid = observer(
     return (
       <div className="flex flex-col gap-2">
         <GridSection
-          className="bg-amber-200/30 border border-amber-100"
+          className="bg-gradient-to-r from-white/5 via-white/10 to-white/5"
           scenarios={mostLikelyScenario}
           label={"Most likely scenario"}
           banners={banners}
