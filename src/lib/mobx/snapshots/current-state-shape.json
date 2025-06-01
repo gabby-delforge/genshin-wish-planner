@@ -12,9 +12,10 @@
     "playgroundSimulationResults",
     "optimizerSimulationResults",
     "bannerConfiguration",
-    "version"
+    "version",
+    "testProperty"
   ],
-  "timestamp": "2025-06-01T14:48:08.617Z",
+  "timestamp": "2025-06-01T14:49:04.687Z",
   "schema": {
     "accountStatusCurrentPity": "number",
     "accountStatusIsNextFiftyFiftyGuaranteed": "boolean",
@@ -27,6 +28,7 @@
     "playgroundSimulationResults": "null",
     "optimizerSimulationResults": "null",
     "bannerConfiguration": "object",
-    "version": "number"
+    "version": "number",
+    "testProperty": "string"
   }
 }
