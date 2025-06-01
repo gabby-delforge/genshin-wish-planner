@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   title: "Wish Simulator | Irminsul.io",
 };
 
+if (process.env.NODE_ENV === "production") {
+  console.log = () => {};
+  console.debug = () => {};
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{

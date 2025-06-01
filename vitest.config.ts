@@ -12,6 +12,16 @@ const dirname =
 export default defineConfig({
   test: {
     workspace: [
+      // Unit tests workspace
+      {
+        test: {
+          name: 'unit',
+          include: ['src/**/*.{test,spec}.{js,ts,tsx}'],
+          environment: 'node',
+          globals: true,
+        },
+      },
+      // Storybook tests workspace
       {
         extends: true,
         plugins: [
@@ -22,11 +32,11 @@ export default defineConfig({
         test: {
           name: 'storybook',
           browser: {
-        enabled: true,
-        headless: true,
-        name: 'chromium',
-        provider: 'playwright'
-      },
+            enabled: true,
+            headless: true,
+            name: 'chromium',
+            provider: 'playwright'
+          },
           setupFiles: ['.storybook/vitest.setup.ts'],
         },
       },

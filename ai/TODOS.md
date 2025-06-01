@@ -4,11 +4,12 @@
 
 **Must fix before any deployment**
 
+- [ ] **Fix hydration errors:**
+  - `src/components/resource.tsx:40-18` - `{number && <div>{number}</div>}` rendered on client/server and not the other
+  - `src/app/panels/configuration/wish-resources.tsx:64` - Number of total wishes is different on client and server
 
 - [ ] **Add comprehensive state validation**
-
-  - `src/lib/mobx/make-local-storage.ts:24-29`
-  - Validate pity (0-89), constellation (0-6), resources (non-negative)
+  - `src/lib/mobx/make-local-storage.ts` - Validate pity (0-89), constellation (0-6), resources (non-negative)
 
 - [ ] **Fix error boundary coverage**
   - `src/app/error-boundary.tsx`, `src/components/safe-error-wrapper.tsx`
@@ -18,8 +19,10 @@
 
 ### State Management
 
+- [ ] **Add localStorage cleanup test**
+  - Verify old keys are removed after migration to prevent quota issues
+
 - [ ] **Implement state backup/restore functionality**
-- [ ] **Setup automated migration tests**
 
 ### Mobile Responsiveness → [Details](./mobile-responsiveness.md)
 
@@ -76,12 +79,16 @@
 - [x] **CRITICAL: Change CLEAR_DATA from true to false** (Fixed data loss issue)
   - `src/lib/mobx/make-local-storage.ts:3`
 - [x] **Add state schema versioning system** → [Details](./state-migration-system.md)
-  - `src/lib/mobx/genshin-state.ts` - Added STATE_VERSION constant
-  - `src/lib/mobx/migrations.ts` - Created migration infrastructure
-  - `src/lib/mobx/make-local-storage.ts` - Added callback support for migrations
+  - `src/lib/mobx/state-version.ts` - Automated STATE_VERSION management
+  - `src/lib/mobx/migrations.ts` - Complete migration infrastructure with tests
+  - `src/lib/mobx/make-local-storage.ts` - Generic callback support + localStorage cleanup
 - [x] **Add data migration system** → [Details](./state-migration-system.md)
-  - `scripts/state-schema-detector.js` - Automated schema change detection
+  - `scripts/state-schema-detector.js` - Fast schema detection with rename detection
   - `scripts/migration-generator.js` - Auto-generates migration stubs
-  - `scripts/setup-git-hooks.js` - Git pre-commit hook for schema validation
+  - `scripts/setup-git-hooks.js` - Git pre-commit hook with symlinks
+  - `package.json` - Added npm scripts: `state:check`, `state:version`, `state:hooks:install`
 - [x] **Add proper fallback states for corrupted data**
-  - Enhanced `make-local-storage.ts` with better error handling and validation callbacks
+  - Enhanced `make-local-storage.ts` with error handling and localStorage cleanup
+- [x] **Setup automated migration tests**
+  - `src/lib/mobx/__tests__/migrations.test.ts` - Comprehensive test suite using real snapshots
+  - `src/lib/mobx/snapshots/v1.json`, `v2.json` - Real state data snapshots for testing

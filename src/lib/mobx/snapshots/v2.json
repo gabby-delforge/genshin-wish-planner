@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "characterPity": 0,
+  "weaponPity": 0,
+  "accountStatusIsNextFiftyFiftyGuaranteed": false,
+  "accountStatusOwnedWishResources": {
+    "primogem": 40,
+    "starglitter": 78,
+    "limitedWishes": 78,
+    "stardust": 0,
+    "genesisCrystal": 0,
+    "standardWish": 0
+  },
+  "accountStatusPrimogemSources": {
+    "gameUpdateCompensation": true,
+    "dailyCommissions": true,
+    "paimonBargain": true,
+    "abyss": true,
+    "imaginarium": true,
+    "battlePass": true,
+    "battlePassGnostic": true,
+    "welkinMoon": true,
+    "archonQuest": true,
+    "storyQuests": true,
+    "newAchievements": true,
+    "characterTestRuns": true,
+    "eventActivities": true,
+    "hoyolabDailyCheckIn": true,
+    "hoyolabWebEvents": true,
+    "livestreamCodes": true,
+    "newVersionCode": true,
+    "limitedExplorationRewards": true
+  },
+  "accountStatusExcludeCurrentBannerPrimogemSources": true,
+  "banners": [
+    {
+      "id": "5.6v2",
+      "version": "5.6v2",
+      "name": "5.6 Phase 2",
+      "startDate": "2025-05-27",
+      "endDate": "2025-06-17",
+      "characters": ["kinich", "raiden-shogun"],
+      "weapons": ["fang-of-the-mountain-king", "engulfing-lightning"]
+    },
+    {
+      "id": "5.7v1",
+      "version": "5.7v1",
+      "name": "5.7 Phase 1",
+      "startDate": "2025-06-18",
+      "endDate": "2025-07-09",
+      "characters": ["skirk", "emilie"],
+      "weapons": ["azurelight", "lumidouce-elegy"]
+    },
+    {
+      "id": "5.7v2",
+      "version": "5.7v2",
+      "name": "5.7 Phase 2",
+      "startDate": "2025-07-09",
+      "endDate": "2025-07-30",
+      "characters": ["mavuika", "shenhe"],
+      "weapons": ["a-thousand-blazing-suns", "calamity-queller"]
+    }
+  ],
+  "simulationCount": 10000,
+  "mode": "playground",
+  "playgroundSimulationResults": null,
+  "optimizerSimulationResults": null,
+  "bannerConfiguration": {}
+}

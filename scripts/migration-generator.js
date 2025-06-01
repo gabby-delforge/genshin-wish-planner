@@ -23,6 +23,11 @@ function generateVersionSnapshot(version, snapshot) {
   const filePath = path.join(SNAPSHOTS_DIR, fileName);
   
   try {
+    // Ensure snapshots directory exists
+    if (!fs.existsSync(SNAPSHOTS_DIR)) {
+      fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
+    }
+    
     fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2));
     console.log(`✅ Generated snapshot: ${fileName}`);
     return true;
