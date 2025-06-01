@@ -1,5 +1,6 @@
 import { LimitedWish, Primogem } from "@/components/resource";
 import { CheckboxWithLabel } from "@/components/ui/checkbox-with-label";
+import { InfoIcon } from "@/components/ui/info-icon";
 import { Label } from "@/components/ui/label";
 import { PRIMOGEM_SOURCE_VALUES } from "@/lib/data";
 import {
@@ -8,13 +9,10 @@ import {
   PrimogemSourceValue,
 } from "@/lib/types";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Helper function to get the primogem value from a source
 const getPrimogemValue = (sourceValue: PrimogemSourceValue): number => {
-  if (!sourceValue) {
-    debugger;
-  }
   if (Array.isArray(sourceValue)) {
     return sourceValue.reduce((total, resource) => {
       if (resource.type === "primogem") {
@@ -61,7 +59,6 @@ const PRIMOGEM_SOURCE_CATEGORIES = {
     "livestreamCodes",
     "newVersionCode",
     "limitedExplorationRewards",
-    "thankYouGift",
     "battlePass",
   ] as PrimogemSourceKey[],
   paid: ["battlePassGnostic", "welkinMoon"] as PrimogemSourceKey[],
@@ -87,8 +84,8 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   livestreamCodes: "Livestream Codes",
   newVersionCode: "New Version Code",
   limitedExplorationRewards: "Limited Exploration Rewards",
-  thankYouGift: "Thank You Gift",
 };
+
 type EstimatedFutureWishesProps = {
   estimatedNewWishesPerBanner: [number, number];
   primogemSources: PrimogemSourcesEnabled;
@@ -106,9 +103,22 @@ export const EstimatedFutureWishes = observer(
     estimatedNewWishesPerBanner,
     primogemSources,
     handlePrimogemSourceChange,
-    excludeCurrentBannerPrimogems,
-    handleExcludeCurrentBannerPrimogemSourcesChange,
   }: EstimatedFutureWishesProps) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerWidth, setContainerWidth] = useState<number>();
+
+    useEffect(() => {
+      const updateWidth = () => {
+        if (containerRef.current) {
+          setContainerWidth(containerRef.current.clientWidth);
+        }
+      };
+
+      updateWidth();
+      window.addEventListener("resize", updateWidth);
+      return () => window.removeEventListener("resize", updateWidth);
+    }, []);
+
     // Calculate totals for each category
     const categoryTotals = useMemo(() => {
       const freeToPlayTotal = PRIMOGEM_SOURCE_CATEGORIES.freeToPlay.reduce(
@@ -178,7 +188,7 @@ export const EstimatedFutureWishes = observer(
                       <>
                         <span>{SOURCE_DISPLAY_NAMES[sourceKey]}</span>
 
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground flex items-center gap-1">
                           {primoValue > 0 && <Primogem number={primoValue} />}
                           {wishValue > 0 && <LimitedWish number={wishValue} />}
                           {(sourceKey === "abyss" ||
@@ -236,12 +246,38 @@ export const EstimatedFutureWishes = observer(
           </div>
         </div>
 
-        <div className="bg-void-1 rounded-md p-3 border border-void-2 mt-4">
+        <div
+          ref={containerRef}
+          className="bg-void-1 rounded-md p-3 border border-void-2 mt-4"
+        >
           <div className="text-sm flex gap-1 items-center justify-center font-medium text-gold-1">
             <LimitedWish number={estimatedNewWishesPerBanner[0]} />
             -
             <LimitedWish number={estimatedNewWishesPerBanner[1]} />
             gained each banner
+            <InfoIcon
+              content={
+                <div className="flex flex-col gap-2">
+                  <div>
+                    The amount earned per banner depends on the number of abyss
+                    and imaginarium seasons that occur during the banner period.
+                  </div>
+                  <div className="flex flex-row items-center self-center gap-1">
+                    <div>2 abyss and 2 imaginarium =</div>
+                    <Primogem number={2400} />
+                    <div>=</div>
+                    <LimitedWish number={15} />
+                  </div>
+                  <div className="flex flex-row items-center self-center gap-1">
+                    <div>1 abyss and 1 imaginarium =</div>
+                    <Primogem number={800} />
+                    <div>=</div>
+                    <LimitedWish number={5} />
+                  </div>
+                </div>
+              }
+              contentMaxWidth={containerWidth ? containerWidth + 36 : undefined}
+            />
           </div>
         </div>
       </div>

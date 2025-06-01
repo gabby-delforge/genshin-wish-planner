@@ -1,4 +1,4 @@
-import CharacterIcon from "@/lib/components/CharacterIcon";
+import CharacterIcon from "@/lib/components/character-icon";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import {
   ApiCharacter,
@@ -9,6 +9,7 @@ import {
 } from "@/lib/types";
 import { observer } from "mobx-react-lite";
 import { LimitedWish } from "../resource";
+import { InfoIcon } from "../ui/info-icon";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -48,16 +49,28 @@ export const CharacterRow = observer(
       >
         <div className="absolute inset-1 border-[1px] border-white/50 rounded pointer-events-none"></div>
         <div className="flex items-center gap-4">
-          <CharacterIcon id={characterId} className="shrink-0" />
-          <div>
-            <p className={`text-sm font-genshin text-gold-1`}>
-              {character.Name}
-            </p>
-          </div>
+          <CharacterIcon id={characterId} showName className="shrink-0" />
         </div>
 
         <div className="flex flex-col mr-3 items-end">
-          <div className="text-xs text-white text-right mr-4">Pull until</div>
+          <div className="flex flex-row items-center gap-1 text-xs text-white text-right ">
+            Pull until
+            <InfoIcon
+              content={
+                <div className="flex flex-col gap-2">
+                  <div>
+                    Tells the simulator to stop pulling once this constellation
+                    is reached, even if you have enough wishes to continue.
+                  </div>
+                  <div>
+                    {`Assumes you don't have the character yet. If you have C0 and want C2, put C1 (which equals two copies).`}
+                  </div>
+                </div>
+              }
+              contentMaxWidth={400}
+              className="text-white/50"
+            />
+          </div>
           <Input
             isLoading={isLoading}
             id={`constellation-${character.Id}`}

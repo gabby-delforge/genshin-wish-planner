@@ -73,7 +73,7 @@ export const SimulationPanel = observer(
             </CardTitle>
             <Separator className="bg-void-2/50 mb-2" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 md:px-6">
             <div className="@container/sim">
               <SimulationResults />
             </div>

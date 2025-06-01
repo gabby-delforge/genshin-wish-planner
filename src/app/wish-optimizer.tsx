@@ -2,16 +2,23 @@
 
 import ConfigurationPanel from "@/app/panels/configuration/configuration-panel";
 import { genshinState } from "@/lib/mobx/genshin-state";
+import { Sparkles } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { SimulationPanel } from "./panels/simulation/simulation-panel";
 
 const WishOptimizer = observer(() => {
   return (
     <div className="container mx-auto py-8 px-4 max-w-8xl">
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center mb-12 mt-4">
         <div className="relative">
-          <h1 className="h0 text-center text-transparent bg-clip-text bg-gradient-to-r from-gold-1 to-yellow-1">
-            Genshin Impact Wish Planner
+          <h1 className="h1 text-center flex flex-row items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-gold-1 to-yellow-1">
+            <Sparkles className="text-gold-1" width={32} height={32} />
+            <div>Wish Simulator</div>
+            <Sparkles
+              className="text-yellow-1 -ml-1 -scale-x-100"
+              width={32}
+              height={32}
+            />
           </h1>
           <div className="absolute -bottom-2 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-1 to-transparent"></div>
         </div>

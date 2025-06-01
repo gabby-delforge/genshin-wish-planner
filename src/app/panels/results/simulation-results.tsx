@@ -1,5 +1,5 @@
-import ScenariosGrid from "@/components/scenarios-grid";
-import { SimulationResultsGrid } from "@/components/simulation-results-grid";
+import ScenariosGrid from "@/components/simulation-results/scenarios-grid";
+import { SimulationResultsGrid } from "@/components/simulation-results/simulation-results-grid";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import { observer } from "mobx-react-lite";
@@ -56,7 +56,6 @@ export const SimulationResults = observer(() => {
 
         <TabsContent value="success-rates" className="mt-0">
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Success Rates by Character</h3>
             <SimulationResultsGrid
               simulationResults={playgroundSimulationResults}
             />
@@ -64,9 +63,9 @@ export const SimulationResults = observer(() => {
         </TabsContent>
 
         <TabsContent value="common-scenarios" className="mt-0">
-          {playgroundSimulationResults?.topScenarios && (
+          {playgroundSimulationResults?.scenarios && (
             <ScenariosGrid
-              scenarioResults={playgroundSimulationResults?.topScenarios}
+              scenarios={playgroundSimulationResults.scenarios.scenarios}
               banners={banners}
             />
           )}

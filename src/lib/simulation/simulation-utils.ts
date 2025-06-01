@@ -3,7 +3,7 @@ import {
   BannerId,
   BannerSimulationResult,
   ResultType,
-  Scenario,
+  ScenarioOld,
   ScenarioOutcome,
 } from "../types";
 
@@ -54,8 +54,7 @@ export const calculateAvailableWishesForBanner = (
   // Subtract spent wishes
   availableWishes -= wishesAllocated;
 
-  // Never return a negative value
-  return Math.max(0, availableWishes);
+  return availableWishes;
 };
 
 const bannerResultToOutcome = (
@@ -98,7 +97,7 @@ export const simulationResultsToScenario = (
   bannerResults: Record<BannerId, BannerSimulationResult>,
   probability: number,
   allBanners: ApiBanner[]
-): Scenario => {
+): ScenarioOld => {
   // Create outcomes for all banners, including those not in the simulation results
   const outcomes: Record<BannerId, ScenarioOutcome> = {};
 

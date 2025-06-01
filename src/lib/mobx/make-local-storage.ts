@@ -40,7 +40,6 @@ export function makeLocalStorage<T extends object, K extends keyof T>(
   autorun(() => {
     for (const key of keys) {
       const localKey = `${prefix}_${String(key)}`;
-
       try {
         localStorage.setItem(localKey, JSON.stringify(toJS(obj[key])));
       } catch (error) {

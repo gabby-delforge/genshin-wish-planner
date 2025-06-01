@@ -1,6 +1,5 @@
 "use client";
 import BannerCard from "@/components/banner/banner-card";
-import { ProgressBar } from "@/components/ui/progress-bar";
 import { GenshinState } from "@/lib/mobx/genshin-state";
 import { ApiBanner } from "@/lib/types";
 import { isCurrentBanner, isPastDate } from "@/lib/utils";
@@ -17,12 +16,21 @@ export const SimulationPanelContent = observer(
         return "Character Priorities";
       }
     }, [genshinState.mode]);
+
+    const descriptionText = useMemo(() => {
+      if (genshinState.mode === "playground") {
+        return "Assign your available wishes to banners and run the simulation to see your chances of getting each character.";
+      } else {
+        return "Character Priorities";
+      }
+    }, [genshinState.mode]);
     return (
       <div className="space-y-6">
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-gold-1">{headerText}</h3>
+          <div className="text-sm text-white/80">{descriptionText}</div>
 
-          <div className="grid grid-cols-1  @4xl/sim:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 @4xl/sim:grid-cols-2 gap-4">
             {genshinState.banners.map((banner: ApiBanner) => (
               <BannerCard
                 key={banner.id}
@@ -42,7 +50,6 @@ export const SimulationPanelContent = observer(
           </div>
         </div>
         <RunSimulationButton className="w-full" />
-        <ProgressBar percent={genshinState.simulationProgress} />
       </div>
     );
   }

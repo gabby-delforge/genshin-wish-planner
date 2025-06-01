@@ -1,9 +1,9 @@
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
-import { Label } from "@radix-ui/react-label";
 import { Loader2 } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 
 type RunSimulationButtonProps = {
   showSimulationCountInput?: boolean;
@@ -13,7 +13,7 @@ type RunSimulationButtonProps = {
 
 const RunSimulationButton = observer(
   ({
-    showSimulationCountInput = true,
+    showSimulationCountInput = false,
     customText,
     className,
   }: RunSimulationButtonProps) => {

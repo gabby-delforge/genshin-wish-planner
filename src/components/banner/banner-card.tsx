@@ -13,7 +13,7 @@ import {
   WeaponId,
   type BannerId,
 } from "@/lib/types";
-import { toFriendlyDate } from "@/lib/utils";
+import { cn, toFriendlyDate } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { LimitedWish } from "../resource";
@@ -77,17 +77,22 @@ const BannerCard = observer(
         <TooltipProvider>
           <Tooltip delayDuration={300}>
             <TooltipTrigger>
-              <div className="flex items-center gap-1 text-sm text-white ">
+              <div
+                className={cn(
+                  "flex items-center gap-1 text-sm",
+                  totalWishes < 0 ? "text-red-300" : "text-white"
+                )}
+              >
                 <LimitedWish number={totalWishes} />
                 available
               </div>
             </TooltipTrigger>
             <TooltipContent className="flex gap-1 items-center">
               <LimitedWish number={leftover} />
-              <div>leftover</div>
+              <div>{isCurrentBanner ? "owned" : "leftover"}</div>
               {gainedWishes > 0 && (
                 <>
-                  <div>+</div>
+                  <div className="text-black/50">+</div>
                   <LimitedWish number={gainedWishes} />
                   <div>earned</div>
                 </>
@@ -95,7 +100,7 @@ const BannerCard = observer(
 
               {spentWishes > 0 && (
                 <>
-                  <div>-</div>
+                  <div className="text-black/50">-</div>
                   <LimitedWish number={spentWishes} />
                   <div>spent</div>
                 </>
@@ -132,16 +137,13 @@ const BannerCard = observer(
               <p className=" text-white/80 uppercase font-bold text-xs">
                 {displayStartDate} - {displayEndDate}
               </p>
-              {isCurrentBanner && (
-                <div className="text-sm text-white/40">(Current banner)</div>
-              )}
             </div>
             <div className=" flex flex-row items-center text-sm text-white">
               {wishesAvailableLabel}
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-2 md:px-6">
+        <CardContent className="space-y-4 px-2 md:px-6 flex flex-col">
           {bannerConfiguration.banner.characters.map((characterId) => {
             const character = API_CHARACTERS[characterId];
             if (!character) return null;
@@ -198,6 +200,11 @@ const BannerCard = observer(
                 }
               />
             </>
+          )}
+          {isCurrentBanner && (
+            <div className="self-end text-xs italic text-white/40">
+              Current banner
+            </div>
           )}
         </CardContent>
       </Card>

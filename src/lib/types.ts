@@ -102,7 +102,6 @@ export const DEFAULT_PRIMOGEM_SOURCES_ENABLED: PrimogemSourcesEnabled = {
   livestreamCodes: true,
   newVersionCode: true,
   limitedExplorationRewards: true,
-  thankYouGift: true,
 };
 
 export const DEFAULT_PRIORITY = 4 as Priority;
@@ -156,7 +155,6 @@ export interface PrimogemSourceValues {
   livestreamCodes: PrimogemSourceValue;
   newVersionCode: PrimogemSourceValue;
   limitedExplorationRewards: PrimogemSourceValue;
-  thankYouGift: PrimogemSourceValue;
 }
 
 // TODO: Refactor priority so it's less annoying
@@ -188,7 +186,7 @@ export interface ScenarioOutcome {
 }
 
 // A possible scenario with probability
-export interface Scenario {
+export interface ScenarioOld {
   outcomes: Record<BannerId, ScenarioOutcome>;
   probability: number;
 }
@@ -219,14 +217,48 @@ export type BannerSimulationResult = {
 // The result for a single simulation run.
 export type SimulationResult = Record<BannerId, BannerSimulationResult>;
 
+// New scenario data structures
+export type CharacterOutcome = {
+  characterId: CharacterId;
+  obtained: boolean;
+  constellation: number;
+  wishesUsed: number;
+};
+
+export type WeaponOutcome = {
+  weaponId: WeaponId;
+  obtained: boolean;
+  wishesUsed: number;
+};
+
+export type BannerOutcome = {
+  bannerId: BannerId;
+  characterOutcomes: CharacterOutcome[];
+  weaponOutcomes: WeaponOutcome[];
+  totalWishesUsed: number;
+};
+
+export type Scenario = {
+  id: string; // Unique identifier for this scenario pattern
+  bannerOutcomes: BannerOutcome[];
+  probability: number;
+  count: number; // How many simulation runs resulted in this scenario
+};
+
+export type ScenarioResults = {
+  scenarios: Scenario[];
+  totalSimulations: number;
+};
+
 // Complete simulation results
 export interface SimulationResults {
   // Full detailed results by banner version
   bannerResults: Record<BannerId, BannerSimulationResult[]>;
-  // Success rates for each character that was wished forin each banner
+  // Success rates for each character that was wished for in each banner
   characterSuccessRates: CharacterSuccessRate[];
   // Common scenario patterns
   topScenarios: ScenarioResult[];
+  scenarios: ScenarioResults; // New simplified structure
 }
 
 export type WishForCharacterResult = {

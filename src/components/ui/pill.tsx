@@ -7,7 +7,7 @@ type PillProps = {
 export const Pill = observer(({ text, color }: PillProps) => {
   return (
     <div
-      className={`text-xs font-bold rounded-full text-white bg-white/30 px-3 py-[1px] flex justify-center items-center ${
+      className={`text-xxs font-bold rounded-full text-white bg-white/30 px-1.5 py-[1px] flex justify-center items-center ${
         color ? color : ""
       }`}
     >

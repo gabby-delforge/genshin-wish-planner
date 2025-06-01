@@ -97,7 +97,6 @@ export class GenshinState {
       livestreamCodes: true,
       newVersionCode: true,
       limitedExplorationRewards: true,
-      thankYouGift: true,
     };
     this.accountStatusExcludeCurrentBannerPrimogemSources = true;
     this.banners = initialBanners;
@@ -139,9 +138,6 @@ export class GenshinState {
   }
 
   setAccountStatusOwnedWishResources(name: ResourceType, amount: number) {
-    if (!this.accountStatusOwnedWishResources) {
-      debugger;
-    }
     this.accountStatusOwnedWishResources[name] = amount;
   }
   setAccountStatusPrimogemSources(source: PrimogemSourceKey, checked: boolean) {
@@ -353,6 +349,12 @@ export class GenshinState {
     return bannerMap;
   }
 
+  /**
+   * Calculates estimated new wishes available for each banner based on enabled primogem sources.
+   * For recurring sources (abyss, imaginarium), only counts rewards from seasons that BEGIN during
+   * the banner period to avoid double-counting rewards from seasons that started in previous banners.
+   * Returns a map of banner ID to total estimated wishes (primogems converted at 160:1 ratio + limited wishes).
+   */
   get estimatedNewWishesMap(): Record<string, number> {
     const bannerMap: Record<string, number> = {};
     for (const banner of this.banners) {
@@ -373,14 +375,15 @@ export class GenshinState {
             const bannerStart = new Date(banner.startDate);
             const bannerEnd = new Date(banner.endDate);
 
-            // Find the first abyss season that starts during or after the banner
+            // Find abyss seasons that BEGIN during this banner period
             let currentAbyssStart = new Date(
               bannerStart.getFullYear(),
               bannerStart.getMonth(),
               16
             );
+
+            // If the 16th of this month is before banner start, move to next month
             if (currentAbyssStart < bannerStart) {
-              // If the 16th of this month is before banner start, move to next month
               currentAbyssStart = new Date(
                 bannerStart.getFullYear(),
                 bannerStart.getMonth() + 1,
@@ -389,7 +392,11 @@ export class GenshinState {
             }
 
             let abyssSeasons = 0;
-            while (currentAbyssStart <= bannerEnd) {
+            // Only count seasons that start during the banner period
+            while (
+              currentAbyssStart >= bannerStart &&
+              currentAbyssStart <= bannerEnd
+            ) {
               abyssSeasons++;
               // Move to next abyss season (16th of next month)
               currentAbyssStart = new Date(
@@ -421,14 +428,15 @@ export class GenshinState {
             const bannerStart = new Date(banner.startDate);
             const bannerEnd = new Date(banner.endDate);
 
-            // Find the first imaginarium season that starts during or after the banner
+            // Find imaginarium seasons that BEGIN during this banner period
             let currentImaginariumStart = new Date(
               bannerStart.getFullYear(),
               bannerStart.getMonth(),
               1
             );
+
+            // If the 1st of this month is before banner start, move to next month
             if (currentImaginariumStart < bannerStart) {
-              // If the 1st of this month is before banner start, move to next month
               currentImaginariumStart = new Date(
                 bannerStart.getFullYear(),
                 bannerStart.getMonth() + 1,
@@ -437,7 +445,11 @@ export class GenshinState {
             }
 
             let imaginariumSeasons = 0;
-            while (currentImaginariumStart <= bannerEnd) {
+            // Only count seasons that start during the banner period
+            while (
+              currentImaginariumStart >= bannerStart &&
+              currentImaginariumStart <= bannerEnd
+            ) {
               imaginariumSeasons++;
               // Move to next imaginarium season (1st of next month)
               currentImaginariumStart = new Date(

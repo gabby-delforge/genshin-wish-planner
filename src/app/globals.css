@@ -44,8 +44,10 @@ html {
 
   /* Other */
 
+  --text-xxs: 0.7rem;
+  --text-xs: 0.8rem;
   --text-sm: 0.9rem;
-  --text-md: 0.9rem;
+  --text-md: 0.95rem;
   --text-lg: 1rem;
   --text-xl: 1.1rem;
   --text-2xl: 1.2rem;
@@ -216,5 +218,9 @@ html {
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
   }
 }

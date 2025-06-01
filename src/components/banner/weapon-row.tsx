@@ -1,4 +1,4 @@
-import WeaponIcon from "@/lib/components/WeaponIcon";
+import WeaponIcon from "@/lib/components/weapon-icon";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import {
   ApiWeapon,

@@ -2,19 +2,46 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+type ExtendedCardProps = {
+  variant?: "default" | "light";
+};
+
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-xl border bg-card text-card-foreground shadow",
-      className
-    )}
-    {...props}
-  />
-));
+  React.HTMLAttributes<HTMLDivElement> & ExtendedCardProps
+>(({ className, variant = "default", children, ...props }, ref) => {
+  if (variant === "default")
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "rounded-xl border bg-card text-card-foreground shadow",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  if (variant === "light")
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "grid gap-2 items-center text-sm bg-void-3 p-3 relative",
+          className
+        )}
+        {...props}
+      >
+        <div
+          className={
+            "absolute inset-1 border-[1px] border-white/50 rounded pointer-events-none"
+          }
+        />
+        {children}
+      </div>
+    );
+});
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<

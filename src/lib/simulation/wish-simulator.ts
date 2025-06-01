@@ -1,12 +1,15 @@
 import {
   BannerConfiguration,
   BannerId,
+  BannerOutcome,
+  CharacterOutcome,
   CharacterSuccessRate,
   SimulationResult,
   SimulationResults,
   WeaponBannerConfig,
   WeaponBannerSimulationResult,
   WeaponId,
+  WeaponOutcome,
   WishForWeaponResult,
 } from "../types";
 import {
@@ -490,6 +493,65 @@ const scenarioToScenarioString = (
   }
   return s;
 };
+
+// New function to convert SimulationResult to BannerOutcome
+const simulationResultToBannerOutcomes = (
+  simulationResult: SimulationResult
+): BannerOutcome[] => {
+  return Object.values(simulationResult).map((bannerResult) => {
+    const characterOutcomes: CharacterOutcome[] =
+      bannerResult.characterResults.map((charResult) => ({
+        characterId: charResult.character,
+        obtained: charResult.obtained,
+        constellation: charResult.constellation,
+        wishesUsed: charResult.wishesUsed,
+      }));
+
+    const weaponOutcomes: WeaponOutcome[] = bannerResult.weaponResults.map(
+      (weaponResult) => ({
+        weaponId: weaponResult.weapon,
+        obtained: weaponResult.obtained,
+        wishesUsed: weaponResult.wishesUsed,
+      })
+    );
+
+    return {
+      bannerId: bannerResult.bannerId,
+      characterOutcomes,
+      weaponOutcomes,
+      totalWishesUsed: bannerResult.wishesUsed,
+    };
+  });
+};
+
+// New function to generate scenario ID from banner outcomes
+const generateScenarioId = (bannerOutcomes: BannerOutcome[]): string => {
+  return bannerOutcomes
+    .map((banner) => {
+      const charResults = banner.characterOutcomes
+        .map((char) => {
+          if (char.wishesUsed === 0) return "Skip";
+          return char.obtained
+            ? `${char.characterId}:C${char.constellation}`
+            : "Miss";
+        })
+        .join(",");
+
+      const weaponResults = banner.weaponOutcomes
+        .map((weapon) => {
+          if (weapon.wishesUsed === 0) return "Skip";
+          return weapon.obtained ? `${weapon.weaponId}:Y` : "Miss";
+        })
+        .join(",");
+
+      const allResults = [charResults, weaponResults]
+        .filter((r) => r)
+        .join("|");
+      return `[${banner.bannerId}]${allResults}`;
+    })
+    .join("");
+};
+
 export const finalizeResults = (
   allSimulationResults: SimulationResult[]
 ): SimulationResults => {
@@ -505,8 +567,25 @@ export const finalizeResults = (
     { count: number; simulationResult: SimulationResult }
   > = {};
 
+  // New scenario tracking
+  const newScenarios: Record<
+    string,
+    { count: number; bannerOutcomes: BannerOutcome[] }
+  > = {};
+
   for (let i = 0; i < numSimulations; i++) {
     const simulationResult = allSimulationResults[i];
+
+    // Convert to new banner outcomes structure
+    const bannerOutcomes = simulationResultToBannerOutcomes(simulationResult);
+    const scenarioId = generateScenarioId(bannerOutcomes);
+
+    if (!(scenarioId in newScenarios)) {
+      newScenarios[scenarioId] = { count: 0, bannerOutcomes };
+    }
+    newScenarios[scenarioId].count += 1;
+
+    // Existing logic for backwards compatibility
     for (const bannerId in simulationResult) {
       // Add to banner results
       const bannerVersion = bannerId;
@@ -562,7 +641,7 @@ export const finalizeResults = (
     }
   }
 
-  // Sort scenarios by count and return top 10
+  // Sort old scenarios by count and return top 10 (backwards compatibility)
   const sortedScenarios = Object.values(scenarios)
     .sort((a, b) => b.count - a.count)
     .map((s) => ({
@@ -571,10 +650,26 @@ export const finalizeResults = (
       percentage: s.count / numSimulations,
     }));
 
+  // Sort new scenarios by count and return top 10
+  const sortedNewScenarios = Object.entries(newScenarios)
+    .sort(([, a], [, b]) => b.count - a.count)
+    .slice(0, 10)
+    .map(([id, data]) => ({
+      id,
+      bannerOutcomes: data.bannerOutcomes,
+      probability: data.count / numSimulations,
+      count: data.count,
+    }));
+
   return {
-    bannerResults,
+    // bannerResults, TODO: This is commented out because it contains info about EVERY single run, so we can't save it to local storage.
+    bannerResults: {},
     characterSuccessRates,
     topScenarios: sortedScenarios.slice(0, 10),
+    scenarios: {
+      scenarios: sortedNewScenarios,
+      totalSimulations: numSimulations,
+    },
   };
 };
 

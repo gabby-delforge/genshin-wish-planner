@@ -16,28 +16,34 @@ export const GENSHIN_WEAPONS = Weapons.map((c) => c.Id);
 // --------------------------------------------------------------
 
 // API Character data
-export const API_CHARACTERS: Partial<Record<CharacterId, ApiCharacter>> =
+export const API_CHARACTERS: Record<CharacterId, ApiCharacter> =
   Characters.reduce((prev, curr) => {
     prev[curr.Id] = curr;
     return prev; //
-  }, {} as Partial<Record<CharacterId, ApiCharacter>>);
+  }, {} as Record<CharacterId, ApiCharacter>);
 
-export const API_WEAPONS: Partial<Record<string, ApiWeapon>> = Weapons.reduce(
+export const API_WEAPONS: Record<string, ApiWeapon> = Weapons.reduce(
   (prev, curr) => {
     prev[curr.Id] = curr;
     return prev;
   },
-  {} as Partial<Record<string, ApiWeapon>>
+  {} as Record<string, ApiWeapon>
 );
 
 // API Banner data
-export const API_BANNERS: ApiBanner[] = Banners;
+export const API_BANNERS: Record<string, ApiBanner> = Banners.reduce(
+  (prev, curr) => {
+    prev[curr.id] = curr;
+    return prev;
+  },
+  {} as Record<string, ApiBanner>
+);
 
 // Helper function to convert API data to application state
 // -------------------------------------------------------
 
 // Initial banners with application state for new users
-export const initialBanners: ApiBanner[] = API_BANNERS;
+export const initialBanners: ApiBanner[] = Object.values(API_BANNERS);
 
 export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   gameUpdateCompensation: { value: 600, type: "primogem" },
@@ -69,8 +75,4 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   livestreamCodes: { value: 300, type: "primogem" },
   newVersionCode: { value: 60, type: "primogem" },
   limitedExplorationRewards: { value: 400, type: "primogem" },
-  thankYouGift: [
-    { value: 10, type: "limitedWishes" },
-    { value: 1600, type: "primogem" },
-  ],
 };

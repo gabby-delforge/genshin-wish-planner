@@ -1,5 +1,6 @@
 "use client";
 
+import { InfoIcon } from "@/components/ui/info-icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Panel } from "@/components/ui/panel";
@@ -17,7 +18,7 @@ const ConfigurationPanel = observer(
     return (
       <Panel title="Configuration" icon={<Cog className="w-h4 h-h4" />}>
         <div className="space-y-4 @container/config">
-          <div className="grid grid-cols-2 @sm/config:grid-cols-[auto_1fr_auto_1fr] gap-2 items-center">
+          <div className="grid grid-cols-2 @lg/config:grid-cols-[auto_1fr_auto_1fr] gap-2 items-center">
             <Label htmlFor="currentPity" className="my-auto text-sm">
               Pity
             </Label>
@@ -46,9 +47,15 @@ const ConfigurationPanel = observer(
             />
             <Label
               htmlFor="isGuaranteed"
-              className="my-auto text-sm  @sm/config:ml-6"
+              className="flex flex-row gap-1 items-center my-auto text-sm @lg/config:ml-6"
             >
-              Last 50/50
+              <div>Last 50/50</div>
+              <InfoIcon
+                className="text-white/50"
+                content={
+                  "Whether you last got the featured 5 star character (won) or the standard 5 star character (lost)."
+                }
+              />
             </Label>
             <ToggleGroup.Root
               type="single"
