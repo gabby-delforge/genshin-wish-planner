@@ -30,7 +30,7 @@ const ConfigurationPanel = observer(
               type="number"
               min="0"
               max="89"
-              value={genshinState.accountStatusCurrentPity}
+              value={genshinState.characterPity}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 genshinState.setAccountStatusCurrentPity(
                   parseInt(e.target.value) || 0

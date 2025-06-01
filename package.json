@@ -8,7 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "state:check": "node scripts/state-schema-detector.js check",
+    "state:update": "node scripts/state-schema-detector.js update",
+    "state:version": "node scripts/increment-state-version.js get",
+    "state:version:increment": "node scripts/increment-state-version.js increment",
+    "state:hooks:install": "node scripts/setup-git-hooks.js install",
+    "state:hooks:remove": "node scripts/setup-git-hooks.js remove"
   },
   "dependencies": {
     "@datastructures-js/priority-queue": "^6.3.3",

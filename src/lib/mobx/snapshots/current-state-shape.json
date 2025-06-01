@@ -1,7 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "keys": [
-    "accountStatusCurrentPity",
+    "characterPity",
+    "weaponPity",
     "accountStatusIsNextFiftyFiftyGuaranteed",
     "accountStatusOwnedWishResources",
     "accountStatusPrimogemSources",
@@ -12,12 +13,11 @@
     "playgroundSimulationResults",
     "optimizerSimulationResults",
     "bannerConfiguration",
-    "version",
-    "testProperty"
+    "version"
   ],
-  "timestamp": "2025-06-01T14:49:04.687Z",
   "schema": {
-    "accountStatusCurrentPity": "number",
+    "characterPity": "number",
+    "weaponPity": "number",
     "accountStatusIsNextFiftyFiftyGuaranteed": "boolean",
     "accountStatusOwnedWishResources": "object",
     "accountStatusPrimogemSources": "object",
@@ -28,7 +28,6 @@
     "playgroundSimulationResults": "null",
     "optimizerSimulationResults": "null",
     "bannerConfiguration": "object",
-    "version": "number",
-    "testProperty": "string"
+    "version": "number"
   }
 }

@@ -11,25 +11,7 @@ const path = require("path");
 
 const HOOKS_DIR = path.join(__dirname, "..", ".git", "hooks");
 const PRE_COMMIT_HOOK = path.join(HOOKS_DIR, "pre-commit");
-
-const preCommitScript = `#!/bin/sh
-
-# State schema detection pre-commit hook
-
-# Run the state schema detector
-node scripts/state-schema-detector.js check
-
-# If the script exits with non-zero code, block the commit
-if [ $? -ne 0 ]; then
-  echo "❌ Commit blocked due to state schema issues"
-  echo "   Please review the changes and increment STATE_VERSION if needed"
-  echo "   Run: node scripts/increment-state-version.js increment"
-  echo "   Then: node scripts/migration-generator.js generate <oldVersion> <newVersion> '<changesJson>'"
-  exit 1
-fi
-
-echo "✅ State schema check passed"
-`;
+const PRE_COMMIT_SCRIPT = path.join(__dirname, "pre-commit-hook.sh");
 
 function setupPreCommitHook() {
   try {
@@ -40,30 +22,37 @@ function setupPreCommitHook() {
       return false;
     }
 
+    if (!fs.existsSync(PRE_COMMIT_SCRIPT)) {
+      console.error(
+        "❌ Pre-commit script not found at:", PRE_COMMIT_SCRIPT
+      );
+      return false;
+    }
+
     // Check if pre-commit hook already exists
     if (fs.existsSync(PRE_COMMIT_HOOK)) {
-      const existing = fs.readFileSync(PRE_COMMIT_HOOK, "utf8");
-      if (existing.includes("state-schema-detector.js")) {
-        console.log(
-          "✅ Pre-commit hook already contains state schema detection"
-        );
-        return true;
+      // Check if it's already our symlink
+      try {
+        const linkTarget = fs.readlinkSync(PRE_COMMIT_HOOK);
+        if (linkTarget === PRE_COMMIT_SCRIPT || path.resolve(path.dirname(PRE_COMMIT_HOOK), linkTarget) === PRE_COMMIT_SCRIPT) {
+          console.log("✅ Pre-commit hook symlink already exists");
+          return true;
+        }
+      } catch (e) {
+        // Not a symlink, it's a regular file
       }
 
       console.log("⚠️  Pre-commit hook already exists. Backing up...");
-      fs.writeFileSync(PRE_COMMIT_HOOK + ".backup", existing);
+      fs.writeFileSync(PRE_COMMIT_HOOK + ".backup", fs.readFileSync(PRE_COMMIT_HOOK));
+      fs.unlinkSync(PRE_COMMIT_HOOK);
     }
 
-    // Write the new pre-commit hook
-    fs.writeFileSync(PRE_COMMIT_HOOK, preCommitScript);
+    // Create symlink to our hook script
+    fs.symlinkSync(PRE_COMMIT_SCRIPT, PRE_COMMIT_HOOK);
 
-    // Make it executable
-    fs.chmodSync(PRE_COMMIT_HOOK, "755");
-
-    console.log("✅ Pre-commit hook installed successfully");
-    console.log(
-      "   State schema changes will now be automatically detected on commit"
-    );
+    console.log("✅ Pre-commit hook symlink created successfully");
+    console.log("   State schema changes will now be automatically detected on commit");
+    console.log(`   Hook points to: ${PRE_COMMIT_SCRIPT}`);
 
     return true;
   } catch (error) {
@@ -75,21 +64,25 @@ function setupPreCommitHook() {
 function removePreCommitHook() {
   try {
     if (fs.existsSync(PRE_COMMIT_HOOK)) {
-      const existing = fs.readFileSync(PRE_COMMIT_HOOK, "utf8");
-      if (existing.includes("state-schema-detector.js")) {
-        fs.unlinkSync(PRE_COMMIT_HOOK);
-        console.log("✅ State schema pre-commit hook removed");
+      // Check if it's our symlink
+      try {
+        const linkTarget = fs.readlinkSync(PRE_COMMIT_HOOK);
+        if (linkTarget === PRE_COMMIT_SCRIPT || path.resolve(path.dirname(PRE_COMMIT_HOOK), linkTarget) === PRE_COMMIT_SCRIPT) {
+          fs.unlinkSync(PRE_COMMIT_HOOK);
+          console.log("✅ State schema pre-commit hook symlink removed");
 
-        // Restore backup if it exists
-        const backup = PRE_COMMIT_HOOK + ".backup";
-        if (fs.existsSync(backup)) {
-          fs.renameSync(backup, PRE_COMMIT_HOOK);
-          console.log("✅ Original pre-commit hook restored from backup");
+          // Restore backup if it exists
+          const backup = PRE_COMMIT_HOOK + ".backup";
+          if (fs.existsSync(backup)) {
+            fs.renameSync(backup, PRE_COMMIT_HOOK);
+            console.log("✅ Original pre-commit hook restored from backup");
+          }
+        } else {
+          console.log("ℹ️  Pre-commit hook exists but is not our symlink");
         }
-      } else {
-        console.log(
-          "ℹ️  Pre-commit hook exists but doesn't contain state schema detection"
-        );
+      } catch (e) {
+        // Not a symlink
+        console.log("ℹ️  Pre-commit hook exists but is not our symlink");
       }
     } else {
       console.log("ℹ️  No pre-commit hook found to remove");

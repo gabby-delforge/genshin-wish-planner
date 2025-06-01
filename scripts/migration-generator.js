@@ -34,21 +34,22 @@ function generateVersionSnapshot(version, snapshot) {
 
 function generateMigrationStub(fromVersion, toVersion, changes) {
   const migrationTemplate = `
-// Auto-generated migration from v${fromVersion} to v${toVersion}
-// Generated on: ${new Date().toISOString()}
-${fromVersion}: (state: any) => {
-  // TODO: Implement migration from v${fromVersion} to v${toVersion}
-  // Changes detected:
-${changes.added.map(key => `  // + ${key}: (new field)`).join('\n')}
-${changes.removed.map(key => `  // - ${key}: (removed field)`).join('\n')}
-${changes.typeChanged.map(({key, oldType, newType}) => `  // ~ ${key}: ${oldType} → ${newType}`).join('\n')}
-  
-  return {
-    ...state,
-    version: ${toVersion},
-    // Add your migration logic here
-  };
-},`;
+  // Migration from v${fromVersion} to v${toVersion}
+  // Generated on: ${new Date().toISOString()}
+  ${fromVersion}: (state) => {
+    // TODO: Implement migration from v${fromVersion} to v${toVersion}
+    // Changes detected:
+${changes.added.map(key => `    // + ${key}: (new field)`).join('\n')}
+${changes.removed.map(key => `    // - ${key}: (removed field)`).join('\n')}
+${changes.typeChanged.map(({key, oldType, newType}) => `    // ~ ${key}: ${oldType} → ${newType}`).join('\n')}
+${changes.possibleRenames.map(({from, to, type}) => `    // ↻ ${from} → ${to}: (possible rename)`).join('\n')}
+    
+    return {
+      ...state,
+      version: ${toVersion},
+      // Add your migration logic here
+    };
+  },`;
 
   return migrationTemplate;
 }

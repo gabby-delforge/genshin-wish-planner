@@ -3,11 +3,10 @@ import { STATE_VERSION } from "../src/lib/mobx/state-version";
 
 try {
   const shape = genshinState.getStateShape();
-  
+
   const result = {
     version: STATE_VERSION,
     keys: Object.keys(shape),
-    timestamp: new Date().toISOString(),
     // Store a simplified representation of the shape
     schema: Object.keys(shape).reduce((acc, key) => {
       const value = shape[key as keyof typeof shape];

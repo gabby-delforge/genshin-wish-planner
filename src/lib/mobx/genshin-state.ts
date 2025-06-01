@@ -30,7 +30,9 @@ export class GenshinState {
   banners: ApiBanner[];
 
   // Account state
-  accountStatusCurrentPity: number = 0;
+  characterPity: number = 0;
+  weaponPity: number = 0;
+
   accountStatusIsNextFiftyFiftyGuaranteed: boolean = false;
   accountStatusOwnedWishResources: WishResources;
   accountStatusPrimogemSources: PrimogemSourcesEnabled;
@@ -62,7 +64,8 @@ export class GenshinState {
 
   // Storage config - these can't be computed values
   PERSISTED_KEYS: (keyof GenshinState)[] = [
-    "accountStatusCurrentPity",
+    "characterPity",
+    "weaponPity",
     "accountStatusIsNextFiftyFiftyGuaranteed",
     "accountStatusOwnedWishResources",
     "accountStatusPrimogemSources",
@@ -77,7 +80,7 @@ export class GenshinState {
   ];
 
   constructor(storageKey: string) {
-    this.accountStatusCurrentPity = 0;
+    this.characterPity = 0;
     this.accountStatusIsNextFiftyFiftyGuaranteed = false;
     this.accountStatusOwnedWishResources = {
       primogem: 40,
@@ -135,7 +138,7 @@ export class GenshinState {
   // Autorun: Save to local storage when state changes
 
   setAccountStatusCurrentPity(pity: number) {
-    this.accountStatusCurrentPity = pity;
+    this.characterPity = pity;
   }
   setAccountStatusIsNextFiftyFiftyGuaranteed(guaranteed: boolean) {
     this.accountStatusIsNextFiftyFiftyGuaranteed = guaranteed;
@@ -253,7 +256,7 @@ export class GenshinState {
     const results = await runSimulation(
       this.banners,
       this.bannerConfiguration,
-      this.accountStatusCurrentPity,
+      this.characterPity,
       this.accountStatusIsNextFiftyFiftyGuaranteed,
       this.simulationCount,
       this.setSimulationProgress
@@ -273,7 +276,7 @@ export class GenshinState {
     await runOptimization(
       this.banners,
       this.bannerConfiguration,
-      this.accountStatusCurrentPity,
+      this.characterPity,
       this.accountStatusIsNextFiftyFiftyGuaranteed,
       this.accountCurrentWishValue,
       this.estimatedNewWishesPerBanner[0], // TODO: Use the more granular option; we just use the low estimate for now
