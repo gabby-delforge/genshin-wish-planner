@@ -22,6 +22,9 @@ import {
 import { clamp, getCurrentBanner, isPastDate } from "../utils";
 import { initializeBannerConfigurations } from "./initializers";
 import { makeLocalStorage } from "./make-local-storage";
+import { validateLoadedState } from "./migration-helpers";
+import { STATE_VERSION } from "./state-version";
+
 export class GenshinState {
   // Static banner data
   banners: ApiBanner[];
@@ -48,19 +51,29 @@ export class GenshinState {
   // Banner configuration
   bannerConfiguration: Record<BannerId, BannerConfiguration>;
 
-  // Computed state
-  // _accountCurrentPrimogemValue: number; // @computed
-  // _availableWishes: Record<BannerId, number>; // @computed
-  // _estimatedNewWishesPerBanner: number; // @computed
-  // _remainingWishes: number; // @computed
-  // _unallocatedWishes: number; // @computed
-  // _areWishesOverAllocated: boolean; // @computed
-
   // Loading state
   isLoading: boolean;
 
   // Client state
   isClient: boolean;
+
+  version: number = STATE_VERSION;
+
+  // Storage config - these can't be computed values
+  PERSISTED_KEYS: (keyof GenshinState)[] = [
+    "accountStatusCurrentPity",
+    "accountStatusIsNextFiftyFiftyGuaranteed",
+    "accountStatusOwnedWishResources",
+    "accountStatusPrimogemSources",
+    "accountStatusExcludeCurrentBannerPrimogemSources",
+    "banners",
+    "simulationCount",
+    "mode",
+    "playgroundSimulationResults",
+    "optimizerSimulationResults",
+    "bannerConfiguration",
+    "version",
+  ];
 
   constructor(storageKey: string) {
     this.accountStatusCurrentPity = 0;
@@ -107,20 +120,15 @@ export class GenshinState {
 
     makeAutoObservable(this, {}, { autoBind: true });
 
-    // These can't be computed values
-    makeLocalStorage(this, storageKey, [
-      "accountStatusCurrentPity",
-      "accountStatusIsNextFiftyFiftyGuaranteed",
-      "accountStatusOwnedWishResources",
-      "accountStatusPrimogemSources",
-      "accountStatusExcludeCurrentBannerPrimogemSources",
-      "banners",
-      "simulationCount",
-      "mode",
-      "playgroundSimulationResults",
-      "optimizerSimulationResults",
-      "bannerConfiguration",
-    ]);
+    makeLocalStorage(this, storageKey, this.PERSISTED_KEYS, {
+      beforeLoad: validateLoadedState,
+      onParseError: (key, error) => {
+        console.warn(
+          `Auto-fixing corrupted storage for ${key}:`,
+          error.message
+        );
+      },
+    });
   }
 
   // Autorun: Save to local storage when state changes
@@ -576,6 +584,20 @@ export class GenshinState {
       })
     );
     return this.banners[bannerIndex].id;
+  }
+
+  /**
+   * Returns the current state shape for migration system inspection.
+   * Automatically extracts the shape from the keys array passed to makeLocalStorage.
+   */
+  getStateShape() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const shape: Partial<Record<keyof this, any>> = {};
+    for (const key of this.PERSISTED_KEYS) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      shape[key] = (this as any)[key];
+    }
+    return shape;
   }
 }
 
