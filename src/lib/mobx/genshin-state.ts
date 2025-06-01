@@ -57,7 +57,10 @@ export class GenshinState {
   // Client state
   isClient: boolean;
 
+  // State version
   version: number = STATE_VERSION;
+
+  testProperty: string = "";
 
   // Storage config - these can't be computed values
   PERSISTED_KEYS: (keyof GenshinState)[] = [
@@ -73,6 +76,7 @@ export class GenshinState {
     "optimizerSimulationResults",
     "bannerConfiguration",
     "version",
+    "testProperty",
   ];
 
   constructor(storageKey: string) {
