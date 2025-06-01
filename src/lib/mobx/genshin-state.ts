@@ -83,9 +83,9 @@ export class GenshinState {
     this.characterPity = 0;
     this.accountStatusIsNextFiftyFiftyGuaranteed = false;
     this.accountStatusOwnedWishResources = {
-      primogem: 40,
-      starglitter: 78,
-      limitedWishes: 78,
+      primogem: 0,
+      starglitter: 0,
+      limitedWishes: 0,
       stardust: 0,
       genesisCrystal: 0,
       standardWish: 0,
@@ -119,13 +119,16 @@ export class GenshinState {
     this.playgroundSimulationResults = null;
     this.optimizerSimulationResults = null;
     this.bannerConfiguration = initializeBannerConfigurations(this.banners);
-    this.isLoading = false;
     this.isClient = typeof window !== "undefined";
+    this.isLoading = this.isClient; // Loading if we're on client side
 
     makeAutoObservable(this, {}, { autoBind: true });
 
     makeLocalStorage(this, storageKey, this.PERSISTED_KEYS, {
-      beforeLoad: validateLoadedState,
+      beforeLoad: (loadedData) => {
+        this.isLoading = false; // Done loading after localStorage is processed
+        return validateLoadedState(loadedData);
+      },
       onParseError: (key, error) => {
         console.warn(
           `Auto-fixing corrupted storage for ${key}:`,

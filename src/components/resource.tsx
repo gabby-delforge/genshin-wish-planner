@@ -37,7 +37,7 @@ function Resource({
         height={size}
         unoptimized
       />
-      {number && <div>{number}</div>}
+      {typeof number === 'number' && <div>{number}</div>}
     </div>
   );
 }
