@@ -19,12 +19,7 @@ import {
   WeaponId,
   WishResources,
 } from "../types";
-import {
-  clamp,
-  getCurrentBanner,
-  isPastDate,
-  logNotImplemented,
-} from "../utils";
+import { clamp, getCurrentBanner, isPastDate } from "../utils";
 import { initializeBannerConfigurations } from "./initializers";
 import { makeLocalStorage } from "./make-local-storage";
 export class GenshinState {
@@ -283,11 +278,6 @@ export class GenshinState {
     results: Record<string, BannerConfiguration>[]
   ) {
     this.optimizerSimulationResults = results;
-  }
-
-  // Global functions
-  resetAllData() {
-    logNotImplemented("resetAllData");
   }
 
   get accountCurrentWishValue(): number {
