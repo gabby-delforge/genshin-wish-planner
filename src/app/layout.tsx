@@ -3,6 +3,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GlobalErrorHandler } from "@/components/global-error-handler";
 import { SilentErrorBoundary } from "./error-boundary";
 import "./globals.css";
 import SafeClientProvider from "./safe-client-provider";
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <GlobalErrorHandler />
         <SilentErrorBoundary>
           <SafeClientProvider>{children}</SafeClientProvider>
         </SilentErrorBoundary>

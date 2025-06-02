@@ -18,56 +18,40 @@ export class SilentErrorBoundary extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    // Check if it's a storage-related error
-    const isStorageError =
-      error.message?.includes("localStorage") ||
-      error.message?.includes("JSON") ||
-      error.message?.includes("sessionStorage") ||
-      error.name === "QuotaExceededError";
-
-    return { hasError: isStorageError };
+    // Catch any error and reset user data
+    console.warn("Error boundary caught error:", error.message);
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, _errorInfo: unknown) {
-    const isStorageError =
-      error.message?.includes("localStorage") ||
-      error.message?.includes("JSON") ||
-      error.message?.includes("sessionStorage") ||
-      error.name === "QuotaExceededError";
+    console.warn("App error encountered, resetting data:", error.message);
 
-    if (isStorageError) {
-      console.warn("Storage error auto-fixed:", error.message);
-
-      // Silently clear problematic storage
-      try {
-        // Only clear keys that might be related to our app
-        const keysToCheck = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key?.includes("genshin-store")) {
-            keysToCheck.push(key);
-          }
+    // Clear all app-related localStorage data
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.includes("genshin-store")) {
+          keysToRemove.push(key);
         }
-
-        keysToCheck.forEach((key) => {
-          try {
-            const item = localStorage.getItem(key);
-            if (item) JSON.parse(item); // Test if valid
-          } catch (e) {
-            console.log(e);
-            localStorage.removeItem(key); // Remove if corrupted
-          }
-        });
-      } catch (e) {
-        console.log(e);
-        // If localStorage is completely broken, just continue
       }
 
-      // Auto-retry by resetting error state after a brief moment
-      setTimeout(() => {
-        this.setState({ hasError: false });
-      }, 100);
+      keysToRemove.forEach((key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (e) {
+          console.log(e);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+      // If localStorage is completely broken, just continue
     }
+
+    // Reload the page to restart with clean state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   }
 
   render() {

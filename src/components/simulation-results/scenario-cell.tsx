@@ -1,5 +1,6 @@
 import CharacterIcon from "@/lib/components/character-icon";
 import { ApiBanner, BannerOutcome, CharacterOutcome } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
@@ -54,13 +55,31 @@ const ScenarioCellDesktop = observer(
         );
       } else {
         // No characters obtained - determine what to show
-        const skippedCharacters = characterResults.filter(
-          (char) => char.wishesUsed === 0
+        const missedCharacters = characterResults.filter(
+          (char) => char.wishesUsed > 0
         );
-        if (skippedCharacters.length > 0) {
-          content = <div className="text-xs font-medium italic">Skipped</div>;
+        if (missedCharacters.length > 0) {
+          content = (
+            <div className="flex flex-col gap-1">
+              {missedCharacters.map((char) => (
+                <div
+                  key={char.characterId}
+                  className="flex relative flex-row items-center gap-2"
+                >
+                  <CharacterIcon
+                    id={char.characterId}
+                    showName
+                    className="opacity-50 "
+                  />
+                  <div className="absolute text-xs bottom-0 right-0 font-medium italic opacity-80">
+                    Missed
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
         } else {
-          content = <div className="text-xs font-medium italic">Missed</div>;
+          content = <div className="text-xs font-medium italic">Skipped</div>;
         }
       }
 
@@ -74,7 +93,7 @@ const ScenarioCellDesktop = observer(
       } else if (resultType === "missed") {
         bgClass = "bg-[#ff6b6b]/20";
         borderClass = "border-[#ff6b6b]/40";
-        textClass = "text-[#ff6b6b]";
+        textClass = "text-white";
       } else if (resultType === "standard5star") {
         bgClass = "bg-gold-1/20";
         borderClass = "border-gold-1/40";
@@ -92,7 +111,7 @@ const ScenarioCellDesktop = observer(
       return {
         displayContent: content,
         styleClasses: {
-          container: `p-2 rounded-md text-center flex flex-col items-center justify-center gap-2 ${bgClass} border ${borderClass}`,
+          container: `p-2 rounded-md text-center h-full flex flex-col items-center justify-center gap-2 ${bgClass} border ${borderClass}`,
           text: textClass,
         },
       };
@@ -120,15 +139,17 @@ const ScenarioCellMobile = observer(
       if (obtainedCharacters.length === 2) {
         // Both characters obtained
         content = (
-          <div className="relative h-full w-full">
-            {obtainedCharacters.map((char, index) => (
-              <CharacterIcon
-                key={char.characterId}
-                id={char.characterId}
-                className={`absolute ${char.characterId} ${
-                  index % 2 ? "left-0" : "right-0"
-                }`}
-              />
+          <div className="flex flex-row-reverse m-auto h-full w-full">
+            {obtainedCharacters.reverse().map((char, index) => (
+              <div key={char.characterId} className="relative">
+                <CharacterIcon
+                  id={char.characterId}
+                  className={cn(index == 0 ? "-ml-3" : "")}
+                />
+                <div className="absolute -bottom-1 -right-1 bg-white text-black/70 text-xs w-5 h-5 flex items-center justify-center rounded-full ">
+                  C{char.constellation}
+                </div>
+              </div>
             ))}
           </div>
         );
@@ -182,57 +203,55 @@ const ScenarioCellMobile = observer(
   }
 );
 
-export const ScenarioCell = observer(
-  ({ bannerOutcome, banner }: ScenarioCellProps) => {
-    const processedScenario = useMemo((): ProcessedScenario | null => {
-      // If no banner outcome, this banner was skipped
-      if (!bannerOutcome) {
-        return {
-          characterResults: [],
-          hasAnySuccess: false,
-          resultType: "skipped",
-        };
-      }
-
-      const characterResults = bannerOutcome.characterOutcomes;
-      const hasAnySuccess = characterResults.some((char) => char.obtained);
-
-      // Determine result type
-      let resultType: ProcessedScenario["resultType"];
-      if (hasAnySuccess) {
-        resultType = "success";
-      } else {
-        // Check if any characters had wishes allocated
-        const hasWishesAllocated = characterResults.some(
-          (char) => char.wishesUsed > 0
-        );
-        if (!hasWishesAllocated) {
-          resultType = "skipped";
-        } else {
-          resultType = "missed"; // Had wishes but didn't get characters
-        }
-      }
-
+export const ScenarioCell = observer(({ bannerOutcome }: ScenarioCellProps) => {
+  const processedScenario = useMemo((): ProcessedScenario | null => {
+    // If no banner outcome, this banner was skipped
+    if (!bannerOutcome) {
       return {
-        characterResults,
-        hasAnySuccess,
-        resultType,
+        characterResults: [],
+        hasAnySuccess: false,
+        resultType: "skipped",
       };
-    }, [bannerOutcome]);
-
-    if (!processedScenario) {
-      return null;
     }
 
-    return (
-      <>
-        <div className="block @lg/sim:hidden">
-          <ScenarioCellMobile processedScenario={processedScenario} />
-        </div>
-        <div className="hidden @lg/sim:block">
-          <ScenarioCellDesktop processedScenario={processedScenario} />
-        </div>
-      </>
-    );
+    const characterResults = bannerOutcome.characterOutcomes;
+    const hasAnySuccess = characterResults.some((char) => char.obtained);
+
+    // Determine result type
+    let resultType: ProcessedScenario["resultType"];
+    if (hasAnySuccess) {
+      resultType = "success";
+    } else {
+      // Check if any characters had wishes allocated
+      const hasWishesAllocated = characterResults.some(
+        (char) => char.wishesUsed > 0
+      );
+      if (!hasWishesAllocated) {
+        resultType = "skipped";
+      } else {
+        resultType = "missed"; // Had wishes but didn't get characters
+      }
+    }
+
+    return {
+      characterResults,
+      hasAnySuccess,
+      resultType,
+    };
+  }, [bannerOutcome]);
+
+  if (!processedScenario) {
+    return null;
   }
-);
+
+  return (
+    <>
+      <div className="block @lg/sim:hidden">
+        <ScenarioCellMobile processedScenario={processedScenario} />
+      </div>
+      <div className="hidden @lg/sim:block">
+        <ScenarioCellDesktop processedScenario={processedScenario} />
+      </div>
+    </>
+  );
+});
