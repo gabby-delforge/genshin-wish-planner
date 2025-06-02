@@ -36,8 +36,8 @@
       "id": "5.6v2",
       "version": "5.6v2",
       "name": "5.6 Phase 2",
-      "startDate": "2025-05-27",
-      "endDate": "2025-06-17",
+      "startDate": "2025-05-27T00:00:00-05:00",
+      "endDate": "2025-06-17T00:00:00-05:00",
       "characters": ["kinich", "raiden-shogun"],
       "weapons": ["fang-of-the-mountain-king", "engulfing-lightning"]
     },
@@ -45,8 +45,8 @@
       "id": "5.7v1",
       "version": "5.7v1",
       "name": "5.7 Phase 1",
-      "startDate": "2025-06-18",
-      "endDate": "2025-07-09",
+      "startDate": "2025-06-18T00:00:00-05:00",
+      "endDate": "2025-07-09T00:00:00-05:00",
       "characters": ["skirk", "emilie"],
       "weapons": ["azurelight", "lumidouce-elegy"]
     },
@@ -54,8 +54,8 @@
       "id": "5.7v2",
       "version": "5.7v2",
       "name": "5.7 Phase 2",
-      "startDate": "2025-07-09",
-      "endDate": "2025-07-30",
+      "startDate": "2025-07-09T00:00:00-05:00",
+      "endDate": "2025-07-30T00:00:00-05:00",
       "characters": ["mavuika", "shenhe"],
       "weapons": ["a-thousand-blazing-suns", "calamity-queller"]
     }
