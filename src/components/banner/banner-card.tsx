@@ -17,6 +17,7 @@ import { cn, toFriendlyDate } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { LimitedWish } from "../resource";
+import { CheckboxWithLabel } from "../ui/checkbox-with-label";
 import { Separator } from "../ui/separator";
 import {
   Tooltip,
@@ -50,6 +51,7 @@ const BannerCard = observer(
   }: BannerCardProps) => {
     const {
       accountStatusExcludeCurrentBannerPrimogemSources,
+      setAccountStatusExcludeCurrentBannerPrimogemSources,
       allocateWishesToCharacter,
       allocateWishesToWeaponBanner,
       setCharacterPullPriority,
@@ -202,8 +204,17 @@ const BannerCard = observer(
             </>
           )}
           {isCurrentBanner && (
-            <div className="self-end text-xs italic text-white/40">
-              Current banner
+            <div className="flex flex-row justify-between w-full text-xs  text-white/40">
+              <div className="italic">Current banner</div>
+              <CheckboxWithLabel
+                id={""}
+                className="text-xs"
+                label={"Exclude wishes earned this banner"}
+                checked={accountStatusExcludeCurrentBannerPrimogemSources}
+                onCheckedChange={
+                  setAccountStatusExcludeCurrentBannerPrimogemSources
+                }
+              />
             </div>
           )}
         </CardContent>

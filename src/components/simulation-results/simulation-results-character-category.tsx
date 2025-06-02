@@ -13,7 +13,7 @@ export const SimulationResultsCharacterCategory = observer(
   ({ character, successRates }: SimulationResultsCharacterCategoryProps) => {
     const sorted = useMemo(() => {
       return successRates.sort((a, b) => a.constellation - b.constellation);
-    }, []);
+    }, [successRates]);
     return (
       <Card variant="light">
         <CardHeader className="flex flex-row items-center gap-2 pb-2">

@@ -1,3 +1,4 @@
+/* eslint-disable mobx/missing-observer */
 import { Checkbox } from "./checkbox";
 import { Label } from "./label";
 
@@ -16,11 +17,13 @@ export const CheckboxWithLabel = ({
   className,
 }: CheckboxWithLabelProps) => {
   return (
-    <div className={`flex items-center space-x-2 ${className ? className : ""}`}>
+    <div
+      className={`flex items-center space-x-2 ${className ? className : ""}`}
+    >
       <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
       <Label
         htmlFor={id}
-        className="text-sm cursor-pointer flex justify-between items-center w-full"
+        className="cursor-pointer text-xs  flex justify-between items-center w-full"
       >
         {label}
       </Label>

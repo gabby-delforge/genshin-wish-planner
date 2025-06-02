@@ -146,7 +146,7 @@ const ScenarioCellMobile = observer(
                   id={char.characterId}
                   className={cn(index == 0 ? "-ml-3" : "")}
                 />
-                <div className="absolute -bottom-1 -right-1 bg-white text-black/70 text-xs w-5 h-5 flex items-center justify-center rounded-full ">
+                <div className="absolute -bottom-1 -right-1 bg-white text-black/70 text-xs w-5.5 h-5.5 flex items-center justify-center rounded-full ">
                   C{char.constellation}
                 </div>
               </div>
@@ -156,7 +156,14 @@ const ScenarioCellMobile = observer(
       } else if (obtainedCharacters.length === 1) {
         // Only one character obtained
         const char = obtainedCharacters[0];
-        content = <CharacterIcon id={char.characterId} />;
+        content = (
+          <div className="relative">
+            <CharacterIcon id={char.characterId} />
+            <div className="absolute -bottom-1 -right-1 bg-white text-black/70 text-xs w-5.5 h-5.5 flex items-center justify-center rounded-full ">
+              C{char.constellation}
+            </div>
+          </div>
+        );
       } else {
         // No characters obtained - determine what to show
         const missedCharacters = characterResults.filter(

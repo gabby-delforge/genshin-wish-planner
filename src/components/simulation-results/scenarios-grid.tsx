@@ -52,7 +52,7 @@ const GridSection = observer(
                   />
                 );
               })}
-              <div className="text-sm w-full flex flex-col justify-center">
+              <div className="text-sm w-full flex flex-col justify-center px-0 @md/sim:px-2">
                 <div className="text-muted-foreground">
                   {(scenario.probability * 100).toFixed(2)}%
                 </div>
@@ -79,14 +79,23 @@ const ScenariosGrid = observer(({ scenarios, banners }: ScenariosGridProps) => {
       </div>
     );
   }
-
   const mostLikelyScenario = scenarios.slice(0, 1);
-  const likelyScenarios = scenarios
-    .slice(1)
-    .filter((s) => s.probability >= 0.2); // 20% threshold for "likely"
-  const unlikelyScenarios = scenarios
-    .slice(1)
-    .filter((s) => s.probability > 0.05);
+  const remainingScenarios = scenarios.slice(1);
+
+  // Ensure we show at least 5 scenarios total
+  const minScenariosToShow = Math.min(5, scenarios.length);
+  const remainingScenariosToShow = minScenariosToShow - 1; // -1 for the most likely scenario
+
+  const likelyScenarios = remainingScenarios
+    .filter((s) => s.probability >= 0.2) // 20% threshold for "likely"
+    .slice(0, Math.max(0, remainingScenariosToShow));
+
+  const likelyScenariosCount = likelyScenarios.length;
+  const remainingCount = remainingScenariosToShow - likelyScenariosCount;
+
+  const unlikelyScenarios = remainingScenarios
+    .slice(likelyScenariosCount) // Start after likely scenarios to avoid overlap
+    .slice(0, Math.max(0, remainingCount));
 
   return (
     <div className="flex flex-col gap-2">

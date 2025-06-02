@@ -1,3 +1,4 @@
+/* eslint-disable mobx/missing-observer */
 "use client";
 
 import { ResourceType } from "@/lib/types";
@@ -9,18 +10,12 @@ type ResourceProps = {
 };
 
 const resourceMap: Record<ResourceType, string> = {
-  primogem:
-    "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Item_Primogem.png",
-  limitedWishes:
-    "https://static.wikia.nocookie.net/gensin-impact/images/1/1f/Item_Intertwined_Fate.png",
-  standardWish:
-    "https://static.wikia.nocookie.net/gensin-impact/images/2/22/Item_Acquaint_Fate.png",
-  starglitter:
-    "https://static.wikia.nocookie.net/gensin-impact/images/6/69/Item_Masterless_Starglitter.png",
-  stardust:
-    "https://static.wikia.nocookie.net/gensin-impact/images/7/7c/Item_Masterless_Stardust.png",
-  genesisCrystal:
-    "https://static.wikia.nocookie.net/gensin-impact/images/4/44/Item_Genesis_Crystal.png",
+  primogem: "/images/resources/primogem.png",
+  limitedWishes: "/images/resources/limited-wish.png",
+  standardWish: "/images/resources/standard-wish.png",
+  starglitter: "/images/resources/starglitter.png",
+  stardust: "/images/resources/stardust.png",
+  genesisCrystal: "/images/resources/genesis-crystal.png",
 };
 
 function Resource({
@@ -37,7 +32,7 @@ function Resource({
         height={size}
         unoptimized
       />
-      {typeof number === 'number' && <div>{number}</div>}
+      {typeof number === "number" && <div>{number}</div>}
     </div>
   );
 }

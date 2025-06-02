@@ -110,7 +110,7 @@ export class GenshinState {
       newVersionCode: true,
       limitedExplorationRewards: true,
     };
-    this.accountStatusExcludeCurrentBannerPrimogemSources = true;
+    this.accountStatusExcludeCurrentBannerPrimogemSources = false;
     this.banners = initialBanners;
     this.simulationCount = 10000;
     this.isSimulating = false;
@@ -306,7 +306,7 @@ export class GenshinState {
       this.accountStatusOwnedWishResources.stardust / 10
     );
     const genesisCrystalWishes = Math.floor(
-      this.accountStatusOwnedWishResources.genesisCrystal / 10
+      this.accountStatusOwnedWishResources.genesisCrystal / 160
     );
     const limitedWishes = this.accountStatusOwnedWishResources.limitedWishes;
 

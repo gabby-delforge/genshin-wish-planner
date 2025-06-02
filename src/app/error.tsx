@@ -35,7 +35,7 @@ export default function Error({
     // Automatically reload after clearing data
     setTimeout(() => {
       window.location.reload();
-    }, 100);
+    }, 2000);
   }, [error]);
 
   // This component will only be visible for a brief moment before reload

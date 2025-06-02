@@ -48,7 +48,7 @@ const CharacterIcon: React.FC<CharacterIconProps> = observer(
     return (
       <div className={`flex flex-row items-center gap-2 ${className}`}>
         <div
-          className={`relative overflow-hidden rounded-full border-gold-1 border-1 shadow-lg ${backgroundColor}`}
+          className={`relative overflow-hidden shrink-0 rounded-full border-gold-1 border-1 shadow-lg ${backgroundColor}`}
           style={{
             width: "var(--icon-size, " + size + "px)",
             height: "var(--icon-size, " + size + "px)",

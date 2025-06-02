@@ -56,9 +56,7 @@ export const SimulationResults = observer(() => {
 
         <TabsContent value="success-rates" className="mt-0">
           <div className="space-y-4">
-            <SimulationResultsGrid
-              simulationResults={playgroundSimulationResults}
-            />
+            <SimulationResultsGrid />
           </div>
         </TabsContent>
 
