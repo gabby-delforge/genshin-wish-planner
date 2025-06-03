@@ -18,7 +18,7 @@ export const validateLoadedState = <T>(
     try {
       const migratedState = migrateState(loadedData, STATE_VERSION);
       console.log(`✅ State successfully migrated to v${STATE_VERSION}`);
-      return migratedState as Partial<T>;
+      return migratedState;
     } catch (error) {
       console.error("❌ State migration failed:", error);
       console.log("Using default state values");

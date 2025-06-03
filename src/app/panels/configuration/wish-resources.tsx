@@ -9,7 +9,7 @@ export const WishResources = observer(() => {
     isLoading,
     accountCurrentWishValue: totalAvailableWishes,
     setAccountStatusOwnedWishResources,
-    accountStatusOwnedWishResources,
+    ownedWishResources: accountStatusOwnedWishResources,
   } = useGenshinState();
   return (
     <div className="space-y-3">
@@ -61,7 +61,9 @@ export const WishResources = observer(() => {
       <div className="bg-void-1 rounded-md p-3 border border-void-2 mt-4">
         <div className="text-sm flex gap-1 items-center justify-center font-medium text-gold-1">
           <span className=" font-bold">
-            <LimitedWish number={isLoading ? undefined : totalAvailableWishes} />
+            <LimitedWish
+              number={isLoading ? undefined : totalAvailableWishes}
+            />
           </span>
           total wishes
         </div>

@@ -50,13 +50,15 @@ const BannerCard = observer(
     estimatedWishesEarned,
   }: BannerCardProps) => {
     const {
-      accountStatusExcludeCurrentBannerPrimogemSources,
+      shouldExcludeCurrentBannerEarnedWishes:
+        accountStatusExcludeCurrentBannerPrimogemSources,
       setAccountStatusExcludeCurrentBannerPrimogemSources,
       allocateWishesToCharacter,
       allocateWishesToWeaponBanner,
       setCharacterPullPriority,
       setEpitomizedPath,
       setWeaponBannerStrategy,
+      setWeaponBannerMaxRefinement,
       setCharacterMaxConstellation,
     } = useGenshinState();
     const wishesAvailableLabel = useMemo(() => {
@@ -71,8 +73,6 @@ const BannerCard = observer(
       for (const char of Object.values(bannerConfiguration.characters)) {
         spentWishes += char.wishesAllocated;
       }
-      // totalWishes = earned + leftover - spent
-      // leftover = spent + totalWishes - earned
       const leftover = spentWishes - gainedWishes + totalWishes;
 
       return (
@@ -114,13 +114,13 @@ const BannerCard = observer(
     }, [wishesAvailable, estimatedWishesEarned, id]);
 
     const displayStartDate = useMemo(
-      () => toFriendlyDate(new Date(bannerConfiguration.banner.startDate)),
-      [bannerConfiguration.banner.startDate]
+      () => toFriendlyDate(new Date(bannerData.startDate)),
+      [bannerData.startDate]
     );
 
     const displayEndDate = useMemo(
-      () => toFriendlyDate(new Date(bannerConfiguration.banner.endDate)),
-      [bannerConfiguration.banner.endDate]
+      () => toFriendlyDate(new Date(bannerData.endDate)),
+      [bannerData.endDate]
     );
 
     return (
@@ -145,9 +145,13 @@ const BannerCard = observer(
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 px-2 md:px-6 flex flex-col">
-          {FLAGS.WEAPON_BANNER && "Character Banners"}
-          {bannerConfiguration.banner.characters.map((characterId) => {
+        <CardContent className=" px-2 md:px-6 flex flex-col">
+          {FLAGS.WEAPON_BANNER && (
+            <div className="text-xs italic text-white/50">
+              Character Banners
+            </div>
+          )}
+          {bannerData.characters.map((characterId) => {
             const character = API_CHARACTERS[characterId];
             if (!character) return null;
             return (
@@ -182,7 +186,7 @@ const BannerCard = observer(
           {FLAGS.WEAPON_BANNER && (
             <>
               <Separator />
-              Weapon Banner
+              <div className="text-xs italic text-white/50">Weapon Banner</div>
               <WeaponBannerRow
                 weapons={[
                   API_WEAPONS[bannerData.weapons[0]!]!, // Lol
@@ -194,19 +198,27 @@ const BannerCard = observer(
                 setWishesAllocated={(value: number) =>
                   allocateWishesToWeaponBanner(id, value)
                 }
-                currentEpitomizedPath={""}
+                currentEpitomizedPath={
+                  bannerConfiguration.weaponBanner.epitomizedPath
+                }
                 setEpitomizedPath={(weaponId: WeaponId) =>
                   setEpitomizedPath(id, weaponId)
                 }
-                currentStrategy={"stop"}
-                setStrategy={(strategy: "stop" | "continue") =>
+                currentMaxRefinement={
+                  bannerConfiguration.weaponBanner.maxRefinement
+                }
+                setMaxRefinement={(value: number) =>
+                  setWeaponBannerMaxRefinement(id, value)
+                }
+                _currentStrategy={bannerConfiguration.weaponBanner.strategy}
+                _setStrategy={(strategy: "stop" | "continue") =>
                   setWeaponBannerStrategy(id, strategy)
                 }
               />
             </>
           )}
           {isCurrentBanner && (
-            <div className="flex flex-row justify-between w-full text-xs  text-white/40">
+            <div className="flex flex-row justify-between w-full text-xs mt-2 text-white/40">
               <div className="italic">Current banner</div>
               <CheckboxWithLabel
                 id={""}

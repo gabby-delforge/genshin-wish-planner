@@ -1,114 +1,41 @@
 "use client";
 
-import { InfoIcon } from "@/components/ui/info-icon";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Panel } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
-import { GenshinState } from "@/lib/mobx/genshin-state";
+import { useGenshinState } from "@/lib/mobx/genshin-context";
 import { Cog } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { ToggleGroup } from "radix-ui";
-import type React from "react";
 import { EstimatedFutureWishes } from "./estimated-future-wishes";
+import { PityStatus } from "./pity-status";
 import { WishResources } from "./wish-resources";
 
-const ConfigurationPanel = observer(
-  ({ genshinState }: { genshinState: GenshinState }) => {
-    return (
-      <Panel title="Configuration" icon={<Cog className="w-h4 h-h4" />}>
-        <div className="space-y-4 @container/config">
-          <div className="grid grid-cols-2 @lg/config:grid-cols-[auto_1fr_auto_1fr] gap-2 items-center">
-            <Label htmlFor="currentPity" className="my-auto text-sm">
-              Pity
-            </Label>
-            <Input
-              className="w-full"
-              id="currentPity"
-              isLoading={genshinState.isLoading}
-              name="currentPity"
-              type="number"
-              min="0"
-              max="89"
-              value={genshinState.characterPity}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                genshinState.setAccountStatusCurrentPity(
-                  parseInt(e.target.value) || 0
-                )
-              }
-              showPlusMinus
-              width={"w-full"}
-              validate={(value) => [
-                value !== undefined &&
-                  parseInt(value.toString()) >= 0 &&
-                  parseInt(value.toString()) < 90,
-                "",
-              ]}
-            />
-            <Label
-              htmlFor="isGuaranteed"
-              className="flex flex-row gap-1 items-center my-auto text-sm @lg/config:ml-6"
-            >
-              <div>Last 50/50</div>
-              <InfoIcon
-                className="text-white/50"
-                content={
-                  "Whether you last got the featured 5 star character (won) or the standard 5 star character (lost)."
-                }
-              />
-            </Label>
-            <ToggleGroup.Root
-              type="single"
-              className="items-center justify-center rounded-lg p-1 text-muted-foreground grid grid-cols-2 bg-void-1"
-              value={
-                genshinState.accountStatusIsNextFiftyFiftyGuaranteed
-                  ? "lost"
-                  : "won"
-              }
-              onValueChange={(value) => {
-                if (value) {
-                  genshinState.setAccountStatusIsNextFiftyFiftyGuaranteed(
-                    value === "lost"
-                  );
-                }
-              }}
-            >
-              <ToggleGroup.Item
-                value="lost"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:text-foreground data-[state=on]:shadow data-[state=on]:bg-void-3"
-              >
-                <span className="text-sm">Lost</span>
-              </ToggleGroup.Item>
-              <ToggleGroup.Item
-                value="won"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:text-foreground data-[state=on]:shadow data-[state=on]:bg-void-3"
-              >
-                <span className="text-sm">Won</span>
-              </ToggleGroup.Item>
-            </ToggleGroup.Root>
-          </div>
-          <Separator className="bg-void-2/50" />
-          <WishResources />
-          <Separator className="bg-void-2/50" />
-          <EstimatedFutureWishes
-            estimatedNewWishesPerBanner={
-              genshinState.estimatedNewWishesPerBanner
-            }
-            primogemSources={genshinState.accountStatusPrimogemSources}
-            handlePrimogemSourceChange={
-              genshinState.setAccountStatusPrimogemSources
-            }
-            excludeCurrentBannerPrimogems={
-              genshinState.accountStatusExcludeCurrentBannerPrimogemSources
-            }
-            handleExcludeCurrentBannerPrimogemSourcesChange={
-              genshinState.setAccountStatusExcludeCurrentBannerPrimogemSources
-            }
-          />
-        </div>
-      </Panel>
-    );
-  }
-);
+const ConfigurationPanel = observer(() => {
+  const {
+    estimatedNewWishesPerBanner,
+    primogemSources,
+    setAccountStatusPrimogemSources,
+    shouldExcludeCurrentBannerEarnedWishes,
+    setAccountStatusExcludeCurrentBannerPrimogemSources,
+  } = useGenshinState();
+  return (
+    <Panel title="Configuration" icon={<Cog className="w-h4 h-h4" />}>
+      <div className="space-y-4 @container/config">
+        <PityStatus />
+        <Separator className="bg-void-2/50" />
+        <WishResources />
+        <Separator className="bg-void-2/50" />
+        <EstimatedFutureWishes
+          estimatedNewWishesPerBanner={estimatedNewWishesPerBanner}
+          primogemSources={primogemSources}
+          handlePrimogemSourceChange={setAccountStatusPrimogemSources}
+          excludeCurrentBannerPrimogems={shouldExcludeCurrentBannerEarnedWishes}
+          handleExcludeCurrentBannerPrimogemSourcesChange={
+            setAccountStatusExcludeCurrentBannerPrimogemSources
+          }
+        />
+      </div>
+    </Panel>
+  );
+});
 
 export default ConfigurationPanel;

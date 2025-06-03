@@ -42,6 +42,7 @@ function generateMigrationStub(fromVersion, toVersion, changes) {
   // Migration from v${fromVersion} to v${toVersion}
   // Generated on: ${new Date().toISOString()}
   ${fromVersion}: (state) => {
+    const typedState = state as StateTypes.V${fromVersion}.GenshinStateV${fromVersion};
     // TODO: Implement migration from v${fromVersion} to v${toVersion}
     // Changes detected:
 ${changes.added.map(key => `    // + ${key}: (new field)`).join('\n')}
@@ -50,10 +51,10 @@ ${changes.typeChanged.map(({key, oldType, newType}) => `    // ~ ${key}: ${oldTy
 ${changes.possibleRenames.map(({from, to, type}) => `    // ↻ ${from} → ${to}: (possible rename)`).join('\n')}
     
     return {
-      ...state,
+      ...typedState,
       version: ${toVersion},
       // Add your migration logic here
-    };
+    } as StateTypes.V${toVersion}.GenshinStateV${toVersion};
   },`;
 
   return migrationTemplate;
@@ -70,6 +71,8 @@ function updateMigrationsFile(migrationStub) {
  * 
  * Handles migration between different state schema versions.
  */
+
+import * as StateTypes from "./snapshots";
 
 export const migrations: Record<number, (state: any) => any> = {${migrationStub}
 };
@@ -94,20 +97,46 @@ export function migrateState(state: any, targetVersion: number): any {
       // Update existing migrations file
       migrationsContent = fs.readFileSync(MIGRATIONS_FILE, 'utf8');
       
+      // Ensure import statement exists
+      if (!migrationsContent.includes('import * as StateTypes from "./snapshots";')) {
+        // Add import after the comment header
+        const importStatement = 'import * as StateTypes from "./snapshots";\n';
+        const commentEndIndex = migrationsContent.indexOf('*/');
+        if (commentEndIndex !== -1) {
+          const insertIndex = commentEndIndex + 2;
+          migrationsContent = migrationsContent.slice(0, insertIndex) + '\n\n' + importStatement + migrationsContent.slice(insertIndex);
+        } else {
+          // Fallback: add at the top
+          migrationsContent = importStatement + '\n' + migrationsContent;
+        }
+      }
+      
       // Find the migrations object and add the new migration
-      const migrationsMatch = migrationsContent.match(/export const migrations[^{]*{([^}]*?)};/s);
+      // Updated regex to handle multiline type definitions with more flexible matching
+      const migrationsMatch = migrationsContent.match(/export const migrations:\s*Record<[\s\S]*?>\s*=\s*{([\s\S]*?)^};/m);
       if (migrationsMatch) {
         const existingMigrations = migrationsMatch[1];
         // Clean up any existing malformed migrations
         const cleanMigrations = existingMigrations.replace(/,\s*}\),?$/, '');
         const newMigrations = cleanMigrations.trim() ? cleanMigrations + migrationStub : migrationStub;
         migrationsContent = migrationsContent.replace(
-          /export const migrations[^{]*{[^}]*?};/s,
-          `export const migrations: Record<number, (state: any) => any> = {${newMigrations}
+          /export const migrations:\s*Record<[\s\S]*?>\s*=\s*{[\s\S]*?^};/m,
+          `export const migrations: Record<
+  number,
+  (state: Record<string, unknown>) => Record<string, unknown>
+> = {${newMigrations}
 };`
         );
       } else {
         console.error('❌ Could not find migrations object in existing file');
+        console.error('Looking for pattern: export const migrations: Record<...> = { ... };');
+        // Debug: show what the file actually contains around the migrations
+        const lines = migrationsContent.split('\n');
+        const migrationsLineIndex = lines.findIndex(line => line.includes('export const migrations'));
+        if (migrationsLineIndex >= 0) {
+          console.error('Found migration line at:', migrationsLineIndex + 1);
+          console.error('Context:', lines.slice(Math.max(0, migrationsLineIndex - 2), migrationsLineIndex + 8).join('\n'));
+        }
         return false;
       }
     }

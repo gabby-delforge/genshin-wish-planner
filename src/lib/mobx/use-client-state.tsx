@@ -12,7 +12,6 @@ import { validateLoadedState } from "./migration-helpers";
  */
 export function useClientState(state: GenshinState) {
   const [isHydrated, setIsHydrated] = useState(false);
-
   useEffect(() => {
     // Only run on client side after hydration
     if (typeof window !== "undefined" && !isHydrated) {
@@ -22,6 +21,22 @@ export function useClientState(state: GenshinState) {
           runInAction(() => {
             state.isLoading = false; // Done loading after localStorage is processed
           });
+
+          // If data is empty, malformed, or doesn't have meaningful content,
+          // just ignore it and use constructor defaults
+          if (
+            !loadedData ||
+            typeof loadedData !== "object" ||
+            Object.keys(loadedData).length === 0 ||
+            !loadedData.version
+          ) {
+            console.warn(
+              "Empty or malformed state data, using constructor defaults"
+            );
+            return {}; // Return empty object to use all constructor defaults
+          }
+
+          // Only attempt migration if we have actual meaningful data
           return validateLoadedState(loadedData);
         },
         onParseError: (key, error) => {

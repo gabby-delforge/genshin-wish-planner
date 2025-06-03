@@ -8,32 +8,6 @@ import {
 } from "../types";
 
 /**
- * Calculate the probability of getting a 5-star based on current pity
- * Implements Genshin Impact's soft and hard pity system
- */
-export const getCharacter5StarProbability = (pity: number): number => {
-  if (pity < 73) {
-    return 0.006; // Base rate
-  } else if (pity < 89) {
-    // Soft pity - increases with each pull
-    return 0.006 + (pity - 72) * 0.06;
-  } else {
-    return 1.0; // Hard pity (90th pull)
-  }
-};
-
-export const getWeapon5StarProbability = (pity: number): number => {
-  if (pity < 63) {
-    return 0.007; // Base rate (0.7%)
-  } else if (pity < 79) {
-    // Soft pity - increases with each pull from 63 onwards
-    return 0.007 + (pity - 62) * 0.07;
-  } else {
-    return 1.0; // Hard pity (80th pull)
-  }
-};
-
-/**
  * Calculate available wishes for a specific banner.
  * Takes into account wishes spent on previous banners and estimated new wishes.
  * Because this depends on previous banners, banneres should be processed in order,

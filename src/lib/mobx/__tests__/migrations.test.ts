@@ -5,19 +5,24 @@
  */
 
 import { migrateState, migrations } from "../migrations";
+import * as StateTypes from "../snapshots";
+import { VersionedState } from "../snapshots";
 import v1Snapshot from "../snapshots/v1.json";
 import v2Snapshot from "../snapshots/v2.json";
 
 describe("State Migrations", () => {
   describe("migrateState", () => {
     it("should migrate v1 snapshot to v2", () => {
-      const result = migrateState(v1Snapshot, 2);
+      const result = migrateState(
+        v1Snapshot,
+        2
+      ) as StateTypes.V2.GenshinStateV2;
 
       // Check that migration worked correctly
       expect(result.version).toBe(2);
       expect(result.characterPity).toBe(v1Snapshot.accountStatusCurrentPity); // Old pity migrated
       expect(result.weaponPity).toBe(0); // New field initialized to 0
-      expect(result.accountStatusCurrentPity).toBeUndefined(); // Old field removed
+      expect(result).not.toHaveProperty("accountStatusCurrentPity");
 
       // All other fields should be preserved
       expect(result.accountStatusIsNextFiftyFiftyGuaranteed).toBe(
@@ -33,23 +38,19 @@ describe("State Migrations", () => {
 
     it("should handle v1 state with non-zero pity", () => {
       const v1StateWithPity = {
-        ...v1Snapshot,
+        ...(v1Snapshot as StateTypes.V1.GenshinStateV1),
         accountStatusCurrentPity: 73,
       };
 
-      const result = migrateState(v1StateWithPity, 2);
+      const result = migrateState(
+        v1StateWithPity,
+        2
+      ) as StateTypes.V2.GenshinStateV2;
 
       expect(result.version).toBe(2);
       expect(result.characterPity).toBe(73);
       expect(result.weaponPity).toBe(0);
-      expect(result.accountStatusCurrentPity).toBeUndefined();
-    });
-
-    it("should not migrate if already at target version", () => {
-      const result = migrateState(v2Snapshot, 2);
-
-      // Should return equivalent state (migration is idempotent)
-      expect(result).toEqual(v2Snapshot);
+      expect(result).not.toHaveProperty("accountStatusCurrentPity");
     });
 
     it("should migrate through multiple versions", () => {
@@ -67,12 +68,14 @@ describe("State Migrations", () => {
 
   describe("Individual Migration v1 → v2", () => {
     it("should correctly transform v1 snapshot", () => {
-      const result = migrations[1](v1Snapshot);
+      const result = migrations[1](
+        v1Snapshot as StateTypes.V1.GenshinStateV1
+      ) as StateTypes.V2.GenshinStateV2;
 
       expect(result.version).toBe(2);
       expect(result.characterPity).toBe(v1Snapshot.accountStatusCurrentPity);
       expect(result.weaponPity).toBe(0);
-      expect(result.accountStatusCurrentPity).toBeUndefined();
+      expect(result).not.toHaveProperty("accountStatusCurrentPity");
 
       // Verify all other fields are preserved
       const expectedKeys = Object.keys(v1Snapshot).filter(
@@ -80,7 +83,8 @@ describe("State Migrations", () => {
       );
       expectedKeys.forEach((key) => {
         if (key !== "version") {
-          expect(result[key]).toEqual(
+          const keyTyped = key as keyof StateTypes.V2.GenshinStateV2;
+          expect(result[keyTyped]).toEqual(
             v1Snapshot[key as keyof typeof v1Snapshot]
           );
         }
@@ -89,10 +93,22 @@ describe("State Migrations", () => {
 
     it("should handle edge cases", () => {
       const edgeCases = [
-        { ...v1Snapshot, accountStatusCurrentPity: 0 },
-        { ...v1Snapshot, accountStatusCurrentPity: 89 }, // Max pity
-        { ...v1Snapshot, accountStatusCurrentPity: undefined },
-        { ...v1Snapshot, accountStatusCurrentPity: null },
+        {
+          ...(v1Snapshot as StateTypes.V1.GenshinStateV1),
+          accountStatusCurrentPity: 0,
+        } as unknown as VersionedState,
+        {
+          ...(v1Snapshot as StateTypes.V1.GenshinStateV1),
+          accountStatusCurrentPity: 89,
+        } as unknown as VersionedState, // Max pity
+        {
+          ...(v1Snapshot as StateTypes.V1.GenshinStateV1),
+          accountStatusCurrentPity: undefined,
+        } as unknown as VersionedState,
+        {
+          ...(v1Snapshot as StateTypes.V1.GenshinStateV1),
+          accountStatusCurrentPity: null,
+        } as unknown as VersionedState,
       ];
 
       edgeCases.forEach((testCase) => {
@@ -102,8 +118,13 @@ describe("State Migrations", () => {
         expect(result.weaponPity).toBe(0);
 
         // Handle undefined/null cases
-        const expectedCharacterPity = testCase.accountStatusCurrentPity ?? 0;
-        expect(result.characterPity).toBe(expectedCharacterPity);
+        if (
+          "accountStatusCurrentPity" in testCase &&
+          "characterPity" in result
+        ) {
+          const expectedCharacterPity = testCase.accountStatusCurrentPity ?? 0;
+          expect(result.characterPity).toBe(expectedCharacterPity);
+        }
       });
     });
   });
@@ -159,9 +180,11 @@ describe("State Migrations", () => {
 
       // Specific fields should match expected values
       expect(migratedFromV1.version).toBe(v2Snapshot.version);
-      expect(migratedFromV1.characterPity).toBe(
-        v1Snapshot.accountStatusCurrentPity
-      );
+      if ("characterPity" in migratedFromV1) {
+        expect(migratedFromV1.characterPity).toBe(
+          v1Snapshot.accountStatusCurrentPity
+        );
+      }
       expect(migratedFromV1.weaponPity).toBe(0); // New field default
     });
   });

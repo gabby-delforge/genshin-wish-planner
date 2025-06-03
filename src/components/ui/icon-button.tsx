@@ -1,3 +1,4 @@
+/* eslint-disable mobx/missing-observer */
 import { Icon } from "@phosphor-icons/react";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 

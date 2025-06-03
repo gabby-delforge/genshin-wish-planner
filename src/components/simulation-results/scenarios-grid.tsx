@@ -1,3 +1,4 @@
+import React from "react";
 import { ApiBanner, Scenario } from "@/lib/types";
 import { observer } from "mobx-react-lite";
 import { BannerVersion } from "../banner/banner-version";
@@ -16,13 +17,36 @@ const GridSection = observer(
     label: string;
     className?: string;
   }) => {
+    // Generate explicit grid column classes that Tailwind can detect
+    const getGridColsClass = (columnCount: number) => {
+      const gridClasses = {
+        1: "grid-cols-1",
+        2: "grid-cols-2",
+        3: "grid-cols-3",
+        4: "grid-cols-4",
+        5: "grid-cols-5",
+        6: "grid-cols-6",
+        7: "grid-cols-7",
+        8: "grid-cols-8",
+        9: "grid-cols-9",
+        10: "grid-cols-10",
+        11: "grid-cols-11",
+        12: "grid-cols-12",
+      } as const;
+
+      return (
+        gridClasses[columnCount as keyof typeof gridClasses] || "grid-cols-12"
+      );
+    };
+
+    const columnsCount = banners.length + 1;
+    const gridColsClass = getGridColsClass(columnsCount);
+
     return (
       <div className="text-sm">
         <div className="py-2">{label}</div>
         <div
-          className={`grid grid-cols-${
-            banners.length + 1
-          } gap-1 @lg/sim:gap-4 justify-center pb-2`}
+          className={`grid ${gridColsClass} gap-1 @lg/sim:gap-4 justify-center pb-2`}
         >
           <>
             {banners.map((banner) => (
@@ -32,12 +56,10 @@ const GridSection = observer(
           </>
         </div>
         <div
-          className={`grid grid-cols-${
-            banners.length + 1
-          } gap-x-1 gap-y-6 py-2 ${className}`}
+          className={`grid ${gridColsClass} gap-x-1 gap-y-6 py-2 ${className}`}
         >
           {scenarios.map((scenario, scenarioIndex) => (
-            <>
+            <React.Fragment key={`scenario-${scenarioIndex}`}>
               {banners.map((banner) => {
                 // Find the banner outcome for this banner
                 const bannerOutcome = scenario.bannerOutcomes.find(
@@ -58,7 +80,7 @@ const GridSection = observer(
                 </div>
                 <ProgressBar percent={scenario.probability} />
               </div>
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>
@@ -82,8 +104,8 @@ const ScenariosGrid = observer(({ scenarios, banners }: ScenariosGridProps) => {
   const mostLikelyScenario = scenarios.slice(0, 1);
   const remainingScenarios = scenarios.slice(1);
 
-  // Ensure we show at least 5 scenarios total
-  const minScenariosToShow = Math.min(5, scenarios.length);
+  // Ensure we show at least 10 scenarios total
+  const minScenariosToShow = Math.min(10, scenarios.length);
   const remainingScenariosToShow = minScenariosToShow - 1; // -1 for the most likely scenario
 
   const likelyScenarios = remainingScenarios

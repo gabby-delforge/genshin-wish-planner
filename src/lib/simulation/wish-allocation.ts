@@ -75,29 +75,16 @@ export class WishAllocation {
           priority: DEFAULT_PRIORITY,
         };
       }
-      const weapConfig: Record<
-        WeaponId,
-        {
-          wishesAllocated: number;
-          priority: Priority;
-        }
-      > = {};
-      for (const weaponId of Object.keys(allocation.weapAllocations)) {
-        weapConfig[weaponId] = {
-          wishesAllocated: allocation.weapAllocations[weaponId]!,
-          priority: DEFAULT_PRIORITY,
-        };
-      }
       const currBanner = this.banners.find((b) => b.id === bannerId)!;
       alloc[bannerId] = {
-        banner: currBanner,
+        bannerId,
         isCurrentBanner: false, // TODO: These properties shouldn't be passed around everywhere
         isOldBanner: false, // TODO: " "
         characters: charConfig,
-        weapons: weapConfig,
         weaponBanner: {
           wishesAllocated: 0,
           epitomizedPath: currBanner.weapons[0],
+          maxRefinement: 0,
           strategy: "stop",
         },
       };

@@ -6,6 +6,7 @@
  */
 
 import { vi } from "vitest";
+import { SIMULATION_COUNT } from "../../consts";
 import { GenshinState } from "../genshin-state";
 import { makeLocalStorage } from "../make-local-storage";
 
@@ -57,8 +58,8 @@ describe("Hydration Behavior", () => {
       // State should be initialized with defaults
       expect(state.characterPity).toBe(0);
       expect(state.weaponPity).toBe(0);
-      expect(state.accountStatusIsNextFiftyFiftyGuaranteed).toBe(false);
-      expect(state.simulationCount).toBe(10000);
+      expect(state.isNextCharacterFeaturedGuaranteed).toBe(false);
+      expect(state.simulationCount).toBe(SIMULATION_COUNT);
       expect(state.mode).toBe("playground");
       expect(state.isClient).toBe(false);
       expect(state.isLoading).toBe(true); // Loading is now always true initially
@@ -199,7 +200,7 @@ describe("Hydration Behavior", () => {
       mockStorage.setItem.mockClear();
 
       // Change state
-      state.setAccountStatusCurrentPity(33);
+      state.setCharacterPity(33);
 
       // Should trigger localStorage save
       expect(mockStorage.setItem).toHaveBeenCalledWith(
@@ -298,7 +299,7 @@ describe("Hydration Behavior", () => {
       global.window = {} as any;
       global.localStorage = mockLocalStorage() as any;
       const mockStorage = global.localStorage as any;
-      
+
       // Mock localStorage with NaN-producing data (like user's "abcd" case)
       mockStorage.getItem.mockImplementation((key: string) => {
         const storage: Record<string, string> = {
@@ -310,24 +311,36 @@ describe("Hydration Behavior", () => {
       });
 
       mockStorage.key.mockImplementation((index: number) => {
-        const keys = ["test-store_characterPity", "test-store_weaponPity", "test-store_simulationCount"];
+        const keys = [
+          "test-store_characterPity",
+          "test-store_weaponPity",
+          "test-store_simulationCount",
+        ];
         return keys[index] || null;
       });
 
-      Object.defineProperty(mockStorage, "length", { value: 3, writable: true });
+      Object.defineProperty(mockStorage, "length", {
+        value: 3,
+        writable: true,
+      });
 
       const state = new GenshinState();
-      
-      makeLocalStorage(state, "test-store", ["characterPity", "weaponPity", "simulationCount"], {
-        beforeLoad: (loadedData) => {
-          state.isLoading = false;
-          return loadedData;
-        },
-      });
+
+      makeLocalStorage(
+        state,
+        "test-store",
+        ["characterPity", "weaponPity", "simulationCount"],
+        {
+          beforeLoad: (loadedData) => {
+            state.isLoading = false;
+            return loadedData;
+          },
+        }
+      );
 
       // Invalid numbers should be rejected, valid numbers should load
       expect(state.characterPity).toBe(0); // Default (NaN rejected)
-      expect(state.weaponPity).toBe(0); // Default (Infinity rejected)  
+      expect(state.weaponPity).toBe(0); // Default (Infinity rejected)
       expect(state.simulationCount).toBe(42); // Valid number loaded
       expect(state.isLoading).toBe(false);
     });
@@ -336,9 +349,9 @@ describe("Hydration Behavior", () => {
       global.window = {} as any;
       global.localStorage = mockLocalStorage() as any;
       const mockStorage = global.localStorage as any;
-      
+
       // Create corrupted and valid object data
-      const validResources = {
+      const _validResources = {
         primogem: 1600,
         starglitter: 50,
         limitedWishes: 10,
@@ -358,30 +371,42 @@ describe("Hydration Behavior", () => {
 
       mockStorage.getItem.mockImplementation((key: string) => {
         const storage: Record<string, string> = {
-          "test-store_accountStatusOwnedWishResources": JSON.stringify(corruptedResources),
+          "test-store_accountStatusOwnedWishResources":
+            JSON.stringify(corruptedResources),
           "test-store_characterPity": JSON.stringify(75), // Valid number
         };
         return storage[key] || null;
       });
 
       mockStorage.key.mockImplementation((index: number) => {
-        const keys = ["test-store_accountStatusOwnedWishResources", "test-store_characterPity"];
+        const keys = [
+          "test-store_accountStatusOwnedWishResources",
+          "test-store_characterPity",
+        ];
         return keys[index] || null;
       });
 
-      Object.defineProperty(mockStorage, "length", { value: 2, writable: true });
-
-      const state = new GenshinState();
-      
-      makeLocalStorage(state, "test-store", ["accountStatusOwnedWishResources", "characterPity"], {
-        beforeLoad: (loadedData) => {
-          state.isLoading = false;
-          return loadedData;
-        },
+      Object.defineProperty(mockStorage, "length", {
+        value: 2,
+        writable: true,
       });
 
+      const state = new GenshinState();
+
+      makeLocalStorage(
+        state,
+        "test-store",
+        ["ownedWishResources", "characterPity"],
+        {
+          beforeLoad: (loadedData) => {
+            state.isLoading = false;
+            return loadedData;
+          },
+        }
+      );
+
       // Corrupted object should be rejected, valid data should load
-      expect(state.accountStatusOwnedWishResources).toEqual({
+      expect(state.ownedWishResources).toEqual({
         primogem: 0,
         starglitter: 0,
         limitedWishes: 0,
@@ -396,29 +421,29 @@ describe("Hydration Behavior", () => {
       global.window = {} as any;
       global.localStorage = mockLocalStorage() as any;
       const mockStorage = global.localStorage as any;
-      
+
       // Mock deeply nested data (like bannerConfiguration)
-      const validBannerConfig = {
+      const _validBannerConfig = {
         "banner-1": {
           characters: {
             "char-1": {
               priority: "high",
               wishesAllocated: 90,
-              maxConstellation: 6
-            }
+              maxConstellation: 6,
+            },
           },
           weapons: {
             "weapon-1": {
               priority: "medium",
               wishesAllocated: 0,
-            }
+            },
           },
           weaponBanner: {
             wishesAllocated: 0,
             epitomizedPath: null,
-            strategy: "stop"
-          }
-        }
+            strategy: "stop",
+          },
+        },
       };
 
       const corruptedBannerConfig = {
@@ -427,26 +452,26 @@ describe("Hydration Behavior", () => {
             "char-1": {
               priority: "high",
               wishesAllocated: "invalid", // String instead of number
-              maxConstellation: NaN // Invalid number
-            }
+              maxConstellation: NaN, // Invalid number
+            },
           },
           weapons: {
             "weapon-1": {
               priority: "medium",
               wishesAllocated: 0,
-            }
+            },
           },
           weaponBanner: {
             wishesAllocated: 0,
             epitomizedPath: null,
-            strategy: "stop"
-          }
-        }
+            strategy: "stop",
+          },
+        },
       };
 
       mockStorage.getItem.mockImplementation((key: string) => {
-        return key === "test-store_bannerConfiguration" 
-          ? JSON.stringify(corruptedBannerConfig) 
+        return key === "test-store_bannerConfiguration"
+          ? JSON.stringify(corruptedBannerConfig)
           : null;
       });
 
@@ -455,10 +480,13 @@ describe("Hydration Behavior", () => {
         return keys[index] || null;
       });
 
-      Object.defineProperty(mockStorage, "length", { value: 1, writable: true });
+      Object.defineProperty(mockStorage, "length", {
+        value: 1,
+        writable: true,
+      });
 
       const state = new GenshinState();
-      
+
       makeLocalStorage(state, "test-store", ["bannerConfiguration"], {
         beforeLoad: (loadedData) => {
           state.isLoading = false;
@@ -475,17 +503,24 @@ describe("Hydration Behavior", () => {
       global.window = {} as any;
       global.localStorage = mockLocalStorage() as any;
       const mockStorage = global.localStorage as any;
-      
+
       // Create circular reference
       const circularObj: any = { a: 1 };
       circularObj.self = circularObj;
 
-      mockStorage.getItem.mockImplementation(() => JSON.stringify({ test: "value" }));
-      mockStorage.key.mockImplementation((index: number) => index === 0 ? "test-store_testProp" : null);
-      Object.defineProperty(mockStorage, "length", { value: 1, writable: true });
+      mockStorage.getItem.mockImplementation(() =>
+        JSON.stringify({ test: "value" })
+      );
+      mockStorage.key.mockImplementation((index: number) =>
+        index === 0 ? "test-store_testProp" : null
+      );
+      Object.defineProperty(mockStorage, "length", {
+        value: 1,
+        writable: true,
+      });
 
       const state = new GenshinState();
-      
+
       // This should not crash due to maximum depth limit
       expect(() => {
         makeLocalStorage(state, "test-store", ["characterPity"], {
