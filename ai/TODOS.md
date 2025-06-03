@@ -4,6 +4,12 @@
 
 **Must fix before any deployment**
 
+- [ ] **Create media query hooks system**
+  - `src/lib/hooks/use-media-query.ts` - Custom hook for responsive breakpoints
+  - `src/lib/hooks/use-mobile.ts` - Mobile-specific hook for component branching
+  - Enables proper responsive component rendering instead of CSS-only solutions
+  - Critical for proper mobile UX and performance
+
 - [ ] **Fix hydration errors:**
 
   - `src/components/resource.tsx:40-18` - `{number && <div>{number}</div>}` rendered on client/server and not the other
@@ -19,17 +25,7 @@
 
 ## 🔥 HIGH PRIORITY
 
-### State Management
-
-- [ ] **Add localStorage cleanup test**
-
-  - Verify old keys are removed after migration to prevent quota issues
-
-- [ ] **Implement state backup/restore functionality**
-
-- [ ] [FEATURE] **Implement "strategies"** so that users can tell the simulator what to do with leftover wishes if characters are obtained early - see ./wish-strategies.md
-
-### Mobile Responsiveness → [Details](./mobile-responsiveness.md)
+### Mobile Responsiveness (Launch Critical) → [Details](./mobile-responsiveness.md)
 
 - [ ] **Remove input spinners for touch devices**
   - `src/components/ui/input.tsx:163-184` - Use native `inputMode="numeric"`
@@ -41,6 +37,21 @@
   - `src/components/ui/checkbox.tsx:16`
 - [ ] **Add touch targets to IconButton component**
   - `src/components/ui/icon-button.tsx:27-28`
+
+### Core Features
+
+- [ ] [FEATURE] **Implement weapon wishing**
+
+### State Management
+
+- [ ] **Add localStorage cleanup test**
+  - Verify old keys are removed after migration to prevent quota issues
+
+- [ ] **Implement state backup/restore functionality**
+
+- [ ] [FEATURE] **Implement "strategies"** so that users can tell the simulator what to do with leftover wishes if characters are obtained early - see ./wish-strategies.md
+
+- [ ] [FEATURE] **Implement Capturing Radiance**
 
 ## 🔧 MEDIUM PRIORITY
 
@@ -68,7 +79,6 @@
 
 ### Features
 
-- [ ] **Implement weapon wishing**
 - [ ] **Implement strategy mode**
 
 ### Advanced Features
@@ -80,6 +90,14 @@
 ---
 
 ## ✅ COMPLETED
+
+### Mobile Responsiveness
+
+- [x] **Implement mobile-responsive banner card layouts**
+  - `src/components/banner/character-row.tsx` - 2x2 grid layout on mobile (character name spans 2 cols, constellation and wishes each span 1 col)
+  - `src/components/banner/weapon-banner-row.tsx` - 2x2 grid layout on mobile (weapon selector spans 2 cols, refinement and wishes each span 1 col)
+
+### State Management & Infrastructure
 
 - [x] **CRITICAL: Change CLEAR_DATA from true to false** (Fixed data loss issue)
   - `src/lib/mobx/make-local-storage.ts:3`
