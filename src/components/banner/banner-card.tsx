@@ -145,7 +145,8 @@ const BannerCard = observer(
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-2 md:px-6 flex flex-col">
+        <CardContent className="space-y-2 px-2 md:px-6 flex flex-col">
+          {FLAGS.WEAPON_BANNER && "Character Banners"}
           {bannerConfiguration.banner.characters.map((characterId) => {
             const character = API_CHARACTERS[characterId];
             if (!character) return null;
@@ -181,6 +182,7 @@ const BannerCard = observer(
           {FLAGS.WEAPON_BANNER && (
             <>
               <Separator />
+              Weapon Banner
               <WeaponBannerRow
                 weapons={[
                   API_WEAPONS[bannerData.weapons[0]!]!, // Lol

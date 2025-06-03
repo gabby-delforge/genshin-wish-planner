@@ -1,6 +1,6 @@
 /* eslint-disable mobx/missing-observer */
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Error({
   error,
@@ -8,6 +8,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [dataCleared, setDataCleared] = useState(false);
+
   useEffect(() => {
     console.warn("App error, resetting data:", error);
 
@@ -32,16 +34,26 @@ export default function Error({
       console.log(e);
     }
 
-    // Automatically reload after clearing data
-    setTimeout(() => {
-      window.location.reload();
-    }, 2000);
+    setDataCleared(true);
   }, [error]);
 
-  // This component will only be visible for a brief moment before reload
+  const handleReload = () => {
+    window.location.reload();
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4">
       <div className="text-gray-500 text-sm">Oops! Something went wrong...</div>
+      {dataCleared && (
+        <>
+          <button
+            onClick={handleReload}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Reload Page
+          </button>
+        </>
+      )}
     </div>
   );
 }

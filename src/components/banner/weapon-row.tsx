@@ -61,7 +61,7 @@ export const WeaponRow = observer(
         <div className="">
           {mode === "playground" && (
             <div className="flex flex-col">
-              <div className="text-sm text-gray-400/70">Spend</div>
+              <div className="text-sm text-gray-400/70">Spend up to</div>
               <Input
                 isLoading={isLoading}
                 id={`wishes-${weapon.Id}`}

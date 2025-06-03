@@ -87,7 +87,9 @@ export const CharacterRow = observer(
         <>
           {mode === "playground" && (
             <div className="flex flex-col">
-              <div className="text-xs text-white text-right mr-4">Spend</div>
+              <div className="text-xs text-white text-right mr-4">
+                Spend up to
+              </div>
               <Input
                 isLoading={isLoading}
                 id={`wishes-${character.Id}`}
