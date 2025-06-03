@@ -24,7 +24,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       <button
         ref={ref}
         onClick={onClick}
-        className={`inline-flex items-center justify-center rounded-md hover:text-white active:scale-110 origin-center focus:outline-none  transition-colors ${className}`}
+        className={`inline-flex items-center justify-center rounded-md hover:text-white active:scale-110 origin-center focus:outline-none transition-colors min-h-[44px] min-w-[44px] ${className}`}
         {...props}
       >
         <IconComponent size={size} weight={weight} />

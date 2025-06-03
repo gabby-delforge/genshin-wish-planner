@@ -207,6 +207,12 @@ export class GenshinState {
     bannerConfig.weaponBanner.strategy = value;
   }
 
+  setWeaponBannerMaxRefinement(bannerId: BannerId, value: number) {
+    const bannerConfig = this.bannerConfiguration[bannerId];
+    if (!bannerConfig) return;
+    bannerConfig.weaponBanner.maxRefinement = clamp(value, 0, 4);
+  }
+
   setCharacterPullPriority(
     bannerId: BannerId,
     characterId: CharacterId,

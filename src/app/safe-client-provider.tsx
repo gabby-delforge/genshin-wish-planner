@@ -1,7 +1,9 @@
+/* eslint-disable mobx/missing-observer */
 // app/safe-client-provider.tsx
 "use client";
 
 import { GenshinProvider } from "@/lib/mobx/genshin-context";
+import { ResponsiveProvider } from "@/lib/responsive-design/responsive-context";
 import { usePathname } from "next/navigation";
 
 export default function SafeClientProvider({
@@ -22,5 +24,9 @@ export default function SafeClientProvider({
     return <>{children}</>;
   }
 
-  return <GenshinProvider>{children}</GenshinProvider>;
+  return (
+    <GenshinProvider>
+      <ResponsiveProvider>{children}</ResponsiveProvider>
+    </GenshinProvider>
+  );
 }

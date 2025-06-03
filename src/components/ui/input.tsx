@@ -123,7 +123,7 @@ const Input = React.forwardRef<
     // Class that emulates an "input"-like aesthetic, for the wrapper div
     const c = cn(
       `flex items-center
-        h-7 min-w-0
+        h-11 min-w-0
         rounded-md
         border border-white/12 hover:border-white/25
         bg-white/3 focus-within:bg-white/10
@@ -145,9 +145,10 @@ const Input = React.forwardRef<
 
         <input
           type={type}
+          inputMode={type === "number" ? "numeric" : undefined}
           className={`focus-visible:outline-none text-right min-w-0 ${
             width ? width : ""
-          } ${!isValid ? "text-red-300" : ""}`}
+          } ${!isValid ? "text-red-300" : ""} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           ref={inputRef}
           value={displayValue}
           onFocus={handleFocus}
@@ -159,26 +160,26 @@ const Input = React.forwardRef<
     );
 
     const plusMinus = (
-      <div className="flex flex-col justify-around items-center">
+      <div className="flex flex-col justify-center items-center h-11">
         <IconButton
           icon={CaretUpIcon}
-          size={12}
+          size={16}
           onClick={() => {
             const currentValue = Number(value) || 0;
             handlePlusMinusChange(currentValue + 1);
           }}
           weight="bold"
-          className="text-white/30"
+          className="text-white/30 h-5.5 w-8 min-h-[22px] min-w-[32px] flex items-center justify-center"
         />
         <IconButton
           icon={CaretDownIcon}
-          size={12}
+          size={16}
           onClick={() => {
             const currentValue = Number(value) || 0;
             handlePlusMinusChange(Math.max(0, currentValue - 1));
           }}
           weight="bold"
-          className="text-white/30"
+          className="text-white/30 h-5.5 w-8 min-h-[22px] min-w-[32px] flex items-center justify-center"
         />
       </div>
     );

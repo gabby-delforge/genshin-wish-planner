@@ -10,6 +10,7 @@ import {
   WeaponBannerSimulationResult,
   WeaponId,
   WeaponOutcome,
+  WeaponSuccessRate,
   WishForWeaponResult,
 } from "../types";
 import {
@@ -280,7 +281,7 @@ const wishForBanner = (
   isGuaranteed: boolean,
   currentWeaponPity: number = 0,
   isWeaponGuaranteed: boolean = false,
-  weaponFatePoints: number = 0
+  _weaponFatePoints: number = 0
 ): BannerSimulationResult | undefined => {
   const bannerVersion = banner.version;
   const versionAllocation = bannerConfiguration[bannerVersion] || {};
@@ -560,6 +561,8 @@ export const finalizeResults = (
     `${CharacterId}${BannerId}C${number}`,
     number
   > = {};
+  const weaponSuccessTotals: Record<`${WeaponId}${BannerId}`, number> = {};
+  const weaponAttemptTotals: Record<`${WeaponId}${BannerId}`, number> = {};
 
   const numSimulations = allSimulationResults.length;
   const scenarios: Record<
@@ -612,6 +615,32 @@ export const finalizeResults = (
           }
         }
       }
+
+      // Add to weapon success totals (only for weapons with wishes allocated)
+      for (const w of bannerResult.weaponResults) {
+        const weaponId = w.weapon;
+        const weaponResult = bannerResult.weaponResults.find(
+          (w) => w.weapon === weaponId
+        );
+        // Only track weapons that had wishes allocated to them
+        if (weaponResult && weaponResult.hasWishesAllocated) {
+          const code: `${WeaponId}${BannerId}` = `${weaponId}${bannerVersion}`;
+
+          // Track attempts
+          if (!(code in weaponAttemptTotals)) {
+            weaponAttemptTotals[code] = 0;
+          }
+          weaponAttemptTotals[code] += 1;
+
+          // Track successes
+          if (!(code in weaponSuccessTotals)) {
+            weaponSuccessTotals[code] = 0;
+          }
+          if (weaponResult.obtained) {
+            weaponSuccessTotals[code] += 1;
+          }
+        }
+      }
     }
 
     const scenarioString = scenarioToScenarioString(simulationResult);
@@ -641,6 +670,28 @@ export const finalizeResults = (
     }
   }
 
+  // Calculate weapon success rates
+  const weaponSuccessRates: WeaponSuccessRate[] = [];
+  for (const code of Object.keys(weaponAttemptTotals)) {
+    // Match weapon ID (everything before the version pattern) and version pattern
+    const regexLiteral: RegExp = /^(.+?)(\d\.\dv\d)$/;
+    const result: string[] | null = regexLiteral.exec(code);
+    if (result) {
+      const successCount =
+        weaponSuccessTotals[code as `${WeaponId}${BannerId}`] || 0;
+      const attemptCount =
+        weaponAttemptTotals[code as `${WeaponId}${BannerId}`];
+      weaponSuccessRates.push({
+        versionId: result[2],
+        weaponId: result[1],
+        refinement: 0, // TODO: This is hard-coded
+        successPercent: successCount / attemptCount,
+      });
+    } else {
+      console.warn("No match found for weapon code ", code);
+    }
+  }
+
   // Sort old scenarios by count and return top 10 (backwards compatibility)
   const sortedScenarios = Object.values(scenarios)
     .sort((a, b) => b.count - a.count)
@@ -665,6 +716,7 @@ export const finalizeResults = (
     // bannerResults, TODO: This is commented out because it contains info about EVERY single run, so we can't save it to local storage.
     bannerResults: {},
     characterSuccessRates,
+    weaponSuccessRates,
     topScenarios: sortedScenarios.slice(0, 10),
     scenarios: {
       scenarios: sortedNewScenarios,

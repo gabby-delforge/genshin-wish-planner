@@ -33,6 +33,7 @@ export const initializeBannerConfigurations = (
         wishesAllocated: 0,
         epitomizedPath: banner.weapons[0], // Which weapon to chart path for
         strategy: "stop", // Stop after getting epitomized weapon, or continue for both
+        maxRefinement: 1, // Default to R1 (0 = R1, 4 = R5)
       },
     };
 

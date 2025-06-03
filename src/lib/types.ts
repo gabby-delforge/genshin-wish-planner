@@ -20,6 +20,7 @@ export interface WeaponBannerConfig {
   wishesAllocated: number;
   epitomizedPath: WeaponId; // Which weapon to chart path for
   strategy: "stop" | "continue"; // Stop after getting epitomized weapon, or continue for both
+  maxRefinement: number; // Stop pulling once this refinement is reached (0 = R1, 4 = R5)
 }
 
 export type BannerConfiguration = {
@@ -55,6 +56,13 @@ export type CharacterSuccessRate = {
   versionId: BannerId;
   characterId: CharacterId;
   constellation: number;
+  successPercent: number;
+};
+
+export type WeaponSuccessRate = {
+  versionId: BannerId;
+  weaponId: WeaponId;
+  refinement: number; // 0 = R1, 1 = R2, etc.
   successPercent: number;
 };
 
@@ -256,6 +264,8 @@ export interface SimulationResults {
   bannerResults: Record<BannerId, BannerSimulationResult[]>;
   // Success rates for each character that was wished for in each banner
   characterSuccessRates: CharacterSuccessRate[];
+  // Success rates for each weapon that was wished for in each banner
+  weaponSuccessRates: WeaponSuccessRate[];
   // Common scenario patterns
   topScenarios: ScenarioResult[];
   scenarios: ScenarioResults; // New simplified structure

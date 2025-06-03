@@ -98,6 +98,7 @@ export class WishAllocation {
         weaponBanner: {
           wishesAllocated: 0,
           epitomizedPath: currBanner.weapons[0],
+          maxRefinement: 0,
           strategy: "stop",
         },
       };
