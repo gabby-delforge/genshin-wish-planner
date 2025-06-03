@@ -1,9 +1,10 @@
 /* eslint-disable mobx/missing-observer */
+import { GlobalErrorHandler } from "@/components/global-error-handler";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { GlobalErrorHandler } from "@/components/global-error-handler";
 import { SilentErrorBoundary } from "./error-boundary";
 import "./globals.css";
 import SafeClientProvider from "./safe-client-provider";
@@ -19,7 +20,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wish Simulator | Irminsul.io",
+  title:
+    process.env.NODE_ENV === "development"
+      ? "[DEV] Wish Simulator | Irminsul.io"
+      : "Wish Simulator | Irminsul.io",
 };
 
 if (process.env.NODE_ENV === "production") {
@@ -43,6 +47,7 @@ export default function RootLayout({
           <SafeClientProvider>{children}</SafeClientProvider>
         </SilentErrorBoundary>
         <Analytics />
+        <SpeedInsights />
         <GoogleAnalytics gaId="G-MS78GXGNYZ" />
       </body>
     </html>
