@@ -27,16 +27,16 @@
 
 ### Mobile Responsiveness (Launch Critical) → [Details](./mobile-responsiveness.md)
 
-- [ ] **Remove input spinners for touch devices**
-  - `src/components/ui/input.tsx:163-184` - Use native `inputMode="numeric"`
-- [ ] **Increase button touch targets to 44x44px minimum**
-  - `src/components/ui/button.tsx:24-27`
-- [ ] **Fix plus/minus buttons (currently 12px)**
-  - `src/components/ui/input.tsx:165,175`
-- [ ] **Increase checkbox touch targets**
-  - `src/components/ui/checkbox.tsx:16`
-- [ ] **Add touch targets to IconButton component**
-  - `src/components/ui/icon-button.tsx:27-28`
+- [x] **Remove input spinners for touch devices**
+  - `src/components/ui/input.tsx` - Added `inputMode="numeric"` and CSS to hide spinners
+- [x] **Increase button touch targets to 44x44px minimum**
+  - `src/components/ui/button.tsx` - Updated all size variants to meet 44px minimum
+- [x] **Fix plus/minus buttons (currently 12px)**
+  - `src/components/ui/input.tsx` - Increased icon size and added proper touch targets
+- [x] **Increase checkbox touch targets**
+  - `src/components/ui/checkbox.tsx` - Added 44x44px minimum touch area
+- [x] **Add touch targets to IconButton component**
+  - `src/components/ui/icon-button.tsx` - Added 44x44px minimum touch targets
 
 ### Core Features
 
@@ -66,8 +66,8 @@
 
 ### Mobile Polish
 
-- [ ] **Increase input container heights to 44px**
-  - `src/components/ui/input.tsx:126`
+- [x] **Increase input container heights to 44px**
+  - `src/components/ui/input.tsx` - Updated from h-7 to h-11 (44px)
 - [ ] **Implement mobile-first typography**
   - `src/components/ui/input.tsx:138`
 - [ ] **Increase grid gaps for touch interactions**
