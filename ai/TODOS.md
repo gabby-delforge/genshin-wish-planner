@@ -5,10 +5,12 @@
 **Must fix before any deployment**
 
 - [ ] **Fix hydration errors:**
+
   - `src/components/resource.tsx:40-18` - `{number && <div>{number}</div>}` rendered on client/server and not the other
   - `src/app/panels/configuration/wish-resources.tsx:64` - Number of total wishes is different on client and server
 
 - [ ] **Add comprehensive state validation**
+
   - `src/lib/mobx/make-local-storage.ts` - Validate pity (0-89), constellation (0-6), resources (non-negative)
 
 - [ ] **Fix error boundary coverage**
@@ -20,9 +22,12 @@
 ### State Management
 
 - [ ] **Add localStorage cleanup test**
+
   - Verify old keys are removed after migration to prevent quota issues
 
 - [ ] **Implement state backup/restore functionality**
+
+- [ ] [FEATURE] **Implement "strategies"** so that users can tell the simulator what to do with leftover wishes if characters are obtained early - see ./wish-strategies.md
 
 ### Mobile Responsiveness → [Details](./mobile-responsiveness.md)
 
