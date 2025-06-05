@@ -32,7 +32,7 @@ function Resource({
         height={size}
         unoptimized
       />
-      {typeof number === "number" && <div>{number}</div>}
+      {typeof number === "number" && Number.isFinite(number) && <div>{number}</div>}
     </div>
   );
 }

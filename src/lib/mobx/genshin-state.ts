@@ -21,8 +21,6 @@ import {
 } from "../types";
 import { clamp, getCurrentBanner, isPastDate } from "../utils";
 import { initializeBannerConfigurations } from "./initializers";
-import { makeLocalStorage } from "./make-local-storage";
-import { validateLoadedState } from "./migration-helpers";
 import { STATE_VERSION } from "./state-version";
 
 export class GenshinState {
@@ -79,7 +77,7 @@ export class GenshinState {
     "version",
   ];
 
-  constructor(storageKey: string) {
+  constructor() {
     this.characterPity = 0;
     this.accountStatusIsNextFiftyFiftyGuaranteed = false;
     this.accountStatusOwnedWishResources = {
@@ -120,25 +118,11 @@ export class GenshinState {
     this.optimizerSimulationResults = null;
     this.bannerConfiguration = initializeBannerConfigurations(this.banners);
     this.isClient = typeof window !== "undefined";
-    this.isLoading = this.isClient; // Loading if we're on client side
+
+    this.isLoading = true;
 
     makeAutoObservable(this, {}, { autoBind: true });
-
-    makeLocalStorage(this, storageKey, this.PERSISTED_KEYS, {
-      beforeLoad: (loadedData) => {
-        this.isLoading = false; // Done loading after localStorage is processed
-        return validateLoadedState(loadedData);
-      },
-      onParseError: (key, error) => {
-        console.warn(
-          `Auto-fixing corrupted storage for ${key}:`,
-          error.message
-        );
-      },
-    });
   }
-
-  // Autorun: Save to local storage when state changes
 
   setAccountStatusCurrentPity(pity: number) {
     this.characterPity = pity;
@@ -608,4 +592,4 @@ export class GenshinState {
   }
 }
 
-export const genshinState = new GenshinState("genshin-store");
+export const genshinState = new GenshinState();
