@@ -1,0 +1,32 @@
+name: Run Tests
+
+on:
+  # Run tests on every push to main/master
+  push:
+    branches: [main, master]
+
+  # Run tests on all pull requests
+  pull_request:
+    branches: [main, master]
+
+  # Allow manual workflow runs
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Jest tests
+        run: npm test

@@ -1,4 +1,4 @@
-// app/safe-client-provider.tsx
+/* eslint-disable mobx/missing-observer */
 "use client";
 
 import { GenshinProvider } from "@/lib/mobx/genshin-context";
@@ -11,7 +11,6 @@ export default function SafeClientProvider({
 }) {
   const pathname = usePathname();
 
-  // For error pages, don't wrap with your custom providers
   if (
     pathname === "/error" ||
     pathname === "/not-found" ||

@@ -10,7 +10,7 @@ import { GenshinState } from '../src/lib/mobx/genshin-state';
 
 function generateStateSnapshot(version: number) {
   // Create a temporary instance to get the actual initial state data
-  const tempState = new GenshinState('temp-snapshot');
+  const tempState = new GenshinState();
   const stateShape = tempState.getStateShape();
   
   // Set the version explicitly
