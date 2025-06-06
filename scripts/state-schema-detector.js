@@ -230,6 +230,7 @@ function hasBreakingChanges(changes) {
 function main() {
   const args = process.argv.slice(2);
   const command = args[0];
+  const forceSnapshot = args.includes('--force-snapshot');
 
   if (command === "check") {
     console.log("🔍 Checking for state schema changes...");
@@ -249,11 +250,105 @@ function main() {
       changes.typeChanged.length > 0 ||
       changes.possibleRenames.length > 0;
 
-    if (!hasChanges) {
+    if (!hasChanges && !forceSnapshot) {
       console.log("✅ No state schema changes detected");
       // Update the snapshot
       saveSnapshot(newSnapshot, CURRENT_SNAPSHOT_PATH);
       process.exit(0);
+    }
+
+    if (!hasChanges && forceSnapshot) {
+      console.log("🔧 Force snapshot mode: generating snapshot without schema changes");
+      
+      // Check if we're running in an interactive terminal
+      const isInteractive = process.stdin.isTTY && process.stdout.isTTY;
+
+      if (!isInteractive) {
+        console.log("⚠️  Use --force-snapshot in interactive mode to create snapshot without schema changes");
+        process.exit(1);
+      }
+
+      const readline = require("readline");
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      rl.question("Generate new version snapshot for data changes (banner updates, etc.)? (Y/n): ", (answer) => {
+        const shouldGenerate = answer.toLowerCase() === "y" || answer.toLowerCase() === "yes" || answer.trim() === "";
+
+        if (shouldGenerate) {
+          // Get current version to suggest next version
+          const { getVersion } = require("./increment-state-version.js");
+          const currentVersion = getVersion();
+          const suggestedVersion = currentVersion + 1;
+
+          rl.question(`Enter version number (default: ${suggestedVersion}): `, (versionAnswer) => {
+            rl.close();
+
+            const targetVersion = versionAnswer.trim() === "" ? suggestedVersion : parseInt(versionAnswer);
+
+            if (isNaN(targetVersion) || targetVersion <= 0) {
+              console.error("❌ Invalid version number");
+              return;
+            }
+
+            // Check if snapshot already exists for this version
+            const snapshotPath = path.join(SNAPSHOTS_DIR, `v${targetVersion}.json`);
+            if (fs.existsSync(snapshotPath)) {
+              console.error(`❌ Snapshot v${targetVersion}.json already exists`);
+              return;
+            }
+
+            // Allow creating snapshot for current version if it doesn't exist, otherwise must be greater
+            if (targetVersion < currentVersion) {
+              console.error(`❌ Version ${targetVersion} is less than current version ${currentVersion}`);
+              return;
+            }
+
+            // Update version file if target version is different from current
+            let result = { oldVersion: currentVersion, newVersion: targetVersion };
+            if (targetVersion !== currentVersion) {
+              const { setVersion } = require("./increment-state-version.js");
+              result = setVersion(targetVersion);
+              if (!result) return;
+              console.log(`✅ Version set to ${targetVersion} for data changes`);
+            } else {
+              console.log(`✅ Creating snapshot for current version ${targetVersion}`);
+            }
+
+            if (result) {
+
+              // Generate a data snapshot for the new version
+              const { generateVersionSnapshot } = require("./migration-generator.js");
+              const { execSync } = require("child_process");
+              
+              try {
+                // Generate actual state data snapshot for the new version
+                const snapshotData = execSync(`npx tsx scripts/generate-state-snapshot.ts ${targetVersion}`, {
+                  encoding: "utf8",
+                });
+                const parsedSnapshot = JSON.parse(snapshotData);
+                
+                if (generateVersionSnapshot(targetVersion, parsedSnapshot)) {
+                  console.log(`📸 Generated v${targetVersion}.json snapshot`);
+                }
+
+                // Update current state shape
+                if (saveSnapshot(newSnapshot, CURRENT_SNAPSHOT_PATH)) {
+                  console.log("📸 Updated current state shape");
+                }
+              } catch (error) {
+                console.error("❌ Failed to generate state snapshot:", error.message);
+              }
+            }
+          });
+        } else {
+          rl.close();
+          console.log("📸 Skipping snapshot generation");
+        }
+      });
+      return;
     }
 
     console.log("🔍 State schema changes detected:");
@@ -286,7 +381,7 @@ function main() {
         output: process.stdout,
       });
 
-      rl.question("Create migration? (y/n): ", (answer) => {
+      rl.question("Create migration? (y/N): ", (answer) => {
         rl.close();
 
         if (answer.toLowerCase() === "y" || answer.toLowerCase() === "yes") {
@@ -355,14 +450,19 @@ function main() {
   }
 
   console.log(`
-Usage: node state-schema-detector.js <command>
+Usage: node state-schema-detector.js <command> [options]
 
 Commands:
   check    Check for state schema changes and update snapshot
   update   Force update the current state snapshot
 
+Options:
+  --force-snapshot   Generate new version snapshot even without schema changes
+                     (useful for banner data updates, etc.)
+
 Examples:
   node state-schema-detector.js check
+  node state-schema-detector.js check --force-snapshot
   node state-schema-detector.js update
 `);
 }

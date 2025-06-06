@@ -25,13 +25,12 @@ function getCurrentVersion() {
   }
 }
 
-function incrementVersion() {
+function setVersion(targetVersion) {
   const currentVersion = getCurrentVersion();
   if (currentVersion === null) {
     return false;
   }
   
-  const newVersion = currentVersion + 1;
   const newContent = `/**
  * State Schema Version
  * 
@@ -39,16 +38,26 @@ function incrementVersion() {
  * Do not edit manually - use the git hooks or migration scripts.
  */
 
-export const STATE_VERSION = ${newVersion};`;
+export const STATE_VERSION = ${targetVersion};`;
 
   try {
     fs.writeFileSync(STATE_VERSION_FILE, newContent);
-    console.log(`✅ State version incremented: ${currentVersion} → ${newVersion}`);
-    return { oldVersion: currentVersion, newVersion };
+    console.log(`✅ State version set: ${currentVersion} → ${targetVersion}`);
+    return { oldVersion: currentVersion, newVersion: targetVersion };
   } catch (error) {
-    console.error('❌ Failed to increment version:', error.message);
+    console.error('❌ Failed to set version:', error.message);
     return false;
   }
+}
+
+function incrementVersion() {
+  const currentVersion = getCurrentVersion();
+  if (currentVersion === null) {
+    return false;
+  }
+  
+  const newVersion = currentVersion + 1;
+  return setVersion(newVersion);
 }
 
 function main() {
@@ -92,5 +101,7 @@ if (require.main === module) {
 
 module.exports = {
   getCurrentVersion,
-  incrementVersion
+  getVersion: getCurrentVersion, // Alias for compatibility
+  incrementVersion,
+  setVersion
 };
