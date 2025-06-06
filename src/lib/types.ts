@@ -212,6 +212,7 @@ export type BannerSimulationResult = {
   wishesUsed: number;
   endPity: number;
   endGuaranteed: boolean;
+  endConsecutive5050Losses: number;
   endWeaponPity: number;
   endWeaponGuaranteed: boolean;
   endWeaponFatePoints: number;
@@ -275,6 +276,7 @@ export type WishForCharacterResult = {
   pity: number;
   guaranteed: boolean;
   constellation: number;
+  consecutive5050Losses: number;
 };
 
 export type WishForWeaponResult = {

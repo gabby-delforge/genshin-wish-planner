@@ -33,6 +33,7 @@ export class GenshinState {
   weaponPity: number = 0;
 
   isNextCharacterFeaturedGuaranteed: boolean = false;
+  isCapturingRadianceActive: boolean = false;
   isNextWeaponFeaturedGuaranteed: boolean = false;
 
   ownedWishResources: WishResources;
@@ -68,6 +69,7 @@ export class GenshinState {
     "characterPity",
     "weaponPity",
     "isNextCharacterFeaturedGuaranteed",
+    "isCapturingRadianceActive",
     "isNextWeaponFeaturedGuaranteed",
     "ownedWishResources",
     "primogemSources",
@@ -136,6 +138,10 @@ export class GenshinState {
 
   setIsNextCharacterFeaturedGuaranteed(guaranteed: boolean) {
     this.isNextCharacterFeaturedGuaranteed = guaranteed;
+  }
+
+  setIsCapturingRadianceActive(active: boolean) {
+    this.isCapturingRadianceActive = active;
   }
 
   setIsNextWeaponFeaturedGuaranteed(guaranteed: boolean) {
@@ -248,6 +254,7 @@ export class GenshinState {
       this.bannerConfiguration,
       this.characterPity,
       this.isNextCharacterFeaturedGuaranteed,
+      this.isCapturingRadianceActive,
       this.weaponPity,
       this.isNextWeaponFeaturedGuaranteed,
       this.simulationCount,
@@ -270,6 +277,7 @@ export class GenshinState {
       this.bannerConfiguration,
       this.characterPity,
       this.isNextCharacterFeaturedGuaranteed,
+      this.isCapturingRadianceActive,
       this.weaponPity,
       this.isNextWeaponFeaturedGuaranteed,
       this.accountCurrentWishValue,

@@ -28,6 +28,7 @@ const wishForBanner = (
   bannerConfiguration: Record<string, BannerConfiguration>,
   currentPity: number,
   isGuaranteed: boolean,
+  consecutive5050Losses: number,
   currentWeaponPity: number = 0,
   isWeaponGuaranteed: boolean = false,
   _weaponFatePoints: number = 0
@@ -56,6 +57,7 @@ const wishForBanner = (
   const characterResults: CharacterSimulationResult[] = [];
   let charPity = currentPity;
   let charGuaranteed = isGuaranteed;
+  let currentConsecutive5050Losses = consecutive5050Losses;
 
   for (const targetCharId of charactersWithWishes) {
     const wishesToSpend =
@@ -68,7 +70,8 @@ const wishForBanner = (
       wishesToSpend,
       maxConst,
       charPity,
-      charGuaranteed
+      charGuaranteed,
+      currentConsecutive5050Losses
     );
 
     characterResults.push({
@@ -82,6 +85,7 @@ const wishForBanner = (
 
     charPity = charResult.pity;
     charGuaranteed = charResult.guaranteed;
+    currentConsecutive5050Losses = charResult.consecutive5050Losses;
   }
 
   // WEAPONS (new approach using sentence-based strategy)
@@ -136,6 +140,7 @@ const wishForBanner = (
     wishesUsed: totalCharWishes + totalWeaponWishes,
     endPity: charPity,
     endGuaranteed: charGuaranteed,
+    endConsecutive5050Losses: currentConsecutive5050Losses,
     endWeaponPity: weaponBannerResult?.endPity || currentWeaponPity,
     endWeaponGuaranteed:
       weaponBannerResult?.endGuaranteed || isWeaponGuaranteed,
@@ -148,6 +153,7 @@ const runSimulationOnce = (
   bannerConfiguration: Record<string, BannerConfiguration>,
   pity: number,
   guaranteed: boolean,
+  capturingRadiance: boolean,
   weaponPity: number,
   weaponGuaranteed: boolean
 ) => {
@@ -159,6 +165,7 @@ const runSimulationOnce = (
       wishesUsed: 0,
       endPity: 0,
       endGuaranteed: false,
+      endConsecutive5050Losses: 0,
       endWeaponPity: 0,
       endWeaponGuaranteed: false,
       endWeaponFatePoints: 0,
@@ -168,6 +175,9 @@ const runSimulationOnce = (
 
   let currentPity = pity;
   let currentGuaranteed = guaranteed;
+  // Convert initial state to consecutive 5050 losses count
+  // If guaranteed=true, they lost 1 50/50. If capturingRadiance=true, they lost 2 50/50s
+  let currentConsecutive5050Losses = capturingRadiance ? 2 : (guaranteed ? 1 : 0);
   let currentWeaponPity = weaponPity;
   let currentWeaponGuaranteed = weaponGuaranteed;
 
@@ -177,6 +187,7 @@ const runSimulationOnce = (
       bannerConfiguration,
       currentPity,
       currentGuaranteed,
+      currentConsecutive5050Losses,
       currentWeaponPity,
       currentWeaponGuaranteed,
       0 // Fate points always start at 0 for each banner
@@ -188,6 +199,7 @@ const runSimulationOnce = (
       // Update state for next banner
       currentPity = bannerResult.endPity;
       currentGuaranteed = bannerResult.endGuaranteed;
+      currentConsecutive5050Losses = bannerResult.endConsecutive5050Losses;
       currentWeaponPity = bannerResult.endWeaponPity;
       currentWeaponGuaranteed = bannerResult.endWeaponGuaranteed;
       // Weapon fate points always reset between banners
@@ -203,6 +215,7 @@ export const runSimulationBatch = (
   bannerConfiguration: Record<string, BannerConfiguration>,
   pity: number,
   guaranteed: boolean,
+  capturingRadiance: boolean,
   batchSize: number,
   weaponPity: number,
   weaponGuaranteed: boolean
@@ -214,6 +227,7 @@ export const runSimulationBatch = (
       bannerConfiguration,
       pity,
       guaranteed,
+      capturingRadiance,
       weaponPity,
       weaponGuaranteed
     );
@@ -577,6 +591,7 @@ export const runSimulation = async (
   bannerConfiguration: Record<string, BannerConfiguration>,
   characterPity: number,
   characterGuaranteed: boolean,
+  capturingRadiance: boolean,
   weaponPity: number,
   weaponGuaranteed: boolean,
   simulations: number,
@@ -603,6 +618,7 @@ export const runSimulation = async (
         bannerConfiguration,
         characterPity,
         characterGuaranteed,
+        capturingRadiance,
         currentBatchSize,
         weaponPity,
         weaponGuaranteed
