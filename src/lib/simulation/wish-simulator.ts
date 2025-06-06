@@ -6,271 +6,21 @@ import {
   CharacterSuccessRate,
   SimulationResult,
   SimulationResults,
-  WeaponBannerConfig,
   WeaponBannerSimulationResult,
   WeaponId,
   WeaponOutcome,
+  WeaponSuccessRate,
   WishForWeaponResult,
 } from "../types";
-import {
-  getCharacter5StarProbability,
-  getWeapon5StarProbability,
-} from "./simulation-utils";
 
 import {
   ApiBanner,
   BannerSimulationResult,
   CharacterId,
   CharacterSimulationResult,
-  WishForCharacterResult,
 } from "../types";
-
-/**
- * Simulate a single character wish
- * @returns "featured" if the featured 5-star was pulled, "standard" if a standard 5-star, or "non-5-star" otherwise
- */
-const characterWish = (
-  pity: number,
-  guaranteed: boolean
-): {
-  result: "featured" | "standard" | "non-5-star";
-  newPity: number;
-  newGuaranteed: boolean;
-} => {
-  const newPity = pity + 1;
-  const prob = getCharacter5StarProbability(newPity);
-
-  if (Math.random() < prob) {
-    // Got a 5-star, reset pity
-    if (guaranteed) {
-      // Guaranteed featured character
-      return { result: "featured", newPity: 0, newGuaranteed: false };
-    } else {
-      // 50/50 chance (55% with capturing radiance, but we'll use 50% for now)
-      if (Math.random() < 0.5) {
-        return { result: "featured", newPity: 0, newGuaranteed: false };
-      } else {
-        return { result: "standard", newPity: 0, newGuaranteed: true };
-      }
-    }
-  }
-
-  return { result: "non-5-star", newPity, newGuaranteed: guaranteed };
-};
-
-const wishForCharacter = (
-  character: CharacterId,
-  maxWishes: number,
-  maxConst: number,
-  startingPity: number,
-  startingGuaranteed: boolean
-): WishForCharacterResult => {
-  let charPulls = 0;
-  let obtained = false;
-  let lostFiftyFifty = false;
-  let constellationCount = 0;
-  let gotStandard5Star = false;
-  let gotFeatured5Star = false;
-  let pity = startingPity;
-  let guaranteed = startingGuaranteed;
-
-  // Simulate pulls for this specific character
-  while (charPulls < maxWishes && constellationCount <= maxConst) {
-    charPulls++;
-
-    const wishResult = characterWish(pity, guaranteed);
-    pity = wishResult.newPity;
-    guaranteed = wishResult.newGuaranteed;
-
-    if (wishResult.result === "featured") {
-      // Successfully got the featured character
-      obtained = true;
-      gotFeatured5Star = true;
-      constellationCount++;
-
-      // If we've reached the desired constellation, break
-      if (constellationCount > maxConst) {
-        break;
-      }
-    } else if (wishResult.result === "standard") {
-      // Got a standard 5-star
-      gotStandard5Star = true;
-    }
-  }
-
-  // We only consider the 50/50 as "lost" if the player got a standard 5* character
-  // but didn't get any copies of the featured character.
-  lostFiftyFifty = gotStandard5Star && !gotFeatured5Star;
-
-  return {
-    character,
-    obtained,
-    lostFiftyFifty,
-    wishesUsed: charPulls,
-    pity,
-    guaranteed,
-    constellation: constellationCount > 0 ? constellationCount - 1 : 0,
-  };
-};
-
-// Updated weaponWish function to work with your existing structure
-const weaponWish = (
-  pity: number,
-  guaranteed: boolean,
-  fatePoints: number,
-  targetWeapon: WeaponId,
-  featuredWeapons: [WeaponId, WeaponId]
-): {
-  result: "desired" | "other" | "standard" | "non-5-star";
-  weaponObtained?: WeaponId;
-  newPity: number;
-  newGuaranteed: boolean;
-  newFatePoints: number;
-} => {
-  const newPity = pity + 1;
-  const prob = getWeapon5StarProbability(newPity);
-
-  if (Math.random() < prob) {
-    // Got a 5-star weapon, reset pity
-
-    // Epitomized path guarantee: if we have 1+ fate points, guaranteed target weapon
-    if (fatePoints >= 1) {
-      return {
-        result: "desired",
-        weaponObtained: targetWeapon,
-        newPity: 0,
-        newGuaranteed: false,
-        newFatePoints: 0, // Reset after getting epitomized weapon
-      };
-    }
-
-    if (guaranteed) {
-      // Guaranteed featured weapon (50/50 between the two featured)
-      const weaponObtained =
-        Math.random() < 0.5 ? featuredWeapons[0] : featuredWeapons[1];
-      const newFatePoints =
-        weaponObtained === targetWeapon ? 0 : fatePoints + 1;
-
-      return {
-        result: weaponObtained === targetWeapon ? "desired" : "other",
-        weaponObtained,
-        newPity: 0,
-        newGuaranteed: false,
-        newFatePoints,
-      };
-    } else {
-      // 75% featured, 25% standard
-      if (Math.random() < 0.75) {
-        // Got featured weapon (50/50 between the two)
-        const weaponObtained =
-          Math.random() < 0.5 ? featuredWeapons[0] : featuredWeapons[1];
-        const newFatePoints =
-          weaponObtained === targetWeapon ? 0 : fatePoints + 1;
-
-        return {
-          result: weaponObtained === targetWeapon ? "desired" : "other",
-          weaponObtained,
-          newPity: 0,
-          newGuaranteed: false,
-          newFatePoints,
-        };
-      } else {
-        // Got standard weapon - you'd need to implement getRandomStandardWeapon()
-        return {
-          result: "standard",
-          weaponObtained: "standard_weapon" as WeaponId, // Placeholder
-          newPity: 0,
-          newGuaranteed: true,
-          newFatePoints: fatePoints + 1,
-        };
-      }
-    }
-  }
-
-  // Didn't get 5-star
-  return {
-    result: "non-5-star",
-    newPity,
-    newGuaranteed: guaranteed,
-    newFatePoints: fatePoints,
-  };
-};
-
-// New function to simulate weapon banner with your sentence-based approach
-const wishForWeapon = (
-  config: WeaponBannerConfig,
-  featuredWeapons: [WeaponId, WeaponId],
-  startingPity: number,
-  startingGuaranteed: boolean
-): WeaponBannerSimulationResult => {
-  let pity = startingPity;
-  let guaranteed = startingGuaranteed;
-  let fatePoints = 0; // Always starts at 0 for new banner
-  let wishesUsed = 0;
-  let pathSwitched = false;
-
-  const obtainedWeapons: WeaponId[] = [];
-  let currentTarget = config.epitomizedPath;
-
-  const otherFeaturedWeapon = featuredWeapons.find(
-    (w) => w !== config.epitomizedPath
-  )!;
-
-  while (wishesUsed < config.wishesAllocated) {
-    wishesUsed++;
-
-    const wishResult = weaponWish(
-      pity,
-      guaranteed,
-      fatePoints,
-      currentTarget,
-      featuredWeapons
-    );
-    pity = wishResult.newPity;
-    guaranteed = wishResult.newGuaranteed;
-    fatePoints = wishResult.newFatePoints;
-
-    // If we got a 5-star weapon, add it to obtained list
-    if (wishResult.weaponObtained) {
-      obtainedWeapons.push(wishResult.weaponObtained);
-    }
-
-    // Check if we should stop or switch strategy
-    const gotPrimaryWeapon = obtainedWeapons.includes(config.epitomizedPath);
-    const gotSecondaryWeapon = obtainedWeapons.includes(otherFeaturedWeapon);
-
-    if (config.strategy === "stop" && gotPrimaryWeapon) {
-      // Stop strategy: we got our target weapon, we're done
-      break;
-    }
-
-    if (config.strategy === "continue" && gotPrimaryWeapon && !pathSwitched) {
-      // Continue strategy: got primary weapon, now switch to secondary
-      currentTarget = otherFeaturedWeapon;
-      fatePoints = 0; // Reset fate points when switching path
-      pathSwitched = true;
-    }
-
-    if (
-      config.strategy === "continue" &&
-      gotPrimaryWeapon &&
-      gotSecondaryWeapon
-    ) {
-      // Continue strategy: got both weapons, we're done
-      break;
-    }
-  }
-
-  return {
-    obtainedWeapons,
-    primaryWeaponObtained: obtainedWeapons.includes(config.epitomizedPath),
-    secondaryWeaponObtained: obtainedWeapons.includes(otherFeaturedWeapon),
-    wishesUsed,
-    pathSwitched,
-    endPity: pity,
-    endGuaranteed: guaranteed,
-  };
-};
+import { wishForCharacter } from "./character-banner-model";
+import { wishForWeapon } from "./weapon-banner-model";
 
 // Updated wishForBanner function to handle the new weapon banner approach
 const wishForBanner = (
@@ -280,7 +30,7 @@ const wishForBanner = (
   isGuaranteed: boolean,
   currentWeaponPity: number = 0,
   isWeaponGuaranteed: boolean = false,
-  weaponFatePoints: number = 0
+  _weaponFatePoints: number = 0
 ): BannerSimulationResult | undefined => {
   const bannerVersion = banner.version;
   const versionAllocation = bannerConfiguration[bannerVersion] || {};
@@ -351,19 +101,24 @@ const wishForBanner = (
   if (weaponBannerResult) {
     // Create results for each featured weapon
     banner.weapons.forEach((weaponId: WeaponId) => {
+      const isPrimaryWeapon =
+        weaponId === versionAllocation.weaponBanner!.epitomizedPath;
+      const refinementLevel = isPrimaryWeapon
+        ? weaponBannerResult!.primaryWeaponRefinement
+        : weaponBannerResult!.secondaryWeaponRefinement;
+
       weaponResults.push({
         weapon: weaponId,
         obtained: weaponBannerResult!.obtainedWeapons.includes(weaponId),
-        hasWishesAllocated:
-          weaponId === versionAllocation.weaponBanner!.epitomizedPath,
-        lostSeventyFive:
-          weaponId === versionAllocation.weaponBanner!.epitomizedPath
-            ? !weaponBannerResult!.primaryWeaponObtained
-            : false,
-        wishesUsed:
-          weaponId === versionAllocation.weaponBanner!.epitomizedPath
-            ? weaponBannerResult!.wishesUsed
-            : 0,
+        hasWishesAllocated: isPrimaryWeapon,
+        lostSeventyFive: isPrimaryWeapon
+          ? !weaponBannerResult!.primaryWeaponObtained
+          : false,
+        wishesUsed: isPrimaryWeapon ? weaponBannerResult!.wishesUsed : 0,
+        // Add refinement level to the result
+        refinementLevel: weaponBannerResult!.obtainedWeapons.includes(weaponId)
+          ? refinementLevel
+          : 0,
       });
     });
   }
@@ -388,14 +143,13 @@ const wishForBanner = (
   };
 };
 
-// Updated runSimulationOnce to pass weapon parameters
 const runSimulationOnce = (
   banners: ApiBanner[],
   bannerConfiguration: Record<string, BannerConfiguration>,
   pity: number,
   guaranteed: boolean,
-  weaponPity: number = 0,
-  weaponGuaranteed: boolean = false
+  weaponPity: number,
+  weaponGuaranteed: boolean
 ) => {
   const simulationResults: SimulationResult = banners.reduce((acc, banner) => {
     acc[banner.version] = {
@@ -450,8 +204,8 @@ export const runSimulationBatch = (
   pity: number,
   guaranteed: boolean,
   batchSize: number,
-  weaponPity: number = 0,
-  weaponGuaranteed: boolean = false
+  weaponPity: number,
+  weaponGuaranteed: boolean
 ) => {
   const batchResults: SimulationResult[] = [];
   for (let i = 0; i < batchSize; i++) {
@@ -512,6 +266,7 @@ const simulationResultToBannerOutcomes = (
         weaponId: weaponResult.weapon,
         obtained: weaponResult.obtained,
         wishesUsed: weaponResult.wishesUsed,
+        refinementLevel: weaponResult.refinementLevel || 0,
       })
     );
 
@@ -540,7 +295,12 @@ const generateScenarioId = (bannerOutcomes: BannerOutcome[]): string => {
       const weaponResults = banner.weaponOutcomes
         .map((weapon) => {
           if (weapon.wishesUsed === 0) return "Skip";
-          return weapon.obtained ? `${weapon.weaponId}:Y` : "Miss";
+          if (weapon.obtained) {
+            const refinement =
+              weapon.refinementLevel !== undefined ? weapon.refinementLevel : 0;
+            return `${weapon.weaponId}:R${refinement + 1}`; // Display as R1-R5
+          }
+          return "Miss";
         })
         .join(",");
 
@@ -560,6 +320,11 @@ export const finalizeResults = (
     `${CharacterId}${BannerId}C${number}`,
     number
   > = {};
+  const weaponSuccessTotals: Record<
+    `${WeaponId}${BannerId}R${number}`,
+    number
+  > = {};
+  const weaponAttemptTotals: Record<`${WeaponId}${BannerId}`, number> = {};
 
   const numSimulations = allSimulationResults.length;
   const scenarios: Record<
@@ -612,6 +377,40 @@ export const finalizeResults = (
           }
         }
       }
+
+      // Add to weapon success totals (only for weapons with wishes allocated)
+      for (const w of bannerResult.weaponResults) {
+        const weaponId = w.weapon;
+        const weaponResult = bannerResult.weaponResults.find(
+          (w) => w.weapon === weaponId
+        );
+        // Only track weapons that had wishes allocated to them
+        if (weaponResult && weaponResult.hasWishesAllocated) {
+          const code: `${WeaponId}${BannerId}` = `${weaponId}${bannerVersion}`;
+
+          // Track attempts
+          if (!(code in weaponAttemptTotals)) {
+            weaponAttemptTotals[code] = 0;
+          }
+          weaponAttemptTotals[code] += 1;
+
+          // Track refinement success totals (similar to constellation tracking)
+          if (
+            weaponResult.obtained &&
+            weaponResult.refinementLevel !== undefined
+          ) {
+            const refinementLevel = weaponResult.refinementLevel;
+            // Track all refinement levels up to the achieved level (R1 to current refinement)
+            for (let r = 0; r <= refinementLevel; r++) {
+              const refinementCode: `${WeaponId}${BannerId}R${number}` = `${weaponId}${bannerVersion}R${r}`;
+              if (!(refinementCode in weaponSuccessTotals)) {
+                weaponSuccessTotals[refinementCode] = 0;
+              }
+              weaponSuccessTotals[refinementCode] += 1;
+            }
+          }
+        }
+      }
     }
 
     const scenarioString = scenarioToScenarioString(simulationResult);
@@ -624,20 +423,119 @@ export const finalizeResults = (
   // Calculate success rates (divide each number by the number of simulations)
   const characterSuccessRates: CharacterSuccessRate[] = [];
   for (const code of Object.keys(characterSuccessTotals)) {
-    const regexLiteral: RegExp = /(\w*)(\d\.\dv\d)(C\d)/;
-    const result: string[] | null = regexLiteral.exec(code);
-    if (result) {
-      characterSuccessRates.push({
-        versionId: result[2],
-        characterId: result[1],
-        constellation: parseInt(result[3].slice(1)),
-        successPercent:
-          characterSuccessTotals[
-            code as `${CharacterId}${BannerId}C${number}`
-          ] / numSimulations,
-      });
+    // Parse character codes like "character_name5.7v1C2"
+    // First extract the constellation level from the end
+    const constellationMatch = /C(\d+)$/.exec(code);
+    if (!constellationMatch) {
+      console.warn("No constellation level found in character code ", code);
+      continue;
+    }
+
+    const constellation = parseInt(constellationMatch[1]);
+    const codeWithoutConstellation = code.slice(
+      0,
+      -constellationMatch[0].length
+    ); // Remove "C2" part
+
+    // Now parse the remaining part to separate character ID and banner ID
+    let characterId: string = "";
+    let bannerId: string = "";
+
+    // Try standard version pattern first (e.g., "5.7v1")
+    const standardPattern = /^(.+?)(\d\.\dv\d)$/;
+    let result = standardPattern.exec(codeWithoutConstellation);
+
+    // If no match, try finding the last hyphen/dash as separator
+    if (!result) {
+      const dashPattern = /^(.+?)(-[^-]+)$/;
+      result = dashPattern.exec(codeWithoutConstellation);
+    }
+
+    // If still no match, try more general approach
+    if (!result) {
+      const generalPattern = /^(.+?)([^a-zA-Z0-9_-].*)$/;
+      result = generalPattern.exec(codeWithoutConstellation);
+    }
+
+    if (result && result.length >= 3) {
+      characterId = result[1];
+      bannerId = result[2];
     } else {
-      console.warn("No match found for ", code);
+      console.warn(
+        "Could not parse character and banner ID from code ",
+        codeWithoutConstellation
+      );
+      continue;
+    }
+
+    const successCount =
+      characterSuccessTotals[code as `${CharacterId}${BannerId}C${number}`];
+
+    characterSuccessRates.push({
+      versionId: bannerId,
+      characterId: characterId,
+      constellation: constellation,
+      successPercent: successCount / numSimulations,
+    });
+  }
+
+  // Calculate weapon success rates for refinements
+  const weaponSuccessRates: WeaponSuccessRate[] = [];
+  for (const code of Object.keys(weaponSuccessTotals)) {
+    // Parse refinement codes like "azurelight5.7v1R2"
+    // First extract the refinement level from the end
+    const refinementMatch = /R(\d+)$/.exec(code);
+    if (!refinementMatch) {
+      console.warn("No refinement level found in weapon code ", code);
+      continue;
+    }
+
+    const refinementLevel = parseInt(refinementMatch[1]);
+    const codeWithoutRefinement = code.slice(0, -refinementMatch[0].length); // Remove "R2" part
+
+    // Now parse the remaining part to separate weapon ID and banner ID
+    let weaponId: string = "";
+    let bannerId: string = "";
+
+    // Try standard version pattern first (e.g., "5.7v1")
+    const standardPattern = /^(.+?)(\d\.\dv\d)$/;
+    let result = standardPattern.exec(codeWithoutRefinement);
+
+    // If no match, try finding the last hyphen/dash as separator
+    if (!result) {
+      const dashPattern = /^(.+?)(-[^-]+)$/;
+      result = dashPattern.exec(codeWithoutRefinement);
+    }
+
+    // If still no match, try more general approach
+    if (!result) {
+      const generalPattern = /^(.+?)([^a-zA-Z0-9_-].*)$/;
+      result = generalPattern.exec(codeWithoutRefinement);
+    }
+
+    if (result && result.length >= 3) {
+      weaponId = result[1];
+      bannerId = result[2];
+    } else {
+      console.warn(
+        "Could not parse weapon and banner ID from code ",
+        codeWithoutRefinement
+      );
+      continue;
+    }
+
+    const attemptCount =
+      weaponAttemptTotals[`${weaponId}${bannerId}` as `${WeaponId}${BannerId}`];
+    const successCount =
+      weaponSuccessTotals[code as `${WeaponId}${BannerId}R${number}`];
+
+    if (attemptCount > 0) {
+      weaponSuccessRates.push({
+        versionId: bannerId,
+        weaponId: weaponId,
+        refinement: refinementLevel,
+        successPercent: successCount / attemptCount,
+      });
     }
   }
 
@@ -665,6 +563,7 @@ export const finalizeResults = (
     // bannerResults, TODO: This is commented out because it contains info about EVERY single run, so we can't save it to local storage.
     bannerResults: {},
     characterSuccessRates,
+    weaponSuccessRates,
     topScenarios: sortedScenarios.slice(0, 10),
     scenarios: {
       scenarios: sortedNewScenarios,
@@ -676,37 +575,50 @@ export const finalizeResults = (
 export const runSimulation = async (
   banners: ApiBanner[],
   bannerConfiguration: Record<string, BannerConfiguration>,
-  pity: number,
-  guaranteed: boolean,
+  characterPity: number,
+  characterGuaranteed: boolean,
+  weaponPity: number,
+  weaponGuaranteed: boolean,
   simulations: number,
   setSimulationProgress?: (progress: number) => void
 ): Promise<SimulationResults> => {
-  // Run simulation with progress updates
   const totalSimulations = simulations;
   const batchSize = Math.min(1000, Math.floor(totalSimulations / 10));
   let completedSimulations = 0;
-
-  // Return a promise that resolves when the simulation is complete
   const allSimulationResults: SimulationResult[] = [];
 
   return new Promise<SimulationResults>((resolve) => {
-    // Run the simulation in batches
-    for (let i = 0; i < totalSimulations; i += batchSize) {
+    const processBatch = (startIndex: number) => {
+      if (startIndex >= totalSimulations) {
+        resolve(finalizeResults(allSimulationResults));
+        return;
+      }
+
+      const currentBatchSize = Math.min(
+        batchSize,
+        totalSimulations - startIndex
+      );
       const batchResults = runSimulationBatch(
         banners,
         bannerConfiguration,
-        pity,
-        guaranteed,
-        batchSize
+        characterPity,
+        characterGuaranteed,
+        currentBatchSize,
+        weaponPity,
+        weaponGuaranteed
       );
-      allSimulationResults.push(...batchResults);
 
-      completedSimulations += batchSize;
+      allSimulationResults.push(...batchResults);
+      completedSimulations += currentBatchSize;
+
       if (setSimulationProgress) {
         setSimulationProgress(completedSimulations / totalSimulations);
       }
-    }
 
-    resolve(finalizeResults(allSimulationResults));
+      // Yield control back to the event loop
+      setTimeout(() => processBatch(startIndex + batchSize), 0);
+    };
+
+    processBatch(0);
   });
 };

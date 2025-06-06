@@ -1,13 +1,19 @@
 import { useGenshinState } from "@/lib/mobx/genshin-context";
+import { Desktop, Mobile } from "@/lib/responsive-design/responsive-context";
 import { ApiWeapon, Priority, WeaponId } from "@/lib/types";
 import { observer } from "mobx-react-lite";
 import { LimitedWish } from "../resource";
 import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 import WeaponIcon from "@/lib/components/weapon-icon";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { CheckboxWithLabel } from "../ui/checkbox-with-label";
+import { InfoIcon } from "../ui/info-icon";
 
 type WeaponBannerRowProps = {
   weapons: [ApiWeapon, ApiWeapon]; // Exactly 2 featured weapons
@@ -15,102 +21,212 @@ type WeaponBannerRowProps = {
   setWishesAllocated: (value: number) => void;
   currentEpitomizedPath: WeaponId;
   setEpitomizedPath: (weaponId: WeaponId) => void;
-  currentStrategy: "stop" | "continue";
-  setStrategy: (strategy: "stop" | "continue") => void;
-  currentPriority?: Priority; // For strategy mode
-  setCurrentPriority?: (value: Priority) => void;
-  availableWishes?: number; // For hint calculations
+  currentMaxRefinement: number;
+  setMaxRefinement: (value: number) => void;
+  _currentStrategy: "stop" | "continue";
+  _setStrategy: (strategy: "stop" | "continue") => void;
+  _currentPriority?: Priority; // For strategy mode
+  _setCurrentPriority?: (value: Priority) => void;
+  _availableWishes?: number; // For hint calculations
 };
 
-export const WeaponBannerRow = observer(
+const WeaponBannerRowMobile = observer(
   ({
     weapons,
     currentWishesAllocated,
     setWishesAllocated,
     currentEpitomizedPath,
     setEpitomizedPath,
-    currentStrategy,
-    setStrategy,
-    currentPriority,
-    setCurrentPriority,
-    availableWishes,
+    currentMaxRefinement,
+    setMaxRefinement,
   }: WeaponBannerRowProps) => {
     const { mode, isLoading } = useGenshinState();
-
-    const [weapon1, weapon2] = weapons;
-    const targetWeapon =
-      weapons.find((w) => w.Id === currentEpitomizedPath) || weapon1;
-    const otherWeapon =
-      weapons.find((w) => w.Id !== currentEpitomizedPath) || weapon2;
-
-    const [hoveredWeaponId, setHoveredWeaponId] = useState("");
-    const [chosenWeaponId, setChosenWeaponId] = useState("");
+    const [weapon1] = weapons;
 
     return (
-      <div className="flex flex-col gap-1 relative bg-void-3 p-3">
+      <div className="grid items-center gap-y-2 text-sm bg-void-3 p-4 relative grid-cols-2">
         <div className="absolute inset-1 border-[1px] border-white/50 rounded pointer-events-none"></div>
-        <div
-          key={weapon1.Id}
-          className="grid gap-2 items-center text-sm "
-          style={{ gridTemplateColumns: "1fr auto auto" }}
-        >
-          <div className="flex items-center gap-4">
-            {[weapon1, weapon2].map((w) => (
-              <button
-                key={w.Id}
-                className={cn(
-                  [hoveredWeaponId, chosenWeaponId].includes(w.Id)
-                    ? "outline"
-                    : "outline-none",
-                  chosenWeaponId === w.Id
-                    ? "outline-red-500"
-                    : "outline-amber-300"
-                )}
-                onMouseEnter={(e) => setHoveredWeaponId(w.Id)}
-                onMouseLeave={(e) => setHoveredWeaponId("")}
-                onClick={(e) =>
-                  setChosenWeaponId((prev) => (prev === w.Id ? "" : w.Id))
-                }
-              >
-                <WeaponIcon id={w.Id} showName className="shrink-0" />
-                {chosenWeaponId === w.Id
-                  ? "Course charted"
-                  : hoveredWeaponId === w.Id
-                  ? "Chart course"
-                  : ""}
-              </button>
-            ))}
-          </div>
-          <>
-            {mode === "playground" && (
-              <div className="flex flex-col">
-                <div className="text-xs text-white text-right mr-4">
-                  Spend up to
-                </div>
-                <Input
-                  isLoading={isLoading}
-                  id={`wishes-${weapon1.Id}`}
-                  type="number"
-                  min="0"
-                  value={currentWishesAllocated}
-                  onChange={(e) => setWishesAllocated(parseInt(e.target.value))}
-                  unit={<LimitedWish />}
-                  showPlusMinus={true}
-                  width={"w-8"}
-                />
-              </div>
-            )}
-          </>
+        
+        <div className="col-span-2">
+          <Select
+            value={currentEpitomizedPath}
+            onValueChange={(value: WeaponId) => setEpitomizedPath(value)}
+          >
+            <SelectTrigger className="border-none">
+              <SelectValue placeholder="Select weapon" />
+            </SelectTrigger>
+            <SelectContent className="bg-void-1 border-void-2">
+              {weapons.map((weapon) => (
+                <SelectItem key={weapon.Id} value={weapon.Id}>
+                  <WeaponIcon id={weapon.Id} showName />
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <CheckboxWithLabel
-          id={""}
-          label={
-            "Obtain Fang of the Mountain King once Engulfing Lightning is obtained"
-          }
-          checked={true}
-          onCheckedChange={() => {}}
-        />{" "}
+
+        <div className="col-span-2 gap-4 flex justify-end">
+          <div className="flex flex-col items-center">
+            <div className="flex flex-row gap-1 text-xs text-white">
+              Pull until
+              <InfoIcon
+                content={
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      Tells the simulator to stop pulling once this refinement
+                      level is reached, even if you have enough wishes to
+                      continue.
+                    </div>
+                    <div>
+                      {`Assumes you don't have the weapon yet. If you have R1 and want R2, put R1 (which equals one copy).`}
+                    </div>
+                  </div>
+                }
+                contentMaxWidth={400}
+                className="text-white/50"
+              />
+            </div>
+            <Input
+              isLoading={isLoading}
+              id={`refinement-${weapon1.Id}`}
+              type="number"
+              min="1"
+              max="5"
+              value={currentMaxRefinement + 1}
+              onChange={(e) => setMaxRefinement(parseInt(e.target.value) - 1)}
+              unit={<div className="text-white/50 pl-1 flex-initial">R</div>}
+              showPlusMinus={true}
+              width={"w-8"}
+            />
+          </div>
+
+          {mode === "playground" && (
+            <div className="flex flex-col items-center">
+              <div className="text-xs text-white text-center mr-4">
+                Spend up to
+              </div>
+              <Input
+                isLoading={isLoading}
+                id={`weapon-wishes-${weapon1.Id}`}
+                type="number"
+                min="0"
+                value={currentWishesAllocated}
+                onChange={(e) => setWishesAllocated(parseInt(e.target.value))}
+                unit={<LimitedWish />}
+                showPlusMinus={true}
+                width={"w-8"}
+              />
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 );
+
+const WeaponBannerRowDesktop = observer(
+  ({
+    weapons,
+    currentWishesAllocated,
+    setWishesAllocated,
+    currentEpitomizedPath,
+    setEpitomizedPath,
+    currentMaxRefinement,
+    setMaxRefinement,
+  }: WeaponBannerRowProps) => {
+    const { mode, isLoading } = useGenshinState();
+    const [weapon1] = weapons;
+
+    return (
+      <div className="grid gap-2 items-center text-sm bg-void-3 p-3 relative grid-cols-[1fr_auto_auto]">
+        <div className="absolute inset-1 border-[1px] border-white/50 rounded pointer-events-none"></div>
+        
+        <div className="flex items-center gap-4">
+          <Select
+            value={currentEpitomizedPath}
+            onValueChange={(value: WeaponId) => setEpitomizedPath(value)}
+          >
+            <SelectTrigger className="border-none">
+              <SelectValue placeholder="Select weapon" />
+            </SelectTrigger>
+            <SelectContent className="bg-void-1 border-void-2">
+              {weapons.map((weapon) => (
+                <SelectItem key={weapon.Id} value={weapon.Id}>
+                  <WeaponIcon id={weapon.Id} showName />
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex justify-end">
+          <div className="flex flex-col mr-3">
+            <div className="flex flex-row items-center gap-1 text-xs text-white text-right">
+              Pull until
+              <InfoIcon
+                content={
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      Tells the simulator to stop pulling once this refinement
+                      level is reached, even if you have enough wishes to
+                      continue.
+                    </div>
+                    <div>
+                      {`Assumes you don't have the weapon yet. If you have R1 and want R2, put R1 (which equals one copy).`}
+                    </div>
+                  </div>
+                }
+                contentMaxWidth={400}
+                className="text-white/50"
+              />
+            </div>
+            <Input
+              isLoading={isLoading}
+              id={`refinement-${weapon1.Id}`}
+              type="number"
+              min="1"
+              max="5"
+              value={currentMaxRefinement + 1}
+              onChange={(e) => setMaxRefinement(parseInt(e.target.value) - 1)}
+              unit={<div className="text-white/50 pl-1 flex-initial">R</div>}
+              showPlusMinus={true}
+              width={"w-8"}
+            />
+          </div>
+
+          {mode === "playground" && (
+            <div className="flex flex-col items-end">
+              <div className="text-xs text-white text-right mr-4">
+                Spend up to
+              </div>
+              <Input
+                isLoading={isLoading}
+                id={`weapon-wishes-${weapon1.Id}`}
+                type="number"
+                min="0"
+                value={currentWishesAllocated}
+                onChange={(e) => setWishesAllocated(parseInt(e.target.value))}
+                unit={<LimitedWish />}
+                showPlusMinus={true}
+                width={"w-8"}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
+export const WeaponBannerRow = observer((props: WeaponBannerRowProps) => {
+  return (
+    <>
+      <Mobile>
+        <WeaponBannerRowMobile {...props} />
+      </Mobile>
+      <Desktop>
+        <WeaponBannerRowDesktop {...props} />
+      </Desktop>
+    </>
+  );
+});

@@ -1,8 +1,14 @@
 "use client";
 import * as React from "react";
 
+import { Desktop, Mobile } from "@/lib/responsive-design/responsive-context";
 import { cn } from "@/lib/utils";
-import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
+import {
+  CaretDownIcon,
+  CaretUpIcon,
+  MinusIcon,
+  PlusIcon,
+} from "@phosphor-icons/react";
 import { IconButton } from "./icon-button";
 
 type InputExtendedProps = {
@@ -120,10 +126,10 @@ const Input = React.forwardRef<
       return stringValue;
     })();
 
-    // Class that emulates an "input"-like aesthetic, for the wrapper div
-    const c = cn(
+    // Base input styles (mobile-first: 44px height, desktop: smaller)
+    const baseInputStyles = cn(
       `flex items-center
-        h-7 min-w-0
+        h-10 md:h-7 min-w-0
         rounded-md
         border border-white/12 hover:border-white/25
         bg-white/3 focus-within:bg-white/10
@@ -140,14 +146,21 @@ const Input = React.forwardRef<
     );
 
     const inputWrapper = (
-      <div className={`${c} justify-between pl-1  ${isLoading && "shimmer"}`}>
+      <div
+        className={`${baseInputStyles} justify-between pl-1 ${
+          isLoading && "shimmer"
+        }`}
+      >
         {unit && unit}
 
         <input
           type={type}
-          className={`focus-visible:outline-none text-right min-w-0 ${
+          inputMode={type === "number" ? "numeric" : undefined}
+          className={`focus-visible:outline-none text-right min-w-0 bg-transparent ${
             width ? width : ""
-          } ${!isValid ? "text-red-300" : ""}`}
+          } ${
+            !isValid ? "text-red-300" : ""
+          } [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           ref={inputRef}
           value={displayValue}
           onFocus={handleFocus}
@@ -158,8 +171,9 @@ const Input = React.forwardRef<
       </div>
     );
 
-    const plusMinus = (
-      <div className="flex flex-col justify-around items-center">
+    // Desktop: vertical +/- buttons (existing design)
+    const desktopPlusMinus = (
+      <div className="flex flex-col justify-center items-center h-7">
         <IconButton
           icon={CaretUpIcon}
           size={12}
@@ -168,7 +182,7 @@ const Input = React.forwardRef<
             handlePlusMinusChange(currentValue + 1);
           }}
           weight="bold"
-          className="text-white/30"
+          className="text-white/30 h-3.5 w-6 min-h-[14px] min-w-[24px] flex items-center justify-center"
         />
         <IconButton
           icon={CaretDownIcon}
@@ -178,18 +192,52 @@ const Input = React.forwardRef<
             handlePlusMinusChange(Math.max(0, currentValue - 1));
           }}
           weight="bold"
-          className="text-white/30"
+          className="text-white/30 h-3.5 w-6 min-h-[14px] min-w-[24px] flex items-center justify-center"
         />
       </div>
     );
 
-    return showPlusMinus ? (
-      <div className={`flex gap-[2px] `}>
+    // Mobile: horizontal -/+ buttons with 44px touch targets but smaller visual buttons
+    const mobilePlusMinus = (
+      <div className="flex items-center gap-2">
+        <IconButton
+          icon={MinusIcon}
+          size={16}
+          onClick={() => {
+            const currentValue = Number(value) || 0;
+            handlePlusMinusChange(Math.max(0, currentValue - 1));
+          }}
+          weight="bold"
+          className="text-white/30  flex items-center justify-center"
+        />
         {inputWrapper}
-        {plusMinus}
+        <IconButton
+          icon={PlusIcon}
+          size={16}
+          onClick={() => {
+            const currentValue = Number(value) || 0;
+            handlePlusMinusChange(currentValue + 1);
+          }}
+          weight="bold"
+          className="text-white/30  flex items-center justify-center"
+        />
       </div>
-    ) : (
-      inputWrapper
+    );
+
+    if (!showPlusMinus) {
+      return inputWrapper;
+    }
+
+    return (
+      <>
+        <Mobile>{mobilePlusMinus}</Mobile>
+        <Desktop>
+          <div className="flex gap-[2px]">
+            {inputWrapper}
+            {desktopPlusMinus}
+          </div>
+        </Desktop>
+      </>
     );
   }
 );

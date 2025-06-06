@@ -46,7 +46,7 @@ const WeaponIcon: React.FC<WeaponIconProps> = observer(
     return (
       <div className={`flex flex-row items-center gap-2 ${className}`}>
         <div
-          className="relative overflow-hidden rounded-full bg-void-1 border border-white/20"
+          className="relative overflow-hidden shrink-0 rounded-full bg-void-1 border border-white/20"
           style={{ width: size, height: size }}
         >
           <Image
@@ -58,7 +58,11 @@ const WeaponIcon: React.FC<WeaponIconProps> = observer(
             onError={() => setImgError(true)}
           />
         </div>
-        {showName && <p className="text-sm font-genshin text-white">{name}</p>}
+        {showName && (
+          <p className="text-sm font-genshin text-gold-1 break-words text-left">
+            {name}
+          </p>
+        )}
       </div>
     );
   }

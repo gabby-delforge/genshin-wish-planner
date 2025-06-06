@@ -11,7 +11,7 @@ export const initializeBannerConfigurations = (
 ): Record<BannerId, BannerConfiguration> => {
   return bannerData.reduce((acc, banner) => {
     const bannerConfig: BannerConfiguration = {
-      banner,
+      bannerId: banner.id,
       isCurrentBanner: isCurrentBanner(banner),
       isOldBanner: isOldBanner(banner),
       characters: banner.characters.reduce((charAcc, charId) => {
@@ -22,17 +22,11 @@ export const initializeBannerConfigurations = (
         };
         return charAcc;
       }, {} as BannerConfiguration["characters"]),
-      weapons: banner.weapons.reduce((weaponAcc, weaponId) => {
-        weaponAcc[weaponId] = {
-          wishesAllocated: 0,
-          priority: DEFAULT_PRIORITY,
-        };
-        return weaponAcc;
-      }, {} as BannerConfiguration["weapons"]),
       weaponBanner: {
         wishesAllocated: 0,
         epitomizedPath: banner.weapons[0], // Which weapon to chart path for
         strategy: "stop", // Stop after getting epitomized weapon, or continue for both
+        maxRefinement: 1, // Default to R1 (0 = R1, 4 = R5)
       },
     };
 

@@ -20,10 +20,11 @@ export interface WeaponBannerConfig {
   wishesAllocated: number;
   epitomizedPath: WeaponId; // Which weapon to chart path for
   strategy: "stop" | "continue"; // Stop after getting epitomized weapon, or continue for both
+  maxRefinement: number; // Stop pulling once this refinement is reached (0 = R1, 4 = R5)
 }
 
 export type BannerConfiguration = {
-  banner: ApiBanner;
+  bannerId: BannerId;
 
   isCurrentBanner: boolean;
   isOldBanner: boolean;
@@ -33,14 +34,6 @@ export type BannerConfiguration = {
     {
       wishesAllocated: number;
       maxConstellation: number;
-      priority: Priority;
-    }
-  >;
-
-  weapons: Record<
-    WeaponId,
-    {
-      wishesAllocated: number;
       priority: Priority;
     }
   >;
@@ -55,6 +48,13 @@ export type CharacterSuccessRate = {
   versionId: BannerId;
   characterId: CharacterId;
   constellation: number;
+  successPercent: number;
+};
+
+export type WeaponSuccessRate = {
+  versionId: BannerId;
+  weaponId: WeaponId;
+  refinement: number; // 0 = R1, 1 = R2, etc.
   successPercent: number;
 };
 
@@ -76,6 +76,9 @@ export interface WeaponBannerSimulationResult {
   pathSwitched: boolean; // Did we have to switch epitomized path?
   endPity: number;
   endGuaranteed: boolean;
+  // Refinement tracking (0 = R1, 4 = R5)
+  primaryWeaponRefinement: number;
+  secondaryWeaponRefinement: number;
   // Note: fate points always reset to 0 at banner end
 }
 
@@ -229,6 +232,7 @@ export type WeaponOutcome = {
   weaponId: WeaponId;
   obtained: boolean;
   wishesUsed: number;
+  refinementLevel?: number; // 0 = R1, 4 = R5
 };
 
 export type BannerOutcome = {
@@ -256,6 +260,8 @@ export interface SimulationResults {
   bannerResults: Record<BannerId, BannerSimulationResult[]>;
   // Success rates for each character that was wished for in each banner
   characterSuccessRates: CharacterSuccessRate[];
+  // Success rates for each weapon that was wished for in each banner
+  weaponSuccessRates: WeaponSuccessRate[];
   // Common scenario patterns
   topScenarios: ScenarioResult[];
   scenarios: ScenarioResults; // New simplified structure
@@ -277,6 +283,7 @@ export type WishForWeaponResult = {
   lostSeventyFive: boolean;
   wishesUsed: number;
   hasWishesAllocated: boolean;
+  refinementLevel?: number; // 0 = R1, 4 = R5
 };
 
 export type WishResources = Record<ResourceType, number>;

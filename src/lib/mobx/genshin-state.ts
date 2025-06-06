@@ -4,6 +4,7 @@ import { calculateAvailableWishesForBanner } from "../simulation/simulation-util
 import { runOptimization } from "../simulation/wish-optimizer";
 import { runSimulation } from "../simulation/wish-simulator";
 
+import { SIMULATION_COUNT } from "../consts";
 import {
   ApiBanner,
   AppMode,
@@ -31,10 +32,12 @@ export class GenshinState {
   characterPity: number = 0;
   weaponPity: number = 0;
 
-  accountStatusIsNextFiftyFiftyGuaranteed: boolean = false;
-  accountStatusOwnedWishResources: WishResources;
-  accountStatusPrimogemSources: PrimogemSourcesEnabled;
-  accountStatusExcludeCurrentBannerPrimogemSources: boolean;
+  isNextCharacterFeaturedGuaranteed: boolean = false;
+  isNextWeaponFeaturedGuaranteed: boolean = false;
+
+  ownedWishResources: WishResources;
+  primogemSources: PrimogemSourcesEnabled;
+  shouldExcludeCurrentBannerEarnedWishes: boolean;
 
   // Simulation
   simulationCount: number;
@@ -64,12 +67,11 @@ export class GenshinState {
   PERSISTED_KEYS: (keyof GenshinState)[] = [
     "characterPity",
     "weaponPity",
-    "accountStatusIsNextFiftyFiftyGuaranteed",
-    "accountStatusOwnedWishResources",
-    "accountStatusPrimogemSources",
-    "accountStatusExcludeCurrentBannerPrimogemSources",
-    "banners",
-    "simulationCount",
+    "isNextCharacterFeaturedGuaranteed",
+    "isNextWeaponFeaturedGuaranteed",
+    "ownedWishResources",
+    "primogemSources",
+    "shouldExcludeCurrentBannerEarnedWishes",
     "mode",
     "playgroundSimulationResults",
     "optimizerSimulationResults",
@@ -79,8 +81,8 @@ export class GenshinState {
 
   constructor() {
     this.characterPity = 0;
-    this.accountStatusIsNextFiftyFiftyGuaranteed = false;
-    this.accountStatusOwnedWishResources = {
+    this.isNextCharacterFeaturedGuaranteed = false;
+    this.ownedWishResources = {
       primogem: 0,
       starglitter: 0,
       limitedWishes: 0,
@@ -88,7 +90,7 @@ export class GenshinState {
       genesisCrystal: 0,
       standardWish: 0,
     };
-    this.accountStatusPrimogemSources = {
+    this.primogemSources = {
       gameUpdateCompensation: true,
       dailyCommissions: true,
       paimonBargain: true,
@@ -108,9 +110,9 @@ export class GenshinState {
       newVersionCode: true,
       limitedExplorationRewards: true,
     };
-    this.accountStatusExcludeCurrentBannerPrimogemSources = false;
+    this.shouldExcludeCurrentBannerEarnedWishes = false;
     this.banners = initialBanners;
-    this.simulationCount = 10000;
+    this.simulationCount = SIMULATION_COUNT;
     this.isSimulating = false;
     this.simulationProgress = 0;
     this.mode = "playground";
@@ -124,22 +126,31 @@ export class GenshinState {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setAccountStatusCurrentPity(pity: number) {
+  setCharacterPity(pity: number) {
     this.characterPity = pity;
   }
-  setAccountStatusIsNextFiftyFiftyGuaranteed(guaranteed: boolean) {
-    this.accountStatusIsNextFiftyFiftyGuaranteed = guaranteed;
+
+  setWeaponPity(pity: number) {
+    this.weaponPity = pity;
+  }
+
+  setIsNextCharacterFeaturedGuaranteed(guaranteed: boolean) {
+    this.isNextCharacterFeaturedGuaranteed = guaranteed;
+  }
+
+  setIsNextWeaponFeaturedGuaranteed(guaranteed: boolean) {
+    this.isNextWeaponFeaturedGuaranteed = guaranteed;
   }
 
   setAccountStatusOwnedWishResources(name: ResourceType, amount: number) {
-    this.accountStatusOwnedWishResources[name] = amount;
+    this.ownedWishResources[name] = amount;
   }
   setAccountStatusPrimogemSources(source: PrimogemSourceKey, checked: boolean) {
-    this.accountStatusPrimogemSources[source] = checked;
+    this.primogemSources[source] = checked;
   }
 
   setAccountStatusExcludeCurrentBannerPrimogemSources(excludeCurrent: boolean) {
-    this.accountStatusExcludeCurrentBannerPrimogemSources = excludeCurrent;
+    this.shouldExcludeCurrentBannerEarnedWishes = excludeCurrent;
   }
 
   setSimulationCount(simulationCount: number) {
@@ -163,12 +174,8 @@ export class GenshinState {
     bannerConfig.wishesAllocated = value;
   }
 
-  allocateWishesToWeapon(
-    bannerId: BannerId,
-    weaponId: WeaponId,
-    value: number
-  ) {
-    const bannerConfig = this.bannerConfiguration[bannerId].weapons[weaponId];
+  allocateWishesToWeapon(bannerId: BannerId, value: number) {
+    const bannerConfig = this.bannerConfiguration[bannerId].weaponBanner;
     if (!bannerConfig) return;
     bannerConfig.wishesAllocated = value;
   }
@@ -191,6 +198,12 @@ export class GenshinState {
     bannerConfig.weaponBanner.strategy = value;
   }
 
+  setWeaponBannerMaxRefinement(bannerId: BannerId, value: number) {
+    const bannerConfig = this.bannerConfiguration[bannerId];
+    if (!bannerConfig) return;
+    bannerConfig.weaponBanner.maxRefinement = clamp(value, 0, 4);
+  }
+
   setCharacterPullPriority(
     bannerId: BannerId,
     characterId: CharacterId,
@@ -198,16 +211,6 @@ export class GenshinState {
   ) {
     const bannerConfig =
       this.bannerConfiguration[bannerId].characters[characterId];
-    if (!bannerConfig) return;
-    bannerConfig.priority = value;
-  }
-
-  setWeaponPullPriority(
-    bannerId: BannerId,
-    weaponId: WeaponId,
-    value: Priority
-  ) {
-    const bannerConfig = this.bannerConfiguration[bannerId].weapons[weaponId];
     if (!bannerConfig) return;
     bannerConfig.priority = value;
   }
@@ -244,7 +247,9 @@ export class GenshinState {
       this.banners,
       this.bannerConfiguration,
       this.characterPity,
-      this.accountStatusIsNextFiftyFiftyGuaranteed,
+      this.isNextCharacterFeaturedGuaranteed,
+      this.weaponPity,
+      this.isNextWeaponFeaturedGuaranteed,
       this.simulationCount,
       this.setSimulationProgress
     );
@@ -264,7 +269,9 @@ export class GenshinState {
       this.banners,
       this.bannerConfiguration,
       this.characterPity,
-      this.accountStatusIsNextFiftyFiftyGuaranteed,
+      this.isNextCharacterFeaturedGuaranteed,
+      this.weaponPity,
+      this.isNextWeaponFeaturedGuaranteed,
       this.accountCurrentWishValue,
       this.estimatedNewWishesPerBanner[0], // TODO: Use the more granular option; we just use the low estimate for now
       this.setOptimizerSimulationResults,
@@ -280,19 +287,19 @@ export class GenshinState {
   }
 
   get accountCurrentWishValue(): number {
-    const primoWishes = Math.floor(
-      this.accountStatusOwnedWishResources.primogem / 160
-    );
+    const primoWishes = Math.floor(this.ownedWishResources.primogem / 160);
     const starglitterWishes = Math.floor(
-      this.accountStatusOwnedWishResources.starglitter / 5
+      this.ownedWishResources.starglitter / 5
     );
-    const stardustWishes = Math.floor(
-      this.accountStatusOwnedWishResources.stardust / 10
+    // You can only get up to 5 wishes from stardust per month
+    const stardustWishes = Math.min(
+      5,
+      Math.floor(this.ownedWishResources.stardust / 10)
     );
     const genesisCrystalWishes = Math.floor(
-      this.accountStatusOwnedWishResources.genesisCrystal / 160
+      this.ownedWishResources.genesisCrystal / 160
     );
-    const limitedWishes = this.accountStatusOwnedWishResources.limitedWishes;
+    const limitedWishes = this.ownedWishResources.limitedWishes;
 
     return (
       primoWishes +
@@ -315,17 +322,20 @@ export class GenshinState {
         bannerMap[banner.id] = carryOverWishes;
         continue;
       }
+      const bannerConfig = this.bannerConfiguration[banner.id];
+      if (!bannerConfig) continue;
+
       const excludeEarnedWishes =
-        this.accountStatusExcludeCurrentBannerPrimogemSources &&
+        this.shouldExcludeCurrentBannerEarnedWishes &&
         this.currentBannerId === banner.id;
       const wishesSpentOnCharacters = Object.values(
         this.bannerConfiguration[banner.id].characters
       ).reduce((acc, curr) => acc + curr.wishesAllocated, 0);
-      const wishesSpentOnWeapons = Object.values(
-        this.bannerConfiguration[banner.id].weapons
-      ).reduce((acc, curr) => acc + curr.wishesAllocated, 0);
+      const wishesSpentOnWeapons =
+        this.bannerConfiguration[banner.id].weaponBanner.wishesAllocated;
 
       const spentWishes = wishesSpentOnCharacters + wishesSpentOnWeapons;
+
       carryOverWishes = calculateAvailableWishesForBanner(
         banner,
         spentWishes,
@@ -342,197 +352,132 @@ export class GenshinState {
    * Calculates estimated new wishes available for each banner based on enabled primogem sources.
    * For recurring sources (abyss, imaginarium), only counts rewards from seasons that BEGIN during
    * the banner period to avoid double-counting rewards from seasons that started in previous banners.
+   * Also includes masterless stardust wishes accumulated from previous banners.
    * Returns a map of banner ID to total estimated wishes (primogems converted at 160:1 ratio + limited wishes).
    */
   get estimatedNewWishesMap(): Record<string, number> {
     const bannerMap: Record<string, number> = {};
+
     for (const banner of this.banners) {
       let totalPrimogems = 0;
       let totalLimitedWishes = 0;
 
+      // Add masterless stardust wishes from accumulated 3-star/4-star pulls
+      // Each subsequent banner gets +5 wishes from stardust accumulation
+      const stardustWishes = 5;
+      totalLimitedWishes += stardustWishes;
+
       // Process each primogem source
-      Object.entries(this.accountStatusPrimogemSources).forEach(
-        ([key, isEnabled]) => {
-          if (!isEnabled) return;
-
-          const sourceKey = key as keyof PrimogemSourceValues;
-          const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
-
-          // Handle abyss and theater specially since they have differing schedules
-          if (sourceKey === "abyss") {
-            // Abyss runs from the 16th of one month to the 15th of the next
-            const bannerStart = new Date(banner.startDate);
-            const bannerEnd = new Date(banner.endDate);
-
-            // Find abyss seasons that BEGIN during this banner period
-            let currentAbyssStart = new Date(
-              bannerStart.getFullYear(),
-              bannerStart.getMonth(),
-              16
-            );
-
-            // If the 16th of this month is before banner start, move to next month
-            if (currentAbyssStart < bannerStart) {
-              currentAbyssStart = new Date(
-                bannerStart.getFullYear(),
-                bannerStart.getMonth() + 1,
-                16
-              );
-            }
-
-            let abyssSeasons = 0;
-            // Only count seasons that start during the banner period
-            while (
-              currentAbyssStart >= bannerStart &&
-              currentAbyssStart <= bannerEnd
-            ) {
-              abyssSeasons++;
-              // Move to next abyss season (16th of next month)
-              currentAbyssStart = new Date(
-                currentAbyssStart.getFullYear(),
-                currentAbyssStart.getMonth() + 1,
-                16
-              );
-            }
-
-            // Apply abyss rewards for the calculated number of seasons
-            if (Array.isArray(sourceValue)) {
-              sourceValue.forEach((resource) => {
-                if (resource.type === "primogem") {
-                  totalPrimogems += resource.value * abyssSeasons;
-                } else if (resource.type === "limitedWishes") {
-                  totalLimitedWishes += resource.value * abyssSeasons;
-                }
-              });
-            } else {
-              if (sourceValue.type === "primogem") {
-                totalPrimogems += sourceValue.value * abyssSeasons;
-              } else if (sourceValue.type === "limitedWishes") {
-                totalLimitedWishes += sourceValue.value * abyssSeasons;
-              }
-            }
-            return;
-          } else if (sourceKey === "imaginarium") {
-            // Imaginarium runs from the 1st of one month to the 30th/31st of the next
-            const bannerStart = new Date(banner.startDate);
-            const bannerEnd = new Date(banner.endDate);
-
-            // Find imaginarium seasons that BEGIN during this banner period
-            let currentImaginariumStart = new Date(
-              bannerStart.getFullYear(),
-              bannerStart.getMonth(),
-              1
-            );
-
-            // If the 1st of this month is before banner start, move to next month
-            if (currentImaginariumStart < bannerStart) {
-              currentImaginariumStart = new Date(
-                bannerStart.getFullYear(),
-                bannerStart.getMonth() + 1,
-                1
-              );
-            }
-
-            let imaginariumSeasons = 0;
-            // Only count seasons that start during the banner period
-            while (
-              currentImaginariumStart >= bannerStart &&
-              currentImaginariumStart <= bannerEnd
-            ) {
-              imaginariumSeasons++;
-              // Move to next imaginarium season (1st of next month)
-              currentImaginariumStart = new Date(
-                currentImaginariumStart.getFullYear(),
-                currentImaginariumStart.getMonth() + 1,
-                1
-              );
-            }
-
-            // Apply imaginarium rewards for the calculated number of seasons
-            if (Array.isArray(sourceValue)) {
-              sourceValue.forEach((resource) => {
-                if (resource.type === "primogem") {
-                  totalPrimogems += resource.value * imaginariumSeasons;
-                } else if (resource.type === "limitedWishes") {
-                  totalLimitedWishes += resource.value * imaginariumSeasons;
-                }
-              });
-            } else {
-              if (sourceValue.type === "primogem") {
-                totalPrimogems += sourceValue.value * imaginariumSeasons;
-              } else if (sourceValue.type === "limitedWishes") {
-                totalLimitedWishes += sourceValue.value * imaginariumSeasons;
-              }
-            }
-            return;
-          }
-
-          if (Array.isArray(sourceValue)) {
-            // Handle array of resource values
-            sourceValue.forEach((resource) => {
-              if (resource.type === "primogem") {
-                totalPrimogems += resource.value;
-              } else if (resource.type === "limitedWishes") {
-                totalLimitedWishes += resource.value;
-              }
-            });
-          } else {
-            // Handle single resource value
-            if (sourceValue.type === "primogem") {
-              totalPrimogems += sourceValue.value;
-            } else if (sourceValue.type === "limitedWishes") {
-              totalLimitedWishes += sourceValue.value;
-            }
-          }
-        }
-      );
-
-      // Convert primogems to wishes (160 primogems per wish)
-      const primogemWishes = Math.floor(totalPrimogems / 160);
-
-      // Return total wishes (only count limited wishes for banner pulls)
-      bannerMap[banner.id] = primogemWishes + totalLimitedWishes;
-    }
-
-    return bannerMap;
-  }
-
-  // Returns a range of estimated wishes to be earned each banner: [low, high]
-  // Banners can span 1 or 2 abyss cycles and 1 or 2 imaginarium cycles.
-  get estimatedNewWishesPerBanner(): [number, number] {
-    let lowPrimogemEstimate = 0;
-    let highPrimogemEstimate = 0;
-
-    let totalPrimogems = 0;
-    let totalLimitedWishes = 0;
-
-    // Process each primogem source
-    Object.entries(this.accountStatusPrimogemSources).forEach(
-      ([key, isEnabled]) => {
+      Object.entries(this.primogemSources).forEach(([key, isEnabled]) => {
         if (!isEnabled) return;
 
         const sourceKey = key as keyof PrimogemSourceValues;
         const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
+
         // Handle abyss and theater specially since they have differing schedules
-        if (sourceKey === "abyss" || sourceKey === "imaginarium") {
+        if (sourceKey === "abyss") {
+          // Abyss runs from the 16th of one month to the 15th of the next
+          const bannerStart = new Date(banner.startDate);
+          const bannerEnd = new Date(banner.endDate);
+
+          // Find abyss seasons that BEGIN during this banner period
+          let currentAbyssStart = new Date(
+            bannerStart.getFullYear(),
+            bannerStart.getMonth(),
+            16
+          );
+
+          // If the 16th of this month is before banner start, move to next month
+          if (currentAbyssStart < bannerStart) {
+            currentAbyssStart = new Date(
+              bannerStart.getFullYear(),
+              bannerStart.getMonth() + 1,
+              16
+            );
+          }
+
+          let abyssSeasons = 0;
+          // Only count seasons that start during the banner period
+          while (
+            currentAbyssStart >= bannerStart &&
+            currentAbyssStart <= bannerEnd
+          ) {
+            abyssSeasons++;
+            // Move to next abyss season (16th of next month)
+            currentAbyssStart = new Date(
+              currentAbyssStart.getFullYear(),
+              currentAbyssStart.getMonth() + 1,
+              16
+            );
+          }
+
           // Apply abyss rewards for the calculated number of seasons
           if (Array.isArray(sourceValue)) {
             sourceValue.forEach((resource) => {
               if (resource.type === "primogem") {
-                lowPrimogemEstimate += resource.value; // 1 season
-                highPrimogemEstimate += resource.value * 2; // 2 seasons
+                totalPrimogems += resource.value * abyssSeasons;
               } else if (resource.type === "limitedWishes") {
-                lowPrimogemEstimate += resource.value * 160; // 1 season
-                highPrimogemEstimate += resource.value * 160 * 2; // 2 seasons
+                totalLimitedWishes += resource.value * abyssSeasons;
               }
             });
           } else {
             if (sourceValue.type === "primogem") {
-              lowPrimogemEstimate += sourceValue.value;
-              highPrimogemEstimate += sourceValue.value * 2;
+              totalPrimogems += sourceValue.value * abyssSeasons;
             } else if (sourceValue.type === "limitedWishes") {
-              lowPrimogemEstimate += sourceValue.value * 160;
-              highPrimogemEstimate += sourceValue.value * 160 * 2;
+              totalLimitedWishes += sourceValue.value * abyssSeasons;
+            }
+          }
+          return;
+        } else if (sourceKey === "imaginarium") {
+          // Imaginarium runs from the 1st of one month to the 30th/31st of the next
+          const bannerStart = new Date(banner.startDate);
+          const bannerEnd = new Date(banner.endDate);
+
+          // Find imaginarium seasons that BEGIN during this banner period
+          let currentImaginariumStart = new Date(
+            bannerStart.getFullYear(),
+            bannerStart.getMonth(),
+            1
+          );
+
+          // If the 1st of this month is before banner start, move to next month
+          if (currentImaginariumStart < bannerStart) {
+            currentImaginariumStart = new Date(
+              bannerStart.getFullYear(),
+              bannerStart.getMonth() + 1,
+              1
+            );
+          }
+
+          let imaginariumSeasons = 0;
+          // Only count seasons that start during the banner period
+          while (
+            currentImaginariumStart >= bannerStart &&
+            currentImaginariumStart <= bannerEnd
+          ) {
+            imaginariumSeasons++;
+            // Move to next imaginarium season (1st of next month)
+            currentImaginariumStart = new Date(
+              currentImaginariumStart.getFullYear(),
+              currentImaginariumStart.getMonth() + 1,
+              1
+            );
+          }
+
+          // Apply imaginarium rewards for the calculated number of seasons
+          if (Array.isArray(sourceValue)) {
+            sourceValue.forEach((resource) => {
+              if (resource.type === "primogem") {
+                totalPrimogems += resource.value * imaginariumSeasons;
+              } else if (resource.type === "limitedWishes") {
+                totalLimitedWishes += resource.value * imaginariumSeasons;
+              }
+            });
+          } else {
+            if (sourceValue.type === "primogem") {
+              totalPrimogems += sourceValue.value * imaginariumSeasons;
+            } else if (sourceValue.type === "limitedWishes") {
+              totalLimitedWishes += sourceValue.value * imaginariumSeasons;
             }
           }
           return;
@@ -555,8 +500,76 @@ export class GenshinState {
             totalLimitedWishes += sourceValue.value;
           }
         }
+      });
+
+      // Convert primogems to wishes (160 primogems per wish)
+      const primogemWishes = Math.floor(totalPrimogems / 160);
+
+      // Return total wishes (primogem wishes + limited wishes + stardust wishes)
+      bannerMap[banner.id] = primogemWishes + totalLimitedWishes;
+    }
+
+    return bannerMap;
+  }
+
+  // Returns a range of estimated wishes to be earned each banner: [low, high]
+  // Banners can span 1 or 2 abyss cycles and 1 or 2 imaginarium cycles.
+  get estimatedNewWishesPerBanner(): [number, number] {
+    let lowPrimogemEstimate = 0;
+    let highPrimogemEstimate = 0;
+
+    let totalPrimogems = 0;
+    let totalLimitedWishes = 0;
+
+    // Process each primogem source
+    Object.entries(this.primogemSources).forEach(([key, isEnabled]) => {
+      if (!isEnabled) return;
+
+      const sourceKey = key as keyof PrimogemSourceValues;
+      const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
+      // Handle abyss and theater specially since they have differing schedules
+      if (sourceKey === "abyss" || sourceKey === "imaginarium") {
+        // Apply abyss rewards for the calculated number of seasons
+        if (Array.isArray(sourceValue)) {
+          sourceValue.forEach((resource) => {
+            if (resource.type === "primogem") {
+              lowPrimogemEstimate += resource.value; // 1 season
+              highPrimogemEstimate += resource.value * 2; // 2 seasons
+            } else if (resource.type === "limitedWishes") {
+              lowPrimogemEstimate += resource.value * 160; // 1 season
+              highPrimogemEstimate += resource.value * 160 * 2; // 2 seasons
+            }
+          });
+        } else {
+          if (sourceValue.type === "primogem") {
+            lowPrimogemEstimate += sourceValue.value;
+            highPrimogemEstimate += sourceValue.value * 2;
+          } else if (sourceValue.type === "limitedWishes") {
+            lowPrimogemEstimate += sourceValue.value * 160;
+            highPrimogemEstimate += sourceValue.value * 160 * 2;
+          }
+        }
+        return;
       }
-    );
+
+      if (Array.isArray(sourceValue)) {
+        // Handle array of resource values
+        sourceValue.forEach((resource) => {
+          if (resource.type === "primogem") {
+            totalPrimogems += resource.value;
+          } else if (resource.type === "limitedWishes") {
+            totalLimitedWishes += resource.value;
+          }
+        });
+      } else {
+        // Handle single resource value
+        if (sourceValue.type === "primogem") {
+          totalPrimogems += sourceValue.value;
+        } else if (sourceValue.type === "limitedWishes") {
+          totalLimitedWishes += sourceValue.value;
+        }
+      }
+    });
 
     // Convert primogems to wishes (160 primogems per wish)
     const baseWishes = Math.floor(totalPrimogems / 160) + totalLimitedWishes;

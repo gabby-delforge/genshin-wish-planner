@@ -17,6 +17,8 @@
     "state:update": "node scripts/state-schema-detector.js update",
     "state:version": "node scripts/increment-state-version.js get",
     "state:version:increment": "node scripts/increment-state-version.js increment",
+    "state:types:generate": "node scripts/generate-versioned-types.js generate",
+    "state:types:update-barrel": "node scripts/generate-versioned-types.js update-barrel",
     "state:hooks:install": "node scripts/setup-git-hooks.js install",
     "state:hooks:remove": "node scripts/setup-git-hooks.js remove"
   },

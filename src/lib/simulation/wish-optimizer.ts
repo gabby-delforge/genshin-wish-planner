@@ -56,8 +56,10 @@ const scoreSimulation = (
 const determineOptimalAllocations = async (
   banners: ApiBanner[],
   bannerConfiguration: Record<string, BannerConfiguration>,
-  pity: number,
-  guaranteed: boolean
+  characterPity: number,
+  characterGuaranteed: boolean,
+  weaponPity: number,
+  weaponGuaranteed: boolean
 ): Promise<Record<string, BannerConfiguration>[]> => {
   const result: Record<string, BannerConfiguration>[] = [];
 
@@ -125,8 +127,10 @@ const determineOptimalAllocations = async (
     const simResults = await runSimulation(
       banners,
       newAllocation,
-      pity,
-      guaranteed,
+      characterPity,
+      characterGuaranteed,
+      weaponPity,
+      weaponGuaranteed,
       SIMULATION_COUNT
     );
 
@@ -268,8 +272,10 @@ const hillClimb = async (
   }>,
   banners: ApiBanner[],
   bannerConfiguration: Record<string, BannerConfiguration>,
-  pity: number,
-  guaranteed: boolean,
+  characterPity: number,
+  characterGuaranteed: boolean,
+  weaponPity: number,
+  weaponGuaranteed: boolean,
   startingWishes: number,
   wishesGainedPerBanner: number,
   numIterations: number = 10000
@@ -281,7 +287,15 @@ const hillClimb = async (
     wishesGainedPerBanner
   );
   const results = finalizeResults(
-    runSimulationBatch(banners, bestGuessAllocation, pity, guaranteed, 100)
+    runSimulationBatch(
+      banners,
+      bestGuessAllocation,
+      characterPity,
+      characterGuaranteed,
+      100,
+      weaponPity,
+      weaponGuaranteed
+    )
   );
   bestScores.enqueue({ allocation: bestGuessAllocation, results });
   for (let i = 0; i < numIterations; i++) {
@@ -313,7 +327,15 @@ const hillClimb = async (
     bestScores.enqueue({
       allocation: newAllocation,
       results: finalizeResults(
-        runSimulationBatch(banners, bestGuessAllocation, pity, guaranteed, 100)
+        runSimulationBatch(
+          banners,
+          bestGuessAllocation,
+          characterPity,
+          characterGuaranteed,
+          100,
+          weaponPity,
+          weaponGuaranteed
+        )
       ),
     });
   }
@@ -332,8 +354,10 @@ const hillClimb = async (
 export const runOptimization = async (
   banners: ApiBanner[],
   bannerConfiguration: Record<string, BannerConfiguration>,
-  pity: number,
-  guaranteed: boolean,
+  characterPity: number,
+  characterGuaranteed: boolean,
+  weaponPity: number,
+  weaponGuaranteed: boolean,
   startingWishes: number,
   wishesGainedPerBanner: number,
   setSimulationResults: (
@@ -356,8 +380,10 @@ export const runOptimization = async (
     bestScores,
     banners,
     bannerConfiguration,
-    pity,
-    guaranteed,
+    characterPity,
+    characterGuaranteed,
+    weaponPity,
+    weaponGuaranteed,
     startingWishes,
     wishesGainedPerBanner
   );
@@ -387,14 +413,24 @@ export const runOptimization = async (
   const optimalAllocations = await determineOptimalAllocations(
     banners,
     bannerConfiguration,
-    pity,
-    guaranteed
+    characterPity,
+    characterGuaranteed,
+    weaponPity,
+    weaponGuaranteed
   );
   console.log("Optimal allocations:");
   for (let i = 0; i < optimalAllocations.length; i++) {
     const a = optimalAllocations[i];
     const results = finalizeResults(
-      runSimulationBatch(banners, a, pity, guaranteed, 100)
+      runSimulationBatch(
+        banners,
+        a,
+        characterPity,
+        characterGuaranteed,
+        100,
+        weaponPity,
+        weaponGuaranteed
+      )
     );
     console.log(
       "Simulation score:",

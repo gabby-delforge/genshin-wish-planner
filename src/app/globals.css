@@ -145,6 +145,41 @@ html {
     width: var(--text-7xl);
     height: var(--text-7xl);
   }
+
+  /* Magical glow effect for successful character pulls */
+  .magical-glow {
+    position: relative;
+    animation: magical-pulse 2s ease-in-out infinite;
+  }
+
+  .magical-glow::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(
+      45deg,
+      transparent,
+      rgba(255, 215, 0, 0.1),
+      rgba(255, 223, 0, 0.2),
+      rgba(255, 215, 0, 0.1),
+      transparent
+    );
+    filter: blur(4px);
+    z-index: -2;
+    animation: magical-shimmer 60s linear infinite;
+  }
+
+  @keyframes magical-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.21),
+        0 0 15px rgba(255, 215, 0, 0.2);
+    }
+  }
 }
 
 @layer base {

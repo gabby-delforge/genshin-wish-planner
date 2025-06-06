@@ -5,15 +5,18 @@
  */
 
 import bannersData from "../../../public/metadata/banners.json";
-import { BannerConfiguration, BannerId } from "../types";
-import { initializeBannerConfigurations } from "./initializers";
+import { BannerId } from "../types";
+import * as StateTypes from "./snapshots";
+import { VersionedState } from "./snapshots";
 
 export const migrations: Record<
   number,
-  (state: Record<string, unknown>) => Record<string, unknown>
+  (state: VersionedState) => VersionedState
 > = {
   // Migration from v1 to v2: Split accountStatusCurrentPity into characterPity and weaponPity
-  1: (state) => {
+  1: (_state) => {
+    const state = _state as StateTypes.V1.GenshinStateV1;
+
     const oldPity = (state.accountStatusCurrentPity as number) || 0;
 
     // Create new state object, explicitly excluding the old field
@@ -25,16 +28,21 @@ export const migrations: Record<
       version: 2,
       characterPity: oldPity, // Migrate old pity to character pity
       weaponPity: 0, // New field starts at 0
-    };
+    } as StateTypes.V2.GenshinStateV2;
   },
 
   // Migration from v2 to v3: Update banner data and migrate character wish allocations
-  2: (state) => {
-    const oldBannerConfiguration = state.bannerConfiguration as Record<
-      BannerId,
-      BannerConfiguration
+  2: (_state) => {
+    const state = _state as StateTypes.V2.GenshinStateV2;
+    const oldBannerConfiguration =
+      (state.bannerConfiguration as Record<
+        StateTypes.V2.BannerId,
+        StateTypes.V2.BannerConfiguration
+      >) || {};
+    const newBannerConfiguration = {} as Record<
+      StateTypes.V3.BannerId,
+      StateTypes.V3.BannerConfiguration
     >;
-    const newBannerConfiguration = initializeBannerConfigurations(bannersData);
 
     // Create character mapping for characters that moved between banners
     const characterMigrationMap: Record<
@@ -59,12 +67,16 @@ export const migrations: Record<
           oldBannerConfiguration[from]?.characters?.[characterId];
         if (
           oldCharacterConfig &&
-          newBannerConfiguration[to]?.characters?.[characterId]
+          newBannerConfiguration[to]?.characters?.[
+            characterId as StateTypes.V3.CharacterId
+          ]
         ) {
-          newBannerConfiguration[to].characters[characterId] = {
+          newBannerConfiguration[to].characters[
+            characterId as StateTypes.V3.CharacterId
+          ] = {
             wishesAllocated: oldCharacterConfig.wishesAllocated,
             maxConstellation: oldCharacterConfig.maxConstellation,
-            priority: oldCharacterConfig.priority,
+            priority: oldCharacterConfig.priority as StateTypes.V3.Priority,
           };
         }
       }
@@ -80,8 +92,9 @@ export const migrations: Record<
         newBannerConfiguration[to].weaponBanner = {
           ...newBannerConfiguration[to].weaponBanner,
           wishesAllocated: oldWeaponConfig.wishesAllocated,
-          epitomizedPath: weaponId, // TypeScript will ensure this is a valid WeaponId
-          strategy: oldWeaponConfig.strategy,
+          epitomizedPath: weaponId as StateTypes.V3.WeaponId, // TypeScript will ensure this is a valid WeaponId
+          strategy:
+            oldWeaponConfig.strategy as StateTypes.V3.WeaponBannerConfig["strategy"],
         };
       }
     });
@@ -94,12 +107,16 @@ export const migrations: Record<
             // Only preserve if character didn't move (not in migration map)
             if (
               !characterMigrationMap[characterId] &&
-              newBannerConfiguration[bannerId].characters[characterId]
+              newBannerConfiguration[bannerId].characters[
+                characterId as StateTypes.V3.CharacterId
+              ]
             ) {
-              newBannerConfiguration[bannerId].characters[characterId] = {
+              newBannerConfiguration[bannerId].characters[
+                characterId as StateTypes.V3.CharacterId
+              ] = {
                 wishesAllocated: charConfig.wishesAllocated,
                 maxConstellation: charConfig.maxConstellation,
-                priority: charConfig.priority,
+                priority: charConfig.priority as StateTypes.V3.Priority,
               };
             }
           }
@@ -113,12 +130,12 @@ export const migrations: Record<
           newBannerConfiguration[bannerId].weaponBanner = {
             ...newBannerConfiguration[bannerId].weaponBanner,
             wishesAllocated: oldConfig.weaponBanner.wishesAllocated || 0,
-            epitomizedPath:
-              oldConfig.weaponBanner.epitomizedPath ||
-              newBannerConfiguration[bannerId].weaponBanner.epitomizedPath,
-            strategy:
-              oldConfig.weaponBanner.strategy ||
-              newBannerConfiguration[bannerId].weaponBanner.strategy,
+            epitomizedPath: (oldConfig.weaponBanner.epitomizedPath ||
+              newBannerConfiguration[bannerId].weaponBanner
+                .epitomizedPath) as StateTypes.V3.WeaponId,
+            strategy: (oldConfig.weaponBanner.strategy ||
+              newBannerConfiguration[bannerId].weaponBanner
+                .strategy) as StateTypes.V3.WeaponBannerConfig["strategy"],
           };
         }
       }
@@ -129,15 +146,57 @@ export const migrations: Record<
       version: 3,
       banners: bannersData,
       bannerConfiguration: newBannerConfiguration,
-    };
+    } as StateTypes.V3.GenshinStateV3;
+  },
+
+  // Migration from v3 to v4
+  // Generated on: 2025-06-06T15:40:09.154Z
+  3: (state) => {
+    const typedState = state as StateTypes.V3.GenshinStateV3;
+    // TODO: Implement migration from v3 to v4
+    // Changes detected:
+    // + isNextCharacterFeaturedGuaranteed: (new field)
+    // + isNextWeaponFeaturedGuaranteed: (new field)
+    // + ownedWishResources: (new field)
+    // + primogemSources: (new field)
+    // + shouldExcludeCurrentBannerEarnedWishes: (new field)
+    // - accountStatusIsNextFiftyFiftyGuaranteed: (removed field)
+    // - accountStatusOwnedWishResources: (removed field)
+    // - accountStatusPrimogemSources: (removed field)
+    // - accountStatusExcludeCurrentBannerPrimogemSources: (removed field)
+    // - banners: (removed field)
+
+    const mappedBannerConfig: Record<
+      string,
+      StateTypes.V4.BannerConfiguration
+    > = {};
+    Object.entries(typedState.bannerConfiguration).forEach(([v, bc]) => {
+      mappedBannerConfig[v] = {
+        ...bc,
+        bannerId: bc.banner.id as StateTypes.V4.BannerId,
+      };
+    });
+
+    return {
+      ...typedState,
+      version: 4,
+      isNextCharacterFeaturedGuaranteed:
+        typedState.accountStatusIsNextFiftyFiftyGuaranteed,
+      isNextWeaponFeaturedGuaranteed: false,
+      ownedWishResources: typedState.accountStatusOwnedWishResources,
+      primogemSources: typedState.accountStatusPrimogemSources,
+      shouldExcludeCurrentBannerEarnedWishes:
+        typedState.accountStatusExcludeCurrentBannerPrimogemSources,
+      bannerConfiguration: mappedBannerConfig,
+    } as StateTypes.V4.GenshinStateV4;
   },
 };
 
 export function migrateState(
   state: Record<string, unknown>,
   targetVersion: number
-): Record<string, unknown> {
-  let currentState = state;
+): VersionedState {
+  let currentState = state as unknown as VersionedState;
   let currentVersion = (state.version as number) || 1;
 
   while (currentVersion < targetVersion) {
