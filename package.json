@@ -13,6 +13,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "state:check": "node scripts/state-schema-detector.js check",
+    "state:check:force-snapshot": "node scripts/state-schema-detector.js check --force-snapshot",
     "state:update": "node scripts/state-schema-detector.js update",
     "state:version": "node scripts/increment-state-version.js get",
     "state:version:increment": "node scripts/increment-state-version.js increment",

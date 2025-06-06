@@ -1,0 +1,226 @@
+{
+  "characterPity": 0,
+  "weaponPity": 0,
+  "accountStatusIsNextFiftyFiftyGuaranteed": false,
+  "accountStatusOwnedWishResources": {
+    "primogem": 0,
+    "starglitter": 0,
+    "limitedWishes": 0,
+    "stardust": 0,
+    "genesisCrystal": 0,
+    "standardWish": 0
+  },
+  "accountStatusPrimogemSources": {
+    "gameUpdateCompensation": true,
+    "dailyCommissions": true,
+    "paimonBargain": true,
+    "abyss": true,
+    "imaginarium": true,
+    "battlePass": true,
+    "battlePassGnostic": true,
+    "welkinMoon": true,
+    "archonQuest": true,
+    "storyQuests": true,
+    "newAchievements": true,
+    "characterTestRuns": true,
+    "eventActivities": true,
+    "hoyolabDailyCheckIn": true,
+    "hoyolabWebEvents": true,
+    "livestreamCodes": true,
+    "newVersionCode": true,
+    "limitedExplorationRewards": true
+  },
+  "accountStatusExcludeCurrentBannerPrimogemSources": false,
+  "banners": [
+    {
+      "id": "5.6v2",
+      "version": "5.6v2",
+      "name": "5.6 Phase 2",
+      "startDate": "2025-05-27T00:00:00-05:00",
+      "endDate": "2025-06-17T00:00:00-05:00",
+      "characters": [
+        "kinich",
+        "raiden-shogun"
+      ],
+      "weapons": [
+        "fang-of-the-mountain-king",
+        "engulfing-lightning"
+      ]
+    },
+    {
+      "id": "5.7v1",
+      "version": "5.7v1",
+      "name": "5.7 Phase 1",
+      "startDate": "2025-06-17T00:00:00-05:00",
+      "endDate": "2025-07-08T00:00:00-05:00",
+      "characters": [
+        "skirk",
+        "shenhe"
+      ],
+      "weapons": [
+        "azurelight",
+        "calamity-queller"
+      ]
+    },
+    {
+      "id": "5.7v2",
+      "version": "5.7v2",
+      "name": "5.7 Phase 2",
+      "startDate": "2025-07-08T00:00:00-05:00",
+      "endDate": "2025-07-29T00:00:00-05:00",
+      "characters": [
+        "mavuika",
+        "emilie"
+      ],
+      "weapons": [
+        "a-thousand-blazing-suns",
+        "lumidouce-elegy"
+      ]
+    }
+  ],
+  "simulationCount": 10000,
+  "mode": "playground",
+  "playgroundSimulationResults": null,
+  "optimizerSimulationResults": null,
+  "bannerConfiguration": {
+    "5.6v2": {
+      "banner": {
+        "id": "5.6v2",
+        "version": "5.6v2",
+        "name": "5.6 Phase 2",
+        "startDate": "2025-05-27T00:00:00-05:00",
+        "endDate": "2025-06-17T00:00:00-05:00",
+        "characters": [
+          "kinich",
+          "raiden-shogun"
+        ],
+        "weapons": [
+          "fang-of-the-mountain-king",
+          "engulfing-lightning"
+        ]
+      },
+      "isCurrentBanner": true,
+      "isOldBanner": false,
+      "characters": {
+        "kinich": {
+          "wishesAllocated": 0,
+          "maxConstellation": 6,
+          "priority": 4
+        },
+        "raiden-shogun": {
+          "wishesAllocated": 0,
+          "maxConstellation": 6,
+          "priority": 4
+        }
+      },
+      "weapons": {
+        "fang-of-the-mountain-king": {
+          "wishesAllocated": 0,
+          "priority": 4
+        },
+        "engulfing-lightning": {
+          "wishesAllocated": 0,
+          "priority": 4
+        }
+      },
+      "weaponBanner": {
+        "wishesAllocated": 0,
+        "epitomizedPath": "fang-of-the-mountain-king",
+        "strategy": "stop"
+      }
+    },
+    "5.7v1": {
+      "banner": {
+        "id": "5.7v1",
+        "version": "5.7v1",
+        "name": "5.7 Phase 1",
+        "startDate": "2025-06-17T00:00:00-05:00",
+        "endDate": "2025-07-08T00:00:00-05:00",
+        "characters": [
+          "skirk",
+          "shenhe"
+        ],
+        "weapons": [
+          "azurelight",
+          "calamity-queller"
+        ]
+      },
+      "isCurrentBanner": false,
+      "isOldBanner": false,
+      "characters": {
+        "skirk": {
+          "wishesAllocated": 0,
+          "maxConstellation": 6,
+          "priority": 4
+        },
+        "shenhe": {
+          "wishesAllocated": 0,
+          "maxConstellation": 6,
+          "priority": 4
+        }
+      },
+      "weapons": {
+        "azurelight": {
+          "wishesAllocated": 0,
+          "priority": 4
+        },
+        "calamity-queller": {
+          "wishesAllocated": 0,
+          "priority": 4
+        }
+      },
+      "weaponBanner": {
+        "wishesAllocated": 0,
+        "epitomizedPath": "azurelight",
+        "strategy": "stop"
+      }
+    },
+    "5.7v2": {
+      "banner": {
+        "id": "5.7v2",
+        "version": "5.7v2",
+        "name": "5.7 Phase 2",
+        "startDate": "2025-07-08T00:00:00-05:00",
+        "endDate": "2025-07-29T00:00:00-05:00",
+        "characters": [
+          "mavuika",
+          "emilie"
+        ],
+        "weapons": [
+          "a-thousand-blazing-suns",
+          "lumidouce-elegy"
+        ]
+      },
+      "isCurrentBanner": false,
+      "isOldBanner": false,
+      "characters": {
+        "mavuika": {
+          "wishesAllocated": 0,
+          "maxConstellation": 6,
+          "priority": 4
+        },
+        "emilie": {
+          "wishesAllocated": 0,
+          "maxConstellation": 6,
+          "priority": 4
+        }
+      },
+      "weapons": {
+        "a-thousand-blazing-suns": {
+          "wishesAllocated": 0,
+          "priority": 4
+        },
+        "lumidouce-elegy": {
+          "wishesAllocated": 0,
+          "priority": 4
+        }
+      },
+      "weaponBanner": {
+        "wishesAllocated": 0,
+        "epitomizedPath": "a-thousand-blazing-suns",
+        "strategy": "stop"
+      }
+    }
+  },
+  "version": 3
+}

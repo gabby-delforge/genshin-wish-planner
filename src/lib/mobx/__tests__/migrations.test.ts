@@ -61,7 +61,7 @@ describe("State Migrations", () => {
     it("should throw error for missing migration", () => {
       expect(() => {
         migrateState(v1Snapshot, 999);
-      }).toThrow("No migration found for version 2");
+      }).toThrow(/No migration found for version \d+/);
     });
   });
 
