@@ -370,6 +370,9 @@ export class GenshinState {
       let totalPrimogems = 0;
       let totalLimitedWishes = 0;
 
+      // Check if this is the first banner of a version (ends with "v1")
+      const isFirstBannerOfVersion = banner.id.endsWith("v1");
+
       // Add masterless stardust wishes from accumulated 3-star/4-star pulls
       // Each subsequent banner gets +5 wishes from stardust accumulation
       const stardustWishes = 5;
@@ -491,8 +494,68 @@ export class GenshinState {
           return;
         }
 
+        // Define source categories
+        const perVersionSources = [
+          "dailyCommissions",
+          "welkinMoon",
+          "battlePass",
+          "battlePassGnostic",
+          "paimonBargain",
+        ];
+        
+        const oneTimePerVersionSources = [
+          "gameUpdateCompensation",
+          "newVersionCode",
+          "archonQuest",
+          "storyQuests",
+          "newAchievements",
+          "limitedExplorationRewards",
+        ];
+
+        // Handle per-version sources (divide by 2 since each banner is half a version)
+        if (perVersionSources.includes(sourceKey)) {
+          if (Array.isArray(sourceValue)) {
+            sourceValue.forEach((resource) => {
+              if (resource.type === "primogem") {
+                totalPrimogems += resource.value / 2;
+              } else if (resource.type === "limitedWishes") {
+                totalLimitedWishes += resource.value / 2;
+              }
+            });
+          } else {
+            if (sourceValue.type === "primogem") {
+              totalPrimogems += sourceValue.value / 2;
+            } else if (sourceValue.type === "limitedWishes") {
+              totalLimitedWishes += sourceValue.value / 2;
+            }
+          }
+          return;
+        }
+
+        // Handle one-time per-version sources (only apply to first banner of version)
+        if (oneTimePerVersionSources.includes(sourceKey)) {
+          if (!isFirstBannerOfVersion) return;
+          
+          if (Array.isArray(sourceValue)) {
+            sourceValue.forEach((resource) => {
+              if (resource.type === "primogem") {
+                totalPrimogems += resource.value;
+              } else if (resource.type === "limitedWishes") {
+                totalLimitedWishes += resource.value;
+              }
+            });
+          } else {
+            if (sourceValue.type === "primogem") {
+              totalPrimogems += sourceValue.value;
+            } else if (sourceValue.type === "limitedWishes") {
+              totalLimitedWishes += sourceValue.value;
+            }
+          }
+          return;
+        }
+
+        // Handle per-banner sources (keep as-is)
         if (Array.isArray(sourceValue)) {
-          // Handle array of resource values
           sourceValue.forEach((resource) => {
             if (resource.type === "primogem") {
               totalPrimogems += resource.value;
@@ -501,7 +564,6 @@ export class GenshinState {
             }
           });
         } else {
-          // Handle single resource value
           if (sourceValue.type === "primogem") {
             totalPrimogems += sourceValue.value;
           } else if (sourceValue.type === "limitedWishes") {
