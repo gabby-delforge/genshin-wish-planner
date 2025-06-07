@@ -302,7 +302,7 @@ export class GenshinState {
     // You can only get up to 5 wishes from stardust per month
     const stardustWishes = Math.min(
       5,
-      Math.floor(this.ownedWishResources.stardust / 10)
+      Math.floor(this.ownedWishResources.stardust / 75)
     );
     const genesisCrystalWishes = Math.floor(
       this.ownedWishResources.genesisCrystal / 160
@@ -374,8 +374,30 @@ export class GenshinState {
       const isFirstBannerOfVersion = banner.id.endsWith("v1");
 
       // Add masterless stardust wishes from accumulated 3-star/4-star pulls
-      // Each subsequent banner gets +5 wishes from stardust accumulation
-      const stardustWishes = 5;
+      // You can buy 5 wishes per month, so only count it for banners that span across monthly reset (1st of month)
+      const bannerStart = new Date(banner.startDate);
+      const bannerEnd = new Date(banner.endDate);
+
+      // Find monthly resets that occur during this banner period
+      let currentMonthStart = new Date(
+        bannerStart.getFullYear(),
+        bannerStart.getMonth() + 1,
+        1
+      );
+
+      let monthlyResets = 0;
+      // Count monthly resets that occur during the banner period
+      while (currentMonthStart <= bannerEnd) {
+        monthlyResets++;
+        // Move to next month
+        currentMonthStart = new Date(
+          currentMonthStart.getFullYear(),
+          currentMonthStart.getMonth() + 1,
+          1
+        );
+      }
+
+      const stardustWishes = monthlyResets * 5;
       totalLimitedWishes += stardustWishes;
 
       // Process each primogem source
@@ -494,48 +516,22 @@ export class GenshinState {
           return;
         }
 
-        // Define source categories
-        const perVersionSources = [
-          "dailyCommissions",
-          "welkinMoon",
-          "battlePass",
-          "battlePassGnostic",
-          "paimonBargain",
-        ];
-        
-        const oneTimePerVersionSources = [
+        // Sources that only apply during the Phase 1 banner
+        const oneTimePerVersionSources: (keyof PrimogemSourcesEnabled)[] = [
           "gameUpdateCompensation",
           "newVersionCode",
           "archonQuest",
           "storyQuests",
           "newAchievements",
           "limitedExplorationRewards",
+          "battlePass",
+          "battlePassGnostic",
         ];
-
-        // Handle per-version sources (divide by 2 since each banner is half a version)
-        if (perVersionSources.includes(sourceKey)) {
-          if (Array.isArray(sourceValue)) {
-            sourceValue.forEach((resource) => {
-              if (resource.type === "primogem") {
-                totalPrimogems += Math.floor(resource.value / 2);
-              } else if (resource.type === "limitedWishes") {
-                totalLimitedWishes += resource.value / 2;
-              }
-            });
-          } else {
-            if (sourceValue.type === "primogem") {
-              totalPrimogems += Math.floor(sourceValue.value / 2);
-            } else if (sourceValue.type === "limitedWishes") {
-              totalLimitedWishes += sourceValue.value / 2;
-            }
-          }
-          return;
-        }
 
         // Handle one-time per-version sources (only apply to first banner of version)
         if (oneTimePerVersionSources.includes(sourceKey)) {
           if (!isFirstBannerOfVersion) return;
-          
+
           if (Array.isArray(sourceValue)) {
             sourceValue.forEach((resource) => {
               if (resource.type === "primogem") {
@@ -552,23 +548,24 @@ export class GenshinState {
             }
           }
           return;
-        }
-
-        // Handle per-banner sources (keep as-is)
-        if (Array.isArray(sourceValue)) {
-          sourceValue.forEach((resource) => {
-            if (resource.type === "primogem") {
-              totalPrimogems += resource.value;
-            } else if (resource.type === "limitedWishes") {
-              totalLimitedWishes += resource.value;
-            }
-          });
         } else {
-          if (sourceValue.type === "primogem") {
-            totalPrimogems += sourceValue.value;
-          } else if (sourceValue.type === "limitedWishes") {
-            totalLimitedWishes += sourceValue.value;
+          // Handle per-version sources (divide by 2 since each banner is half a version)
+          if (Array.isArray(sourceValue)) {
+            sourceValue.forEach((resource) => {
+              if (resource.type === "primogem") {
+                totalPrimogems += Math.floor(resource.value / 2);
+              } else if (resource.type === "limitedWishes") {
+                totalLimitedWishes += resource.value / 2;
+              }
+            });
+          } else {
+            if (sourceValue.type === "primogem") {
+              totalPrimogems += Math.floor(sourceValue.value / 2);
+            } else if (sourceValue.type === "limitedWishes") {
+              totalLimitedWishes += sourceValue.value / 2;
+            }
           }
+          return;
         }
       });
 
