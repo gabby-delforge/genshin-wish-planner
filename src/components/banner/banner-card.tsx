@@ -85,17 +85,17 @@ const BannerCard = observer(
                   totalWishes < 0 ? "text-red-300" : "text-white"
                 )}
               >
-                <LimitedWish number={totalWishes} />
+                <LimitedWish number={Math.floor(totalWishes)} />
                 available
               </div>
             </TooltipTrigger>
             <TooltipContent className="flex gap-1 items-center">
-              <LimitedWish number={leftover} />
+              <LimitedWish number={Math.floor(leftover)} />
               <div>{isCurrentBanner ? "owned" : "leftover"}</div>
               {gainedWishes > 0 && (
                 <>
                   <div className="text-black/50">+</div>
-                  <LimitedWish number={gainedWishes} />
+                  <LimitedWish number={Math.floor(gainedWishes)} />
                   <div>earned</div>
                 </>
               )}

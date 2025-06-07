@@ -517,14 +517,14 @@ export class GenshinState {
           if (Array.isArray(sourceValue)) {
             sourceValue.forEach((resource) => {
               if (resource.type === "primogem") {
-                totalPrimogems += resource.value / 2;
+                totalPrimogems += Math.floor(resource.value / 2);
               } else if (resource.type === "limitedWishes") {
                 totalLimitedWishes += resource.value / 2;
               }
             });
           } else {
             if (sourceValue.type === "primogem") {
-              totalPrimogems += sourceValue.value / 2;
+              totalPrimogems += Math.floor(sourceValue.value / 2);
             } else if (sourceValue.type === "limitedWishes") {
               totalLimitedWishes += sourceValue.value / 2;
             }
