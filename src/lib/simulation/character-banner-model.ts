@@ -21,11 +21,13 @@ export const getCharacter5StarProbability = (pity: number): number => {
  */
 export const characterWish = (
   pity: number,
-  guaranteed: boolean
+  guaranteed: boolean,
+  consecutive5050Losses: number
 ): {
   result: "featured" | "standard" | "non-5-star";
   newPity: number;
   newGuaranteed: boolean;
+  newConsecutive5050Losses: number;
 } => {
   const newPity = pity + 1;
   const prob = getCharacter5StarProbability(newPity);
@@ -34,18 +36,49 @@ export const characterWish = (
     // Got a 5-star, reset pity
     if (guaranteed) {
       // Guaranteed featured character
-      return { result: "featured", newPity: 0, newGuaranteed: false };
+      return { 
+        result: "featured", 
+        newPity: 0, 
+        newGuaranteed: false,
+        newConsecutive5050Losses: 0 // Reset counter on guaranteed win
+      };
     } else {
-      // 50/50 chance (55% with capturing radiance, but we'll use 50% for now)
-      if (Math.random() < 0.5) {
-        return { result: "featured", newPity: 0, newGuaranteed: false };
+      // Check for Capturing Radiance (guaranteed win after 2 consecutive losses)
+      if (consecutive5050Losses >= 2) {
+        // Capturing Radiance guarantees the featured character
+        return { 
+          result: "featured", 
+          newPity: 0, 
+          newGuaranteed: false,
+          newConsecutive5050Losses: 0 // Reset counter after guaranteed win
+        };
       } else {
-        return { result: "standard", newPity: 0, newGuaranteed: true };
+        // Normal 50/50 chance
+        if (Math.random() < 0.5) {
+          return { 
+            result: "featured", 
+            newPity: 0, 
+            newGuaranteed: false,
+            newConsecutive5050Losses: 0 // Reset counter on win
+          };
+        } else {
+          return { 
+            result: "standard", 
+            newPity: 0, 
+            newGuaranteed: true,
+            newConsecutive5050Losses: consecutive5050Losses + 1 // Increment loss counter
+          };
+        }
       }
     }
   }
 
-  return { result: "non-5-star", newPity, newGuaranteed: guaranteed };
+  return { 
+    result: "non-5-star", 
+    newPity, 
+    newGuaranteed: guaranteed,
+    newConsecutive5050Losses: consecutive5050Losses // No change to loss counter
+  };
 };
 
 export const wishForCharacter = (
@@ -53,7 +86,8 @@ export const wishForCharacter = (
   maxWishes: number,
   maxConst: number,
   startingPity: number,
-  startingGuaranteed: boolean
+  startingGuaranteed: boolean,
+  startingConsecutive5050Losses: number
 ): WishForCharacterResult => {
   let charPulls = 0;
   let obtained = false;
@@ -63,14 +97,16 @@ export const wishForCharacter = (
   let gotFeatured5Star = false;
   let pity = startingPity;
   let guaranteed = startingGuaranteed;
+  let consecutive5050Losses = startingConsecutive5050Losses;
 
   // Simulate pulls for this specific character
   while (charPulls < maxWishes && constellationCount <= maxConst) {
     charPulls++;
 
-    const wishResult = characterWish(pity, guaranteed);
+    const wishResult = characterWish(pity, guaranteed, consecutive5050Losses);
     pity = wishResult.newPity;
     guaranteed = wishResult.newGuaranteed;
+    consecutive5050Losses = wishResult.newConsecutive5050Losses;
 
     if (wishResult.result === "featured") {
       // Successfully got the featured character
@@ -100,5 +136,6 @@ export const wishForCharacter = (
     pity,
     guaranteed,
     constellation: constellationCount > 0 ? constellationCount - 1 : 0,
+    consecutive5050Losses,
   };
 };

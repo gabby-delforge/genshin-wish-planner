@@ -240,7 +240,7 @@ describe("Wish Simulator", () => {
       let standardCount = 0;
 
       for (let i = 0; i < iterations; i++) {
-        const result = characterWish(pity, guaranteed);
+        const result = characterWish(pity, guaranteed, 0);
         if (result.result === "featured") {
           fiveStarCount++;
           featuredCount++;
@@ -367,7 +367,7 @@ describe("Wish Simulator", () => {
         let wishes = 0;
 
         while (wishes < 90) {
-          const result = characterWish(currentPity, false);
+          const result = characterWish(currentPity, false, 0);
           wishes++;
 
           if (result.result !== "non-5-star") {
@@ -407,7 +407,7 @@ describe("Wish Simulator", () => {
         let wishes = 0;
 
         while (wishes < 90) {
-          const result = characterWish(currentPity, false);
+          const result = characterWish(currentPity, false, 0);
           wishes++;
 
           if (result.result !== "non-5-star") {
@@ -702,6 +702,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0, // pity
         false, // guaranteed
+        false, // capturing radiance
         100, // batch size
         0, // weapon pity
         false // weapon guaranteed
@@ -736,6 +737,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         50,
         0,
         false
@@ -767,6 +769,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         50,
         0,
         false
@@ -795,6 +798,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         50,
         0,
         false
@@ -825,6 +829,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         20,
         0,
         false
@@ -850,6 +855,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         20,
         0,
         false
@@ -871,6 +877,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         100,
         0,
         false
@@ -903,6 +910,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         100,
         0,
         false
@@ -929,6 +937,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         0,
         false,
+        false, // capturing radiance
         10,
         0,
         false
@@ -947,6 +956,7 @@ describe("Wish Simulator", () => {
         bannerConfiguration,
         89,
         true,
+        false, // capturing radiance (not relevant when guaranteed is true)
         10,
         77,
         true

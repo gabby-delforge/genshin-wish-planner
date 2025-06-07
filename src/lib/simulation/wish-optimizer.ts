@@ -58,6 +58,7 @@ const determineOptimalAllocations = async (
   bannerConfiguration: Record<string, BannerConfiguration>,
   characterPity: number,
   characterGuaranteed: boolean,
+  capturingRadiance: boolean,
   weaponPity: number,
   weaponGuaranteed: boolean
 ): Promise<Record<string, BannerConfiguration>[]> => {
@@ -129,6 +130,7 @@ const determineOptimalAllocations = async (
       newAllocation,
       characterPity,
       characterGuaranteed,
+      capturingRadiance,
       weaponPity,
       weaponGuaranteed,
       SIMULATION_COUNT
@@ -274,6 +276,7 @@ const hillClimb = async (
   bannerConfiguration: Record<string, BannerConfiguration>,
   characterPity: number,
   characterGuaranteed: boolean,
+  capturingRadiance: boolean,
   weaponPity: number,
   weaponGuaranteed: boolean,
   startingWishes: number,
@@ -292,6 +295,7 @@ const hillClimb = async (
       bestGuessAllocation,
       characterPity,
       characterGuaranteed,
+      capturingRadiance,
       100,
       weaponPity,
       weaponGuaranteed
@@ -332,6 +336,7 @@ const hillClimb = async (
           bestGuessAllocation,
           characterPity,
           characterGuaranteed,
+          capturingRadiance,
           100,
           weaponPity,
           weaponGuaranteed
@@ -356,6 +361,7 @@ export const runOptimization = async (
   bannerConfiguration: Record<string, BannerConfiguration>,
   characterPity: number,
   characterGuaranteed: boolean,
+  capturingRadiance: boolean,
   weaponPity: number,
   weaponGuaranteed: boolean,
   startingWishes: number,
@@ -382,6 +388,7 @@ export const runOptimization = async (
     bannerConfiguration,
     characterPity,
     characterGuaranteed,
+    capturingRadiance,
     weaponPity,
     weaponGuaranteed,
     startingWishes,
@@ -415,6 +422,7 @@ export const runOptimization = async (
     bannerConfiguration,
     characterPity,
     characterGuaranteed,
+    capturingRadiance,
     weaponPity,
     weaponGuaranteed
   );
@@ -427,6 +435,7 @@ export const runOptimization = async (
         a,
         characterPity,
         characterGuaranteed,
+        capturingRadiance,
         100,
         weaponPity,
         weaponGuaranteed

@@ -1,3 +1,4 @@
+import { Checkbox } from "@/components/ui/checkbox";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,12 +14,14 @@ export const PityStatus = observer(() => {
     weaponPity,
     setWeaponPity,
     isNextCharacterFeaturedGuaranteed,
+    isCapturingRadianceActive,
     isNextWeaponFeaturedGuaranteed,
     setIsNextCharacterFeaturedGuaranteed,
+    setIsCapturingRadianceActive,
     setIsNextWeaponFeaturedGuaranteed,
   } = useGenshinState();
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       <Label className="text-sm text-gold-1 block">Pity</Label>
       <div>
         <div className="text-xs italic text-white/50 mb-2">
@@ -84,6 +87,30 @@ export const PityStatus = observer(() => {
               <span className="text-xs">Won</span>
             </ToggleGroup.Item>
           </ToggleGroup.Root>
+          {isNextCharacterFeaturedGuaranteed ? (
+            <>
+              <Label
+                htmlFor="capturingRadiance"
+                className="flex flex-row gap-1 items-center my-auto text-xs @lg/config:ml-6"
+              >
+                <div>Capturing Radiance</div>
+                <InfoIcon
+                  className="text-white/50"
+                  content={
+                    "If you have lost two 50/50s in a row, the next one will trigger Capturing Radiance and guarantee that you'll get the featured 5-star character"
+                  }
+                />
+              </Label>
+              <div className="min-h-8 justify-self-end-safe self-center flex justify-center items-center mr-1">
+                <Checkbox
+                  checked={isCapturingRadianceActive}
+                  onCheckedChange={(checked) =>
+                    setIsCapturingRadianceActive(checked === true)
+                  }
+                />
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
       <div>
