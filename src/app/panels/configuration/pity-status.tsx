@@ -144,11 +144,11 @@ export const PityStatus = observer(() => {
             htmlFor="isGuaranteed"
             className="flex flex-row gap-1 items-center my-auto text-xs @lg/config:ml-6"
           >
-            <div>Last 50/50</div>
+            <div>Last 75/25</div>
             <InfoIcon
               className="text-white/50"
               content={
-                "Whether you last got either featured 5 star weapons (won) or a standard 5 star weapon (lost)."
+                "Whether you last got either featured 5 star weapons (won, 75% chance) or a standard 5 star weapon (lost, 25% chance)."
               }
             />
           </Label>
