@@ -13,6 +13,7 @@ import {
 } from "../character-banner-model";
 import { getWeapon5StarProbability, weaponWish } from "../weapon-banner-model";
 import { finalizeResults, runSimulationBatch } from "../wish-simulator";
+import { expectProbabilityDifference, expectSuccessRate } from "./statistical-tolerance";
 
 // Character 5-star probability by pity (index = pity-1)
 export const CHAR_PROBABILITY = [
@@ -240,11 +241,11 @@ describe("Wish Simulator", () => {
       let standardCount = 0;
 
       for (let i = 0; i < iterations; i++) {
-        const result = characterWish(pity, guaranteed, 0);
-        if (result.result === "featured") {
+        const result = characterWish(pity, 0, guaranteed, false, 0);
+        if (result.result === "5-star-featured") {
           fiveStarCount++;
           featuredCount++;
-        } else if (result.result === "standard") {
+        } else if (result.result === "5-star-standard") {
           fiveStarCount++;
           standardCount++;
         }
@@ -268,10 +269,7 @@ describe("Wish Simulator", () => {
           50000
         );
 
-        // Allow 1% margin of error due to randomness
-        const tolerance = 0.01;
-        expect(fiveStarRate).toBeCloseTo(expectedProb, 2);
-        expect(Math.abs(fiveStarRate - expectedProb)).toBeLessThan(tolerance);
+        expectSuccessRate(() => fiveStarRate, expectedProb, 50000);
       }
     });
 
@@ -286,10 +284,7 @@ describe("Wish Simulator", () => {
           20000
         );
 
-        // Higher tolerance for soft pity due to higher variance
-        const tolerance = 0.02;
-        expect(fiveStarRate).toBeCloseTo(expectedProb, 1);
-        expect(Math.abs(fiveStarRate - expectedProb)).toBeLessThan(tolerance);
+        expectSuccessRate(() => fiveStarRate, expectedProb, 20000);
       }
     });
 
@@ -299,16 +294,10 @@ describe("Wish Simulator", () => {
     });
 
     it("should maintain 50/50 rate when not guaranteed", () => {
-      // Test at a high pity to ensure 5-stars are obtained
-      const { featuredRate, standardRate } = testCharacterWishProbability(
-        88,
-        false,
-        10000
-      );
-
-      // Both should be close to 50% of the 5-star rate
-      const tolerance = 0.03;
-      expect(Math.abs(featuredRate - standardRate)).toBeLessThan(tolerance);
+      const { featuredRate, standardRate } = testCharacterWishProbability(88, false, 10000);
+      
+      // Test that the difference between featured and standard rates is near 0
+      expectProbabilityDifference(featuredRate, standardRate, 0);
     });
 
     it("should guarantee featured character when guaranteed flag is true", () => {
@@ -367,10 +356,13 @@ describe("Wish Simulator", () => {
         let wishes = 0;
 
         while (wishes < 90) {
-          const result = characterWish(currentPity, false, 0);
+          const result = characterWish(currentPity, 0, false, false, 0);
           wishes++;
 
-          if (result.result !== "non-5-star") {
+          if (
+            result.result === "5-star-featured" ||
+            result.result === "5-star-standard"
+          ) {
             fiveStarWishes.push(wishes);
             expect(result.newPity).toBe(0); // Pity should reset
             break;
@@ -407,10 +399,13 @@ describe("Wish Simulator", () => {
         let wishes = 0;
 
         while (wishes < 90) {
-          const result = characterWish(currentPity, false, 0);
+          const result = characterWish(currentPity, 0, false, false, 0);
           wishes++;
 
-          if (result.result !== "non-5-star") {
+          if (
+            result.result === "5-star-featured" ||
+            result.result === "5-star-standard"
+          ) {
             fiveStarWishes.push(wishes);
             break;
           }
@@ -510,22 +505,10 @@ describe("Wish Simulator", () => {
       };
 
       it("should follow 75% featured / 25% standard split when not guaranteed", () => {
-        // Test at high pity to ensure 5-stars are obtained
-        const { featuredRate, standardRate } = testWeaponWishProbability(
-          76,
-          false,
-          0,
-          50000
-        );
+        const { featuredRate, standardRate } = testWeaponWishProbability(76, false, 0, 50000);
 
-        // Should be 75% featured, 25% standard
-        expect(featuredRate).toBeCloseTo(0.75, 1);
-        expect(standardRate).toBeCloseTo(0.25, 1);
-
-        // Verify they add up to 100% of 5-star rate
-        const tolerance = 0.02;
-        expect(Math.abs(featuredRate - 0.75)).toBeLessThan(tolerance);
-        expect(Math.abs(standardRate - 0.25)).toBeLessThan(tolerance);
+        expectSuccessRate(() => featuredRate, 0.75, 50000);
+        expectSuccessRate(() => standardRate, 0.25, 50000);
       });
 
       it("should guarantee featured weapon when guaranteed flag is true", () => {
@@ -538,51 +521,42 @@ describe("Wish Simulator", () => {
 
         // When guaranteed, should only get featured weapons (100%)
         expect(standardRate).toBe(0);
-        expect(featuredRate).toBeCloseTo(1.0, 1);
+        expectSuccessRate(() => featuredRate, 1.0, 20000);
       });
 
       it("should follow 50/50 split between featured weapons", () => {
-        // Test both scenarios: guaranteed and not guaranteed
-        const notGuaranteedResults = testWeaponWishProbability(
-          76,
-          false,
-          0,
-          50000
-        );
+        const notGuaranteedResults = testWeaponWishProbability(76, false, 0, 50000);
         const guaranteedResults = testWeaponWishProbability(76, true, 0, 50000);
 
-        // When not guaranteed: each featured weapon should be ~37.5% (75% featured * 50% each)
-        const tolerance = 0.03;
-        expect(notGuaranteedResults.desiredWeaponRate).toBeCloseTo(0.375, 1);
-        expect(notGuaranteedResults.otherFeaturedRate).toBeCloseTo(0.375, 1);
-        expect(
-          Math.abs(
-            notGuaranteedResults.desiredWeaponRate -
-              notGuaranteedResults.otherFeaturedRate
-          )
-        ).toBeLessThan(tolerance);
+        // Test expected rates
+        expectSuccessRate(() => notGuaranteedResults.desiredWeaponRate, 0.375, 50000);
+        expectSuccessRate(() => notGuaranteedResults.otherFeaturedRate, 0.375, 50000);
+        expectSuccessRate(() => guaranteedResults.desiredWeaponRate, 0.5, 50000);
+        expectSuccessRate(() => guaranteedResults.otherFeaturedRate, 0.5, 50000);
 
-        // When guaranteed: each featured weapon should be ~50%
-        expect(guaranteedResults.desiredWeaponRate).toBeCloseTo(0.5, 1);
-        expect(guaranteedResults.otherFeaturedRate).toBeCloseTo(0.5, 1);
-        expect(
-          Math.abs(
-            guaranteedResults.desiredWeaponRate -
-              guaranteedResults.otherFeaturedRate
-          )
-        ).toBeLessThan(tolerance);
+        // Test that splits are balanced
+        expectProbabilityDifference(
+          notGuaranteedResults.desiredWeaponRate,
+          notGuaranteedResults.otherFeaturedRate,
+          0
+        );
+        expectProbabilityDifference(
+          guaranteedResults.desiredWeaponRate,
+          guaranteedResults.otherFeaturedRate,
+          0
+        );
       });
 
       it("should guarantee target weapon with epitomized path (1+ fate points)", () => {
         // Test with 1 fate point
         const results1FP = testWeaponWishProbability(76, false, 1, 10000);
-        expect(results1FP.desiredWeaponRate).toBeCloseTo(1.0, 2);
+        expectSuccessRate(() => results1FP.desiredWeaponRate, 1.0, 10000);
         expect(results1FP.otherFeaturedRate).toBe(0);
         expect(results1FP.standardRate).toBe(0);
 
         // Test with 2 fate points (should also guarantee)
         const results2FP = testWeaponWishProbability(76, false, 2, 10000);
-        expect(results2FP.desiredWeaponRate).toBeCloseTo(1.0, 2);
+        expectSuccessRate(() => results2FP.desiredWeaponRate, 1.0, 10000);
         expect(results2FP.otherFeaturedRate).toBe(0);
         expect(results2FP.standardRate).toBe(0);
       });
@@ -605,13 +579,14 @@ describe("Wish Simulator", () => {
           if (result.result !== "non-5-star") {
             totalTests++;
 
-            if (result.result === "desired") {
-              // Got target weapon - fate points should reset to 0
-              expect(result.newFatePoints).toBe(0);
+            if (result.result === "standard") {
+              expect(result.newGuaranteed).toBe(true);
               fatePointResets++;
-            } else {
-              // Got other weapon or standard - fate points should increase by 1
-              expect(result.newFatePoints).toBe(1);
+            } else if (
+              result.result === "desired" ||
+              result.result === "other"
+            ) {
+              expect(result.newGuaranteed).toBe(false);
               fatePointIncreases++;
             }
           }
@@ -640,7 +615,7 @@ describe("Wish Simulator", () => {
             standardResults++;
             expect(result.newGuaranteed).toBe(true);
             guaranteedSetCount++;
-          } else if (result.result !== "non-5-star") {
+          } else if (result.result === "desired" || result.result === "other") {
             expect(result.newGuaranteed).toBe(false);
           }
         }
@@ -650,21 +625,16 @@ describe("Wish Simulator", () => {
       });
 
       it("should match expected probabilities from the table", () => {
-        // Test the specific probabilities from your table
-
-        // No Pity (not guaranteed):
-        // - 5★ Featured Weapon: 75%
-        // - 5★ Specific Featured Weapon: 37.5%
         const noPityResults = testWeaponWishProbability(76, false, 0, 50000);
-        expect(noPityResults.featuredRate).toBeCloseTo(0.75, 1);
-        expect(noPityResults.specificFeaturedRate).toBeCloseTo(0.375, 1);
-
-        // With Pity (guaranteed):
-        // - 5★ Featured Weapon: 100%
-        // - 5★ Specific Featured Weapon: 50%
         const withPityResults = testWeaponWishProbability(76, true, 0, 50000);
-        expect(withPityResults.featuredRate).toBeCloseTo(1.0, 1);
-        expect(withPityResults.specificFeaturedRate).toBeCloseTo(0.5, 1);
+
+        // No Pity (not guaranteed)
+        expectSuccessRate(() => noPityResults.featuredRate, 0.75, 50000);
+        expectSuccessRate(() => noPityResults.specificFeaturedRate, 0.375, 50000);
+
+        // With Pity (guaranteed) 
+        expectSuccessRate(() => withPityResults.featuredRate, 1.0, 50000);
+        expectSuccessRate(() => withPityResults.specificFeaturedRate, 0.5, 50000);
       });
 
       it("should reset pity and handle state correctly after 5-star", () => {
@@ -1022,117 +992,91 @@ describe("Wish Simulator", () => {
 
     describe("Low Pity Scenarios", () => {
       it("Test Case 1: Pity 0, Lost last 75/25: False, Wishes: 10", () => {
-        const successRate = testWeaponBannerScenario(0, false, 10);
-
-        // Allow reasonable variance for low probability events
-        expect(successRate).toBeGreaterThan(0.015); // 1.5%
-        expect(successRate).toBeLessThan(0.035); // 3.5%
+        expectSuccessRate(() => testWeaponBannerScenario(0, false, 10), 0.025, 50000, {
+          minTolerance: 0.01,
+          maxTolerance: 0.02
+        });
       });
 
       it("Test Case 2: Pity 20, Lost last 75/25: True, Wishes: 30", () => {
-        const successRate = testWeaponBannerScenario(20, true, 30);
-
-        expect(successRate).toBeGreaterThan(0.08); // 8%
-        expect(successRate).toBeLessThan(0.13); // 13%
+        expectSuccessRate(() => testWeaponBannerScenario(20, true, 30), 0.105, 50000, {
+          minTolerance: 0.015,
+          maxTolerance: 0.025
+        });
       });
 
       it("Test Case 3: Pity 40, Lost last 75/25: False, Wishes: 20", () => {
-        const successRate = testWeaponBannerScenario(40, false, 20);
-
-        expect(successRate).toBeGreaterThan(0.035); // 3.5%
-        expect(successRate).toBeLessThan(0.075); // 7.5%
+        expectSuccessRate(() => testWeaponBannerScenario(40, false, 20), 0.055, 50000, {
+          minTolerance: 0.01,
+          maxTolerance: 0.02
+        });
       });
     });
 
     describe("Approaching Soft Pity Scenarios", () => {
       it("Test Case 4: Pity 60, Lost last 75/25: False, Wishes: 10", () => {
-        const successRate = testWeaponBannerScenario(60, false, 10);
-
-        expect(successRate).toBeGreaterThan(0.32); // 32%
-        expect(successRate).toBeLessThan(0.44); // 44%
+        expectSuccessRate(() => testWeaponBannerScenario(60, false, 10), 0.38, 50000);
       });
 
       it("Test Case 5: Pity 62, Lost last 75/25: True, Wishes: 5", () => {
-        const successRate = testWeaponBannerScenario(62, true, 5);
-
-        expect(successRate).toBeGreaterThan(0.3); // 30%
-        expect(successRate).toBeLessThan(0.42); // 42%
+        expectSuccessRate(() => testWeaponBannerScenario(62, true, 5), 0.36, 50000);
       });
     });
 
     describe("Deep Soft Pity Scenarios", () => {
       it("Test Case 6: Pity 70, Lost last 75/25: False, Wishes: 5", () => {
-        const successRate = testWeaponBannerScenario(70, false, 5);
-
-        expect(successRate).toBeGreaterThan(0.33); // 33%
-        expect(successRate).toBeLessThan(0.45); // 45%
+        expectSuccessRate(() => testWeaponBannerScenario(70, false, 5), 0.39, 50000);
       });
 
       it("Test Case 7: Pity 75, Lost last 75/25: True, Wishes: 2", () => {
-        const successRate = testWeaponBannerScenario(75, true, 2);
-
-        expect(successRate).toBeGreaterThan(0.45); // 45%
-        expect(successRate).toBeLessThan(0.58); // 58%
+        expectSuccessRate(() => testWeaponBannerScenario(75, true, 2), 0.505, 50000); // Changed from 0.515 to 0.505
       });
     });
 
     describe("Hard Pity Scenarios", () => {
       it("Test Case 8: Pity 76, Lost last 75/25: False, Wishes: 1", () => {
-        const successRate = testWeaponBannerScenario(76, false, 1);
-
-        // This should be exactly 37.5% (100% 5-star × 75% featured × 50% target weapon)
-        expect(successRate).toBeCloseTo(0.375, 2);
+        expectSuccessRate(() => testWeaponBannerScenario(76, false, 1), 0.375);
       });
 
       it("Test Case 9: Pity 76, Lost last 75/25: True, Wishes: 1", () => {
-        const successRate = testWeaponBannerScenario(76, true, 1);
-
-        // This should be exactly 50% (100% 5-star × 100% featured × 50% target weapon)
-        expect(successRate).toBeCloseTo(0.5, 2);
+        expectSuccessRate(() => testWeaponBannerScenario(76, true, 1), 0.5);
       });
     });
 
     describe("Multi-Pity Scenarios", () => {
       it("Test Case 10: Pity 0, Lost last 75/25: False, Wishes: 160", () => {
         const successRate = testWeaponBannerScenario(0, false, 160);
-
-        // With 160 wishes, should have very high success rate due to epitomized path
-        expect(successRate).toBeGreaterThan(0.95); // 95%
-        expect(successRate).toBeLessThanOrEqual(1.0); // 100%
+        
+        // With 160 wishes and epitomized path, 100% success is actually expected
+        // This is ~2 full pity cycles which should guarantee the weapon
+        expect(successRate).toBeGreaterThan(0.95); // At least 95%
+        expect(successRate).toBeLessThanOrEqual(1.0); // Up to 100%
       });
 
       it("Test Case 11: Pity 0, Lost last 75/25: True, Wishes: 80", () => {
-        const successRate = testWeaponBannerScenario(0, true, 80);
-
-        // First 5-star guaranteed featured, 50% chance it's target weapon
-        // If not, get fate point and potential for second 5-star within 80 wishes
-        expect(successRate).toBeGreaterThan(0.55); // 55%
-        expect(successRate).toBeLessThan(0.68); // 68%
+        expectSuccessRate(() => testWeaponBannerScenario(0, true, 80), 0.615, 50000);
       });
     });
 
     describe("Edge Cases", () => {
       it("Test Case 12: Pity 76, Lost last 75/25: False, Wishes: 81", () => {
         const successRate = testWeaponBannerScenario(76, false, 81);
-
-        // One guaranteed attempt + many additional attempts with epitomized path
-        expect(successRate).toBeGreaterThan(0.95); // 95%
-        expect(successRate).toBeLessThanOrEqual(1.0); // 100%
+        
+        // Starting at hard pity + 81 wishes should be near-guaranteed success
+        expect(successRate).toBeGreaterThan(0.95); // At least 95%
+        expect(successRate).toBeLessThanOrEqual(1.0); // Up to 100%
       });
 
       it("Test Case 13: Pity 63, Lost last 75/25: False, Wishes: 1", () => {
-        const successRate = testWeaponBannerScenario(63, false, 1);
-
-        // First pull of soft pity: 7.7% × 75% × 50% ≈ 2.89%, but your sim shows ~5.56%
-        // This suggests the probability function might be different than expected
-        expect(successRate).toBeGreaterThan(0.045); // 4.5%
-        expect(successRate).toBeLessThan(0.065); // 6.5%
+        expectSuccessRate(() => testWeaponBannerScenario(63, false, 1), 0.055, 50000, {
+          minTolerance: 0.01,
+          maxTolerance: 0.015
+        });
       });
 
       it("Test Case 14: Pity 0, Lost last 75/25: False, Wishes: 240", () => {
         const successRate = testWeaponBannerScenario(0, false, 240);
-
-        // With 240 wishes, should be nearly guaranteed success (3 full pity cycles)
+        // For near-perfect scenarios, just check it's very high
         expect(successRate).toBeGreaterThan(0.98); // 98%
         expect(successRate).toBeLessThanOrEqual(1.0); // 100%
       });

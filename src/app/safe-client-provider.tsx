@@ -1,5 +1,6 @@
 /* eslint-disable mobx/missing-observer */
 "use client";
+import React from "react";
 
 import { GenshinProvider } from "@/lib/mobx/genshin-context";
 import { ResponsiveProvider } from "@/lib/responsive-design/responsive-context";

@@ -53,7 +53,7 @@ const wishForBanner = (
     return;
   }
 
-  // CHARACTERS (your existing logic)
+  // CHARACTERS
   const characterResults: CharacterSimulationResult[] = [];
   let charPity = currentPity;
   let charGuaranteed = isGuaranteed;
@@ -65,12 +65,18 @@ const wishForBanner = (
     const maxConst =
       versionAllocation.characters[targetCharId]!.maxConstellation || 0;
 
+    // TODO: Actually implement these values
+    const fourStarPity = 0;
+    const fourStarGuaranteed = false;
+
     const charResult = wishForCharacter(
       targetCharId,
       wishesToSpend,
       maxConst,
       charPity,
+      fourStarPity,
       charGuaranteed,
+      fourStarGuaranteed,
       currentConsecutive5050Losses
     );
 
@@ -177,7 +183,7 @@ const runSimulationOnce = (
   let currentGuaranteed = guaranteed;
   // Convert initial state to consecutive 5050 losses count
   // If guaranteed=true, they lost 1 50/50. If capturingRadiance=true, they lost 2 50/50s
-  let currentConsecutive5050Losses = capturingRadiance ? 2 : (guaranteed ? 1 : 0);
+  let currentConsecutive5050Losses = capturingRadiance ? 2 : guaranteed ? 1 : 0;
   let currentWeaponPity = weaponPity;
   let currentWeaponGuaranteed = weaponGuaranteed;
 

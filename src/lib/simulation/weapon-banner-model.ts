@@ -4,6 +4,18 @@ import {
   WeaponId,
 } from "../types";
 
+/**
+ * 4-star drop distribution constants for weapon banner
+ * When a 4-star item is obtained on weapon banner:
+ * - 81.5% chance of getting a weapon
+ * - 18.5% chance of getting a character
+ * Source: https://antifandom.com/genshin-impact/wiki/Wish/Expanded_Wish_Probabilities#Non-Featured_Drop_Probability
+ */
+export const WEAPON_BANNER_4STAR_SPLITS = {
+  WEAPON_CHANCE: 0.815,
+  CHARACTER_CHANCE: 0.185,
+} as const;
+
 export const getWeapon5StarProbability = (pity: number): number => {
   if (pity < 63) {
     return 0.007; // Base rate (0.7%)

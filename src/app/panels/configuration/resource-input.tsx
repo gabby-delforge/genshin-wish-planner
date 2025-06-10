@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ResourceType } from "@/lib/types";
 import { observer } from "mobx-react-lite";
+import React from "react";
 
 export const ResourceInput = observer(
   ({

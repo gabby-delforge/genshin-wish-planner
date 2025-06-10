@@ -8,13 +8,8 @@ import { useMemo } from "react";
 import RunSimulationButton from "./run-simulation-button";
 
 export const SimulationPanelContent = observer(() => {
-  const {
-    mode,
-    banners,
-    bannerConfiguration,
-    availableWishes,
-    estimatedNewWishesMap,
-  } = useGenshinState();
+  const { mode, banners, bannerConfiguration, estimatedNewWishesMap } =
+    useGenshinState();
   const headerText = useMemo(() => {
     if (mode === "playground") {
       return "Wish Allocation";
@@ -36,14 +31,13 @@ export const SimulationPanelContent = observer(() => {
         <h3 className="text-lg font-medium text-gold-1">{headerText}</h3>
         <div className="text-sm text-white/80">{descriptionText}</div>
 
-        <div className="grid grid-cols-1 @4xl/sim:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1  gap-4">
           {banners.map((banner: ApiBanner) => (
             <BannerCard
               key={banner.id}
               id={banner.id}
               bannerData={banner}
               bannerConfiguration={bannerConfiguration[banner.id]}
-              wishesAvailable={availableWishes}
               isCurrentBanner={isCurrentBanner(banner)}
               isOldBanner={isPastDate(banner.endDate)}
               estimatedWishesEarned={estimatedNewWishesMap[banner.id]}

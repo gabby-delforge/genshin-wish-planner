@@ -17,10 +17,13 @@ export const GENSHIN_WEAPONS = Weapons.map((c) => c.Id);
 
 // API Character data
 export const API_CHARACTERS: Record<CharacterId, ApiCharacter> =
-  Characters.reduce((prev, curr) => {
-    prev[curr.Id] = curr;
-    return prev; //
-  }, {} as Record<CharacterId, ApiCharacter>);
+  Characters.reduce(
+    (prev, curr) => {
+      prev[curr.Id] = curr;
+      return prev; //
+    },
+    {} as Record<CharacterId, ApiCharacter>
+  );
 
 export const API_WEAPONS: Record<string, ApiWeapon> = Weapons.reduce(
   (prev, curr) => {

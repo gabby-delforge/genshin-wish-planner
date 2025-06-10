@@ -1,6 +1,4 @@
 "use client";
-import * as React from "react";
-
 import { Desktop, Mobile } from "@/lib/responsive-design/responsive-context";
 import { cn } from "@/lib/utils";
 import {
@@ -9,6 +7,7 @@ import {
   MinusIcon,
   PlusIcon,
 } from "@phosphor-icons/react";
+import React from "react";
 import { IconButton } from "./icon-button";
 
 type InputExtendedProps = {
@@ -43,7 +42,7 @@ const Input = React.forwardRef<
     const [isFocused, setIsFocused] = React.useState(false);
     const internalRef = React.useRef<HTMLInputElement>(null);
     const [isValid, setIsValid] = React.useState(true);
-    const [errorHint, setErrorHint] = React.useState("");
+    const [_errorHint, setErrorHint] = React.useState("");
 
     // Use the passed ref if available, otherwise use our internal ref
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
@@ -151,7 +150,7 @@ const Input = React.forwardRef<
           isLoading && "shimmer"
         }`}
       >
-        {unit && unit}
+        <div className="min-w-[24px] min-h-[24px]">{unit && unit}</div>
 
         <input
           type={type}
@@ -182,7 +181,7 @@ const Input = React.forwardRef<
             handlePlusMinusChange(currentValue + 1);
           }}
           weight="bold"
-          className="text-white/30 h-3.5 w-6 min-h-[14px] min-w-[24px] flex items-center justify-center"
+          className="text-white/60 h-3.5 w-6 min-h-[14px] min-w-[24px] flex items-center justify-center"
         />
         <IconButton
           icon={CaretDownIcon}
@@ -192,7 +191,7 @@ const Input = React.forwardRef<
             handlePlusMinusChange(Math.max(0, currentValue - 1));
           }}
           weight="bold"
-          className="text-white/30 h-3.5 w-6 min-h-[14px] min-w-[24px] flex items-center justify-center"
+          className="text-white/60 h-3.5 w-6 min-h-[14px] min-w-[24px] flex items-center justify-center"
         />
       </div>
     );
@@ -208,7 +207,7 @@ const Input = React.forwardRef<
             handlePlusMinusChange(Math.max(0, currentValue - 1));
           }}
           weight="bold"
-          className="text-white/30  flex items-center justify-center"
+          className="text-white/60  flex items-center justify-center"
         />
         {inputWrapper}
         <IconButton
@@ -219,7 +218,7 @@ const Input = React.forwardRef<
             handlePlusMinusChange(currentValue + 1);
           }}
           weight="bold"
-          className="text-white/30  flex items-center justify-center"
+          className="text-white/60  flex items-center justify-center"
         />
       </div>
     );
