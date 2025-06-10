@@ -16,6 +16,16 @@ export type ApiBanner = (typeof Banners)[number];
 // export type BannerId = `${number}.${number}v${number}`;
 export type BannerId = string;
 
+export type BannerWishBreakdown = {
+  startingWishes: number;
+  endingWishes: number;
+
+  wishesSpentOnCharacters: number;
+  wishesSpentOnWeapons: number;
+  earnedWishes: number;
+  starglitterWishes: number;
+};
+
 export interface WeaponBannerConfig {
   wishesAllocated: number;
   epitomizedPath: WeaponId; // Which weapon to chart path for
@@ -96,6 +106,7 @@ export const DEFAULT_PRIMOGEM_SOURCES_ENABLED: PrimogemSourcesEnabled = {
   archonQuest: true,
   storyQuests: true,
   newAchievements: true,
+  stardust: true,
 
   // Time-Limited Contents
   characterTestRuns: true,
@@ -149,6 +160,7 @@ export interface PrimogemSourceValues {
   archonQuest: PrimogemSourceValue;
   storyQuests: PrimogemSourceValue;
   newAchievements: PrimogemSourceValue;
+  stardust: PrimogemSourceValue;
 
   // Time-Limited Contents
   characterTestRuns: PrimogemSourceValue;

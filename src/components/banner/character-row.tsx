@@ -1,8 +1,12 @@
+import { ConstellationInput } from "@/app/panels/simulation/components/constellation-input";
+import { PriorityDropdown } from "@/app/panels/simulation/components/priority-dropdown";
+import { WishesInput } from "@/app/panels/simulation/components/wishes-input";
 import CharacterIcon from "@/lib/components/character-icon";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import { Desktop, Mobile } from "@/lib/responsive-design/responsive-context";
 import {
   ApiCharacter,
+  BannerWishBreakdown,
   DEFAULT_PRIORITY,
   Priority,
   PriorityTextToPriority,
@@ -10,6 +14,7 @@ import {
 } from "@/lib/types";
 import { observer } from "mobx-react-lite";
 import { LimitedWish } from "../resource";
+import { Button } from "../ui/button";
 import { InfoIcon } from "../ui/info-icon";
 import { Input } from "../ui/input";
 import {
@@ -30,8 +35,24 @@ const CharacterRowMobile = observer(
     setWishesAllocated,
     currentPriority,
     setCurrentPriority,
+    bannerId,
+    bannerWishBreakdown,
   }: CharacterRowProps) => {
     const { mode, isLoading } = useGenshinState();
+    const availableWishes = bannerWishBreakdown.startingWishes;
+    const estimatedNewWishes = bannerWishBreakdown.earnedWishes;
+
+    const handleMaximumClick = async () => {
+      if (!bannerId || availableWishes === undefined) return;
+      const { calculateMaximumWishesForBanner } = await import(
+        "@/lib/simulation/starglitter-utils"
+      );
+      const maxWishes = calculateMaximumWishesForBanner(
+        availableWishes,
+        estimatedNewWishes || 0
+      );
+      setWishesAllocated(maxWishes);
+    };
 
     return (
       <div
@@ -79,21 +100,36 @@ const CharacterRowMobile = observer(
 
           <>
             {mode === "playground" && (
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center gap-1">
                 <div className="text-xs text-white text-center mr-4">
                   Spend up to
                 </div>
-                <Input
-                  isLoading={isLoading}
-                  id={`wishes-${character.Id}`}
-                  type="number"
-                  min="0"
-                  value={currentWishesAllocated}
-                  onChange={(e) => setWishesAllocated(parseInt(e.target.value))}
-                  unit={<LimitedWish />}
-                  showPlusMinus={true}
-                  width={"w-8"}
-                />
+                <div className="flex items-center gap-1">
+                  <Input
+                    isLoading={isLoading}
+                    id={`wishes-${character.Id}`}
+                    type="number"
+                    min="0"
+                    value={currentWishesAllocated}
+                    onChange={(e) =>
+                      setWishesAllocated(parseInt(e.target.value))
+                    }
+                    unit={<LimitedWish />}
+                    showPlusMinus={true}
+                    width={"w-8"}
+                  />
+                  <Button
+                    onClick={handleMaximumClick}
+                    disabled={
+                      isLoading || !bannerId || availableWishes === undefined
+                    }
+                    variant="outline"
+                    size="sm"
+                    className="text-xs px-2 py-1 h-6"
+                  >
+                    Max
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -148,8 +184,10 @@ const CharacterRowDesktop = observer(
     setWishesAllocated,
     currentPriority,
     setCurrentPriority,
+    bannerId: _bannerId,
+    bannerWishBreakdown,
   }: CharacterRowProps) => {
-    const { mode, isLoading } = useGenshinState();
+    const { mode, isLoading, bannerConfiguration } = useGenshinState();
 
     return (
       <div
@@ -160,94 +198,30 @@ const CharacterRowDesktop = observer(
         <div className="flex items-center gap-4 col-span-2 md:col-span-1">
           <CharacterIcon id={characterId} showName className="shrink-0" />
         </div>
-
         <div className="col-span-2 flex justify-end">
-          <div className="flex flex-col mr-3">
-            <div className="flex flex-row items-center gap-1 text-xs text-white text-right">
-              Pull until
-              <InfoIcon
-                content={
-                  <div className="flex flex-col gap-2">
-                    <div>
-                      Tells the simulator to stop pulling once this
-                      constellation is reached, even if you have enough wishes
-                      to continue.
-                    </div>
-                    <div>
-                      {`Assumes you don't have the character yet. If you have C0 and want C2, put C1 (which equals two copies).`}
-                    </div>
-                  </div>
-                }
-                contentMaxWidth={400}
-                className="text-white/50"
-              />
-            </div>
-            <Input
-              isLoading={isLoading}
-              id={`constellation-${character.Id}`}
-              type="number"
-              min="0"
-              value={currentMaxConstellation}
-              onChange={(e) => setMaxConstellation(parseInt(e.target.value))}
-              unit={<div className="text-white/50 pl-1 flex-initial">C</div>}
-              showPlusMinus={true}
-              width={"w-8"}
-            />
-          </div>
-
+          <ConstellationInput
+            isLoading={isLoading}
+            character={character}
+            maxConstellation={currentMaxConstellation}
+            setMaxConstellation={setMaxConstellation}
+          />
           <>
             {mode === "playground" && (
-              <div className="flex flex-col items-end ">
-                <div className="text-xs text-white text-right mr-4">
-                  Spend up to
-                </div>
-                <Input
-                  isLoading={isLoading}
-                  id={`wishes-${character.Id}`}
-                  type="number"
-                  min="0"
-                  value={currentWishesAllocated}
-                  onChange={(e) => setWishesAllocated(parseInt(e.target.value))}
-                  unit={<LimitedWish />}
-                  showPlusMinus={true}
-                  width={"w-8"}
-                />
-              </div>
+              <WishesInput
+                isLoading={isLoading}
+                character={character}
+                numWishesAllocated={currentWishesAllocated}
+                setNumWishesAllocated={setWishesAllocated}
+                bannerWishBreakdown={bannerWishBreakdown}
+                bannerConfig={bannerConfiguration[_bannerId]}
+              />
             )}
 
             {mode === "strategy" && (
-              <div className="space-y-1 flex flex-col items-end ">
-                <div className="text-xs text-white text-right mr-4">
-                  Priority
-                </div>
-                <Select
-                  value={PriorityValueToText[currentPriority]}
-                  onValueChange={(value: string) =>
-                    setCurrentPriority(PriorityTextToPriority[value])
-                  }
-                >
-                  <SelectTrigger className=" bg-void-1 border-void-2">
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-void-1 border-void-2">
-                    <SelectItem value="1" className="text-[#ff6b6b]">
-                      {PriorityValueToText[1]}
-                    </SelectItem>
-                    <SelectItem value="2" className="text-[#feca57]">
-                      {PriorityValueToText[2]}
-                    </SelectItem>
-                    <SelectItem value="3" className="text-[#1dd1a1]">
-                      {PriorityValueToText[3]}
-                    </SelectItem>
-                    <SelectItem
-                      value={DEFAULT_PRIORITY.toString()}
-                      className="text-muted-foreground"
-                    >
-                      {PriorityValueToText[DEFAULT_PRIORITY]}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <PriorityDropdown
+                currentPriority={currentPriority}
+                setCurrentPriority={setCurrentPriority}
+              />
             )}
           </>
         </div>
@@ -265,6 +239,8 @@ type CharacterRowProps = {
   setWishesAllocated: (value: number) => void;
   currentPriority: number;
   setCurrentPriority: (value: Priority) => void;
+  bannerId: string;
+  bannerWishBreakdown: BannerWishBreakdown;
 };
 
 export const CharacterRow = observer((props: CharacterRowProps) => {

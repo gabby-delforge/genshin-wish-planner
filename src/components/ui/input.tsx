@@ -1,6 +1,4 @@
 "use client";
-import * as React from "react";
-
 import { Desktop, Mobile } from "@/lib/responsive-design/responsive-context";
 import { cn } from "@/lib/utils";
 import {
@@ -9,6 +7,7 @@ import {
   MinusIcon,
   PlusIcon,
 } from "@phosphor-icons/react";
+import React from "react";
 import { IconButton } from "./icon-button";
 
 type InputExtendedProps = {

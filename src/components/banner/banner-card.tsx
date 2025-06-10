@@ -16,24 +16,19 @@ import {
 import { cn, toFriendlyDate } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import { LimitedWish } from "../resource";
 import { CheckboxWithLabel } from "../ui/checkbox-with-label";
 import { Separator } from "../ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+
+import { LimitedWish } from "../resource";
 import { BannerVersion } from "./banner-version";
 import { CharacterRow } from "./character-row";
 import { WeaponBannerRow } from "./weapon-banner-row";
+import { WishesAvailableTooltip } from "./wishes-available-tooltip";
 
 export type BannerCardProps = {
   id: BannerId;
   bannerData: ApiBanner;
   bannerConfiguration: BannerConfiguration;
-  wishesAvailable: Record<BannerId, number>;
   isCurrentBanner: boolean;
   isOldBanner: boolean;
   estimatedWishesEarned: number;
@@ -44,7 +39,6 @@ const BannerCard = observer(
     id,
     bannerData,
     bannerConfiguration,
-    wishesAvailable,
     isCurrentBanner,
     isOldBanner,
     estimatedWishesEarned,
@@ -60,58 +54,48 @@ const BannerCard = observer(
       setWeaponBannerStrategy,
       setWeaponBannerMaxRefinement,
       setCharacterMaxConstellation,
+      availableWishes,
     } = useGenshinState();
-    const wishesAvailableLabel = useMemo(() => {
-      const totalWishes = wishesAvailable[id] || 0;
 
-      const gainedWishes =
-        isCurrentBanner && accountStatusExcludeCurrentBannerPrimogemSources
-          ? 0
-          : estimatedWishesEarned;
-      // This represents the wishes the user started with
-      let spentWishes = 0;
-      for (const char of Object.values(bannerConfiguration.characters)) {
-        spentWishes += char.wishesAllocated;
-      }
-      const leftover = spentWishes - gainedWishes + totalWishes;
+    const wishesAvailableLabel = useMemo(() => {
+      if (!availableWishes[id]) return null;
+
+      const {
+        startingWishes,
+        earnedWishes,
+        starglitterWishes,
+        wishesSpentOnWeapons,
+        wishesSpentOnCharacters,
+        endingWishes,
+      } = availableWishes[id];
 
       return (
-        <TooltipProvider>
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger>
-              <div
-                className={cn(
-                  "flex items-center gap-1 text-sm",
-                  totalWishes < 0 ? "text-red-300" : "text-white"
-                )}
-              >
-                <LimitedWish number={Math.floor(totalWishes)} />
-                available
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="flex gap-1 items-center">
-              <LimitedWish number={Math.floor(leftover)} />
-              <div>{isCurrentBanner ? "owned" : "leftover"}</div>
-              {gainedWishes > 0 && (
-                <>
-                  <div className="text-black/50">+</div>
-                  <LimitedWish number={Math.floor(gainedWishes)} />
-                  <div>earned</div>
-                </>
-              )}
-
-              {spentWishes > 0 && (
-                <>
-                  <div className="text-black/50">-</div>
-                  <LimitedWish number={spentWishes} />
-                  <div>spent</div>
-                </>
-              )}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <WishesAvailableTooltip
+          wishSources={[
+            {
+              label: isCurrentBanner ? "in account" : "leftover",
+              amount: startingWishes,
+            },
+            { label: "earned", amount: earnedWishes },
+            {
+              label: "spent",
+              amount: 0 - (wishesSpentOnCharacters + wishesSpentOnWeapons),
+            },
+            { label: "from Starglitter", amount: starglitterWishes },
+          ]}
+        >
+          <div
+            className={cn(
+              "flex items-center gap-1 text-sm",
+              endingWishes < 0 ? "text-red-300" : "text-white"
+            )}
+          >
+            <LimitedWish number={endingWishes} />
+            available
+          </div>
+        </WishesAvailableTooltip>
       );
-    }, [wishesAvailable, estimatedWishesEarned, id]);
+    }, [availableWishes, estimatedWishesEarned, id, bannerConfiguration]);
 
     const displayStartDate = useMemo(
       () => toFriendlyDate(new Date(bannerData.startDate)),
@@ -180,6 +164,8 @@ const BannerCard = observer(
                 setCurrentPriority={(value: Priority) =>
                   setCharacterPullPriority(id, characterId, value)
                 }
+                bannerId={id}
+                bannerWishBreakdown={availableWishes[id]}
               />
             );
           })}

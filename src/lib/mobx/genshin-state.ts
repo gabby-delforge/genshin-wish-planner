@@ -1,15 +1,16 @@
 import { makeAutoObservable } from "mobx";
 import { initialBanners, PRIMOGEM_SOURCE_VALUES } from "../data";
-import { calculateAvailableWishesForBanner } from "../simulation/simulation-utils";
 import { runOptimization } from "../simulation/wish-optimizer";
 import { runSimulation } from "../simulation/wish-simulator";
 
 import { SIMULATION_COUNT } from "../consts";
+import { calculateMaxSpendableWishesMultiBanner } from "../simulation/starglitter-utils";
 import {
   ApiBanner,
   AppMode,
   BannerConfiguration,
   BannerId,
+  BannerWishBreakdown,
   CharacterId,
   PrimogemSourceKey,
   PrimogemSourcesEnabled,
@@ -21,7 +22,11 @@ import {
   WishResources,
 } from "../types";
 import { clamp, getCurrentBanner, isPastDate } from "../utils";
-import { initializeBannerConfigurations } from "./initializers";
+import {
+  handleAbyssRewards,
+  handleImaginariumRewards,
+  initializeBannerConfigurations,
+} from "./genshin-state-utils";
 import { STATE_VERSION } from "./state-version";
 
 export class GenshinState {
@@ -104,6 +109,7 @@ export class GenshinState {
       archonQuest: true,
       storyQuests: true,
       newAchievements: true,
+      stardust: true,
       characterTestRuns: true,
       eventActivities: true,
       hoyolabDailyCheckIn: true,
@@ -318,21 +324,34 @@ export class GenshinState {
     );
   }
 
-  get availableWishes(): Record<BannerId, number> {
+  get availableWishes(): Record<BannerId, BannerWishBreakdown> {
     // First banner starts with however many wishes are in the user's account
-    const bannerMap: Record<BannerId, number> = {};
-    let carryOverWishes = this.accountCurrentWishValue;
+    let runningSum = this.accountCurrentWishValue;
+    const bannerMap: Record<BannerId, BannerWishBreakdown> = {};
 
     // Then accumulate wishes over banners
     for (const banner of this.banners) {
+      const bannerBreakdown: BannerWishBreakdown = {
+        startingWishes: runningSum,
+        wishesSpentOnCharacters: 0,
+        wishesSpentOnWeapons: 0,
+        earnedWishes: 0,
+        starglitterWishes: 0,
+        endingWishes: runningSum,
+      };
+
       const isOldBanner = isPastDate(banner.endDate);
       if (isOldBanner) {
-        bannerMap[banner.id] = carryOverWishes;
+        bannerMap[banner.id] = bannerBreakdown;
         continue;
       }
       const bannerConfig = this.bannerConfiguration[banner.id];
-      if (!bannerConfig) continue;
+      if (!bannerConfig) {
+        bannerMap[banner.id] = bannerBreakdown;
+        continue;
+      }
 
+      // Subtract spent wishes and add starglitter wishes
       const excludeEarnedWishes =
         this.shouldExcludeCurrentBannerEarnedWishes &&
         this.currentBannerId === banner.id;
@@ -342,16 +361,32 @@ export class GenshinState {
       const wishesSpentOnWeapons =
         this.bannerConfiguration[banner.id].weaponBanner.wishesAllocated;
 
-      const spentWishes = wishesSpentOnCharacters + wishesSpentOnWeapons;
+      // Add earned wishes
+      if (!excludeEarnedWishes) {
+        bannerBreakdown.earnedWishes = this.estimatedNewWishesMap[banner.id];
+      }
+      // Calculate starglitter wishes from spent wishes on this banner
+      const { starglitterWishesGained } =
+        calculateMaxSpendableWishesMultiBanner(
+          wishesSpentOnCharacters,
+          wishesSpentOnWeapons
+        );
 
-      carryOverWishes = calculateAvailableWishesForBanner(
-        banner,
-        spentWishes,
-        excludeEarnedWishes ? 0 : this.estimatedNewWishesMap[banner.id],
-        carryOverWishes
-      );
+      bannerBreakdown.wishesSpentOnCharacters = wishesSpentOnCharacters;
+      bannerBreakdown.wishesSpentOnWeapons = wishesSpentOnWeapons;
+      bannerBreakdown.earnedWishes = !excludeEarnedWishes
+        ? this.estimatedNewWishesMap[banner.id]
+        : 0;
+      bannerBreakdown.starglitterWishes = starglitterWishesGained;
 
-      bannerMap[banner.id] = carryOverWishes;
+      // Now update the running sum for the next banner to use
+      runningSum -= bannerBreakdown.wishesSpentOnCharacters;
+      runningSum -= bannerBreakdown.wishesSpentOnWeapons;
+      runningSum += bannerBreakdown.earnedWishes;
+      runningSum += bannerBreakdown.starglitterWishes;
+
+      bannerBreakdown.endingWishes = runningSum;
+      bannerMap[banner.id] = bannerBreakdown;
     }
     return bannerMap;
   }
@@ -397,9 +432,6 @@ export class GenshinState {
         );
       }
 
-      const stardustWishes = monthlyResets * 5;
-      totalLimitedWishes += stardustWishes;
-
       // Process each primogem source
       Object.entries(this.primogemSources).forEach(([key, isEnabled]) => {
         if (!isEnabled) return;
@@ -409,113 +441,22 @@ export class GenshinState {
 
         // Handle abyss and theater specially since they have differing schedules
         if (sourceKey === "abyss") {
-          // Abyss runs from the 16th of one month to the 15th of the next
-          const bannerStart = new Date(banner.startDate);
-          const bannerEnd = new Date(banner.endDate);
-
-          // Find abyss seasons that BEGIN during this banner period
-          let currentAbyssStart = new Date(
-            bannerStart.getFullYear(),
-            bannerStart.getMonth(),
-            16
-          );
-
-          // If the 16th of this month is before banner start, move to next month
-          if (currentAbyssStart < bannerStart) {
-            currentAbyssStart = new Date(
-              bannerStart.getFullYear(),
-              bannerStart.getMonth() + 1,
-              16
-            );
-          }
-
-          let abyssSeasons = 0;
-          // Only count seasons that start during the banner period
-          while (
-            currentAbyssStart >= bannerStart &&
-            currentAbyssStart <= bannerEnd
-          ) {
-            abyssSeasons++;
-            // Move to next abyss season (16th of next month)
-            currentAbyssStart = new Date(
-              currentAbyssStart.getFullYear(),
-              currentAbyssStart.getMonth() + 1,
-              16
-            );
-          }
-
-          // Apply abyss rewards for the calculated number of seasons
-          if (Array.isArray(sourceValue)) {
-            sourceValue.forEach((resource) => {
-              if (resource.type === "primogem") {
-                totalPrimogems += resource.value * abyssSeasons;
-              } else if (resource.type === "limitedWishes") {
-                totalLimitedWishes += resource.value * abyssSeasons;
-              }
-            });
-          } else {
-            if (sourceValue.type === "primogem") {
-              totalPrimogems += sourceValue.value * abyssSeasons;
-            } else if (sourceValue.type === "limitedWishes") {
-              totalLimitedWishes += sourceValue.value * abyssSeasons;
-            }
-          }
+          const {
+            totalLimitedWishes: wishesGained,
+            totalPrimogems: primogemsEarned,
+          } = handleAbyssRewards(banner, sourceValue);
+          totalLimitedWishes += wishesGained;
+          totalPrimogems += primogemsEarned;
           return;
         } else if (sourceKey === "imaginarium") {
-          // Imaginarium runs from the 1st of one month to the 30th/31st of the next
-          const bannerStart = new Date(banner.startDate);
-          const bannerEnd = new Date(banner.endDate);
-
-          // Find imaginarium seasons that BEGIN during this banner period
-          let currentImaginariumStart = new Date(
-            bannerStart.getFullYear(),
-            bannerStart.getMonth(),
-            1
-          );
-
-          // If the 1st of this month is before banner start, move to next month
-          if (currentImaginariumStart < bannerStart) {
-            currentImaginariumStart = new Date(
-              bannerStart.getFullYear(),
-              bannerStart.getMonth() + 1,
-              1
-            );
-          }
-
-          let imaginariumSeasons = 0;
-          // Only count seasons that start during the banner period
-          while (
-            currentImaginariumStart >= bannerStart &&
-            currentImaginariumStart <= bannerEnd
-          ) {
-            imaginariumSeasons++;
-            // Move to next imaginarium season (1st of next month)
-            currentImaginariumStart = new Date(
-              currentImaginariumStart.getFullYear(),
-              currentImaginariumStart.getMonth() + 1,
-              1
-            );
-          }
-
-          // Apply imaginarium rewards for the calculated number of seasons
-          if (Array.isArray(sourceValue)) {
-            sourceValue.forEach((resource) => {
-              if (resource.type === "primogem") {
-                totalPrimogems += resource.value * imaginariumSeasons;
-              } else if (resource.type === "limitedWishes") {
-                totalLimitedWishes += resource.value * imaginariumSeasons;
-              }
-            });
-          } else {
-            if (sourceValue.type === "primogem") {
-              totalPrimogems += sourceValue.value * imaginariumSeasons;
-            } else if (sourceValue.type === "limitedWishes") {
-              totalLimitedWishes += sourceValue.value * imaginariumSeasons;
-            }
-          }
+          const {
+            totalLimitedWishes: wishesGained,
+            totalPrimogems: primogemsEarned,
+          } = handleImaginariumRewards(banner, sourceValue);
+          totalLimitedWishes += wishesGained;
+          totalPrimogems += primogemsEarned;
           return;
         }
-
         // Sources that only apply during the Phase 1 banner
         const oneTimePerVersionSources: (keyof PrimogemSourcesEnabled)[] = [
           "gameUpdateCompensation",
@@ -526,6 +467,7 @@ export class GenshinState {
           "limitedExplorationRewards",
           "battlePass",
           "battlePassGnostic",
+          "stardust",
         ];
 
         // Handle one-time per-version sources (only apply to first banner of version)
