@@ -66,6 +66,7 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   ],
   storyQuests: { value: 120, type: "primogem" },
   newAchievements: { value: 200, type: "primogem" },
+  stardust: { value: 5, type: "primogem" },
 
   // Time-Limited Contents
   characterTestRuns: { value: 80, type: "primogem" },

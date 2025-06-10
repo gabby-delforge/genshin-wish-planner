@@ -7,30 +7,6 @@ import {
   ScenarioOutcome,
 } from "../types";
 
-/**
- * Calculate available wishes for a specific banner.
- * Takes into account wishes spent on previous banners and estimated new wishes.
- * Because this depends on previous banners, banneres should be processed in order,
- * and when any banner changes, all future banners should be re-calculated too.
- */
-export const calculateAvailableWishesForBanner = (
-  banner: ApiBanner,
-  wishesAllocated: number,
-  estimatedNewWishes: number,
-  carryOverWishes: number
-): number => {
-  // Initialize with available wishes
-  let availableWishes = carryOverWishes;
-
-  // Add estimated wishes
-  availableWishes += estimatedNewWishes;
-
-  // Subtract spent wishes
-  availableWishes -= wishesAllocated;
-
-  return availableWishes;
-};
-
 const bannerResultToOutcome = (
   bannerResult: BannerSimulationResult
 ): ScenarioOutcome => {
