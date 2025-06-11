@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useGenshinState } from "@/lib/mobx/genshin-context";
 import { observer } from "mobx-react-lite";
 import { ToggleGroup } from "radix-ui";
+import React from "react";
 
 export const PityStatus = observer(() => {
   const {

@@ -77,6 +77,7 @@ const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   archonQuest: "Archon Quest",
   storyQuests: "Story Quests",
   newAchievements: "New Achievements",
+  stardust: "Monthly Stardust Wishes",
   characterTestRuns: "Character Test Runs",
   eventActivities: "Event Activities",
   hoyolabDailyCheckIn: "HoYoLAB Daily Check-In",
