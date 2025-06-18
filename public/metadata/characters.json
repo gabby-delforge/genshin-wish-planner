@@ -370,6 +370,16 @@
     "ModelType": "Tall Male"
   },
   {
+    "Id": "ineffa",
+    "IconSrc": "/images/characters/ineffa_icon.png",
+    "Name": "Ineffa",
+    "Quality": 5,
+    "Element": "Electro",
+    "Weapon": "Polearm",
+    "Region": "Snezhnaya",
+    "ModelType": "Short Female"
+  },
+  {
     "Id": "jean",
     "IconSrc": "/images/characters/jean_icon.png",
     "Name": "Jean",
