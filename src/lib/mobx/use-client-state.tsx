@@ -3,6 +3,7 @@
 import { runInAction } from "mobx";
 import { useEffect, useState } from "react";
 import { GenshinState } from "./genshin-state";
+import { mergeBannerConfigurations } from "./initializers";
 import { makeLocalStorage } from "./make-local-storage";
 import { validateLoadedState } from "./migration-helpers";
 
@@ -36,8 +37,24 @@ export function useClientState(state: GenshinState) {
             return {}; // Return empty object to use all constructor defaults
           }
 
-          // Only attempt migration if we have actual meaningful data
-          return validateLoadedState(loadedData);
+          // Migrate the loaded data first
+          const migratedData = validateLoadedState(loadedData);
+
+          // Merge banner configurations to handle new banners
+          if (
+            "bannerConfiguration" in migratedData &&
+            migratedData.bannerConfiguration
+          ) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (migratedData as any).bannerConfiguration =
+              mergeBannerConfigurations(
+                state.banners,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                migratedData.bannerConfiguration as Record<string, any>
+              );
+          }
+
+          return migratedData;
         },
         onParseError: (key, error) => {
           console.warn(

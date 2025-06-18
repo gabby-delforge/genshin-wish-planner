@@ -21,7 +21,7 @@ import {
   WishResources,
 } from "../types";
 import { clamp, getCurrentBanner, isPastDate } from "../utils";
-import { initializeBannerConfigurations } from "./initializers";
+import { initializeBannerConfigurations, mergeBannerConfigurations } from "./initializers";
 import { STATE_VERSION } from "./state-version";
 
 export class GenshinState {
@@ -237,6 +237,11 @@ export class GenshinState {
     allocation: BannerConfiguration
   ) {
     this.bannerConfiguration[bannerVersion] = allocation;
+  }
+
+  updateBannerConfigurations(newBanners: ApiBanner[]) {
+    this.banners = newBanners;
+    this.bannerConfiguration = mergeBannerConfigurations(newBanners, this.bannerConfiguration);
   }
 
   // Mode functions
