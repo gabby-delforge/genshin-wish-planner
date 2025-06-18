@@ -25,5 +25,25 @@
     "endDate": "2025-07-29T00:00:00-05:00",
     "characters": ["mavuika", "emilie"],
     "weapons": ["a-thousand-blazing-suns", "lumidouce-elegy"]
+  },
+  {
+    "id": "5.8v1",
+    "version": "5.8v1",
+    "name": "5.8 Phase 1",
+    "startDate": "2025-07-08T00:00:00-05:00",
+    "endDate": "2025-07-29T00:00:00-05:00",
+    "characters": ["ineffa", "mualani"],
+    "weapons": ["fractured-halo", "surfs-up"],
+    "isSpeculated": true
+  },
+  {
+    "id": "5.8v2",
+    "version": "5.8v2",
+    "name": "5.8 Phase 2",
+    "startDate": "2025-07-08T00:00:00-05:00",
+    "endDate": "2025-07-29T00:00:00-05:00",
+    "characters": ["chasca", "citlali"],
+    "weapons": ["astral-vultures-crimson-plumage", "starcallers-watch"],
+    "isSpeculated": true
   }
 ]

@@ -123,6 +123,8 @@ const BannerCard = observer(
       [bannerData.endDate]
     );
 
+    if (isOldBanner) return;
+
     return (
       <Card
         className={`bg-void-3/30 ${
@@ -136,9 +138,15 @@ const BannerCard = observer(
           <CardTitle className="text-md font-medium flex justify-between">
             <div className="flex flex-col items-start @md/card:flex-row @md/card:items-center  gap-2 ">
               <BannerVersion version={id} />
+
               <p className=" text-white/80 uppercase font-bold text-xs">
                 {displayStartDate} - {displayEndDate}
               </p>
+              {"isSpeculated" in bannerData && bannerData.isSpeculated ? (
+                <div className="ml-2 italic text-xs rounded-xl px-2 py-0.5 bg-white/20 border-1 border-white">
+                  Not yet confirmed
+                </div>
+              ) : null}
             </div>
             <div className=" flex flex-row items-center text-sm text-white">
               {wishesAvailableLabel}
