@@ -26,11 +26,23 @@ export const initializeBannerConfigurations = (
         wishesAllocated: 0,
         epitomizedPath: banner.weapons[0], // Which weapon to chart path for
         strategy: "stop", // Stop after getting epitomized weapon, or continue for both
-        maxRefinement: 1, // Default to R1 (0 = R1, 4 = R5)
+        maxRefinement: 0, // Default to R1 (0 = R1, 4 = R5)
       },
     };
 
     acc[banner.id] = bannerConfig;
     return acc;
   }, {} as Record<BannerId, BannerConfiguration>);
+};
+
+export const mergeBannerConfigurations = (
+  currentBanners: ApiBanner[],
+  storedConfigurations: Record<BannerId, BannerConfiguration>
+): Record<BannerId, BannerConfiguration> => {
+  const freshConfigurations = initializeBannerConfigurations(currentBanners);
+  
+  return {
+    ...freshConfigurations,
+    ...storedConfigurations,
+  };
 };
