@@ -30,9 +30,11 @@ function Resource({
         alt={type}
         width={size}
         height={size}
-        unoptimized
+        unoptimized={true}
       />
-      {typeof number === "number" && Number.isFinite(number) && <div>{number}</div>}
+      {typeof number === "number" && Number.isFinite(number) && (
+        <div>{Math.floor(number)}</div>
+      )}
     </div>
   );
 }

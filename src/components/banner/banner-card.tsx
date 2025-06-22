@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { API_CHARACTERS, API_WEAPONS } from "@/lib/data";
 import { FLAGS } from "@/lib/feature-flags";
@@ -13,27 +13,18 @@ import {
   WeaponId,
   type BannerId,
 } from "@/lib/types";
-import { cn, toFriendlyDate } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
-import { LimitedWish } from "../resource";
 import { CheckboxWithLabel } from "../ui/checkbox-with-label";
 import { Separator } from "../ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { BannerVersion } from "./banner-version";
+
+import { BannerHeader } from "./banner-header";
 import { CharacterRow } from "./character-row";
-import { WeaponBannerRow } from "./weapon-banner-row";
+import { WeaponBannerRow } from "./weapon-row";
 
 export type BannerCardProps = {
   id: BannerId;
   bannerData: ApiBanner;
   bannerConfiguration: BannerConfiguration;
-  wishesAvailable: Record<BannerId, number>;
   isCurrentBanner: boolean;
   isOldBanner: boolean;
   estimatedWishesEarned: number;
@@ -44,7 +35,6 @@ const BannerCard = observer(
     id,
     bannerData,
     bannerConfiguration,
-    wishesAvailable,
     isCurrentBanner,
     isOldBanner,
     estimatedWishesEarned,
@@ -57,71 +47,10 @@ const BannerCard = observer(
       allocateWishesToWeaponBanner,
       setCharacterPullPriority,
       setEpitomizedPath,
-      setWeaponBannerStrategy,
       setWeaponBannerMaxRefinement,
       setCharacterMaxConstellation,
+      availableWishes,
     } = useGenshinState();
-    const wishesAvailableLabel = useMemo(() => {
-      const totalWishes = wishesAvailable[id] || 0;
-
-      const gainedWishes =
-        isCurrentBanner && accountStatusExcludeCurrentBannerPrimogemSources
-          ? 0
-          : estimatedWishesEarned;
-      // This represents the wishes the user started with
-      let spentWishes = 0;
-      for (const char of Object.values(bannerConfiguration.characters)) {
-        spentWishes += char.wishesAllocated;
-      }
-      const leftover = spentWishes - gainedWishes + totalWishes;
-
-      return (
-        <TooltipProvider>
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger>
-              <div
-                className={cn(
-                  "flex items-center gap-1 text-sm",
-                  totalWishes < 0 ? "text-red-300" : "text-white"
-                )}
-              >
-                <LimitedWish number={Math.floor(totalWishes)} />
-                available
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="flex gap-1 items-center">
-              <LimitedWish number={Math.floor(leftover)} />
-              <div>{isCurrentBanner ? "owned" : "leftover"}</div>
-              {gainedWishes > 0 && (
-                <>
-                  <div className="text-black/50">+</div>
-                  <LimitedWish number={Math.floor(gainedWishes)} />
-                  <div>earned</div>
-                </>
-              )}
-
-              {spentWishes > 0 && (
-                <>
-                  <div className="text-black/50">-</div>
-                  <LimitedWish number={spentWishes} />
-                  <div>spent</div>
-                </>
-              )}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }, [wishesAvailable, estimatedWishesEarned, id]);
-
-    const displayStartDate = useMemo(
-      () => toFriendlyDate(new Date(bannerData.startDate)),
-      [bannerData.startDate]
-    );
-
-    const displayEndDate = useMemo(
-      () => toFriendlyDate(new Date(bannerData.endDate)),
-      [bannerData.endDate]
-    );
 
     if (isOldBanner) return;
 
@@ -134,25 +63,14 @@ const BannerCard = observer(
         <div className="h-2 bg-gradient-to-r from-[#7b68ee] to-[#9370db]"></div>
         <div className="h-[1px]  bg-gradient-to-r from-gold-1/50 via-gold-1 to-gold-1/50"></div>
 
-        <CardHeader className="pb-6">
-          <CardTitle className="text-md font-medium flex justify-between">
-            <div className="flex flex-col items-start @md/card:flex-row @md/card:items-center  gap-2 ">
-              <BannerVersion version={id} />
-
-              <p className=" text-white/80 uppercase font-bold text-xs">
-                {displayStartDate} - {displayEndDate}
-              </p>
-              {"isSpeculated" in bannerData && bannerData.isSpeculated ? (
-                <div className="ml-2 italic text-xs rounded-xl px-2 py-0.5 bg-white/20 border-1 border-white">
-                  Not yet confirmed
-                </div>
-              ) : null}
-            </div>
-            <div className=" flex flex-row items-center text-sm text-white">
-              {wishesAvailableLabel}
-            </div>
-          </CardTitle>
-        </CardHeader>
+        <BannerHeader
+          id={id}
+          bannerData={bannerData}
+          isCurrentBanner={isCurrentBanner}
+          estimatedWishesEarned={estimatedWishesEarned}
+          bannerConfiguration={bannerConfiguration}
+          availableWishes={availableWishes}
+        />
         <CardContent className=" px-2 md:px-6 flex flex-col">
           {FLAGS.WEAPON_BANNER && (
             <div className="text-xs italic text-white/50">
@@ -188,6 +106,7 @@ const BannerCard = observer(
                 setCurrentPriority={(value: Priority) =>
                   setCharacterPullPriority(id, characterId, value)
                 }
+                bannerId={id}
               />
             );
           })}
@@ -196,6 +115,7 @@ const BannerCard = observer(
               <Separator />
               <div className="text-xs italic text-white/50">Weapon Banner</div>
               <WeaponBannerRow
+                bannerId={id}
                 weapons={[
                   API_WEAPONS[bannerData.weapons[0]!]!, // Lol
                   API_WEAPONS[bannerData.weapons[1]!]!,
@@ -218,10 +138,8 @@ const BannerCard = observer(
                 setMaxRefinement={(value: number) =>
                   setWeaponBannerMaxRefinement(id, value)
                 }
-                _currentStrategy={bannerConfiguration.weaponBanner.strategy}
-                _setStrategy={(strategy: "stop" | "continue") =>
-                  setWeaponBannerStrategy(id, strategy)
-                }
+                bannerConfig={bannerConfiguration}
+                availableWishes={availableWishes[id]}
               />
             </>
           )}

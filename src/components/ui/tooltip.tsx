@@ -1,18 +1,23 @@
+/* eslint-disable mobx/missing-observer */
 "use client";
 
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import * as React from "react";
+import React, { createContext, useContext, useState } from "react";
 
+import { useIsMobile } from "@/lib/responsive-design/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
-const Tooltip = TooltipPrimitive.Root;
-
-const TooltipTrigger = TooltipPrimitive.Trigger;
+// Context to share state between Tooltip and TooltipTrigger
+const TooltipContext = createContext<{
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  isMobile: boolean;
+} | null>(null);
 
 const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
   <TooltipPrimitive.Portal>
@@ -28,5 +33,82 @@ const TooltipContent = React.forwardRef<
   </TooltipPrimitive.Portal>
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+
+// Enhanced Tooltip that handles mobile touch interactions
+function Tooltip({
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>) {
+  const isMobile = useIsMobile();
+  const [open, setOpen] = useState(false);
+
+  const contextValue = {
+    open,
+    setOpen,
+    isMobile,
+  };
+
+  // On mobile, we control the open state manually and disable hover
+  if (isMobile) {
+    return (
+      <TooltipContext.Provider value={contextValue}>
+        <TooltipPrimitive.Root
+          open={open}
+          onOpenChange={setOpen}
+          delayDuration={0}
+          disableHoverableContent={true}
+          {...props}
+        >
+          {children}
+        </TooltipPrimitive.Root>
+      </TooltipContext.Provider>
+    );
+  }
+
+  // On desktop, use default behavior (hover)
+  return (
+    <TooltipContext.Provider value={contextValue}>
+      <TooltipPrimitive.Root {...props}>
+        {children}
+      </TooltipPrimitive.Root>
+    </TooltipContext.Provider>
+  );
+}
+
+// Enhanced TooltipTrigger that handles touch events on mobile
+const TooltipTrigger = React.forwardRef<
+  React.ComponentRef<typeof TooltipPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
+>(({ onClick, className, ...props }, ref) => {
+  const context = useContext(TooltipContext);
+  
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Call original onClick if provided
+    onClick?.(event);
+    
+    // On mobile, toggle tooltip state
+    if (context?.isMobile) {
+      context.setOpen(!context.open);
+    }
+  };
+
+  return (
+    <TooltipPrimitive.Trigger
+      ref={ref}
+      onClick={handleClick}
+      className={cn(
+        // Disable hover effects on mobile using CSS
+        context?.isMobile ? "touch-manipulation" : "",
+        className
+      )}
+      style={{
+        // Disable hover on mobile devices
+        ...(context?.isMobile && { WebkitTouchCallout: "none" }),
+      }}
+      {...props}
+    />
+  );
+});
+TooltipTrigger.displayName = "TooltipTrigger";
 
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

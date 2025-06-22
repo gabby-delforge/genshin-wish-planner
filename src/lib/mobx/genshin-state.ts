@@ -1,15 +1,16 @@
 import { makeAutoObservable } from "mobx";
 import { initialBanners, PRIMOGEM_SOURCE_VALUES } from "../data";
-import { calculateAvailableWishesForBanner } from "../simulation/simulation-utils";
 import { runOptimization } from "../simulation/wish-optimizer";
 import { runSimulation } from "../simulation/wish-simulator";
 
 import { SIMULATION_COUNT } from "../consts";
+import { calculateWishesEarnedFromStarglitter } from "../simulation/starglitter-utils";
 import {
   ApiBanner,
   AppMode,
   BannerConfiguration,
   BannerId,
+  BannerWishBreakdown,
   CharacterId,
   PrimogemSourceKey,
   PrimogemSourcesEnabled,
@@ -21,7 +22,11 @@ import {
   WishResources,
 } from "../types";
 import { clamp, getCurrentBanner, isPastDate } from "../utils";
-import { initializeBannerConfigurations } from "./initializers";
+import {
+  handleAbyssRewards,
+  handleImaginariumRewards,
+  initializeBannerConfigurations,
+} from "./genshin-state-utils";
 import { STATE_VERSION } from "./state-version";
 
 export class GenshinState {
@@ -294,6 +299,15 @@ export class GenshinState {
     this.optimizerSimulationResults = results;
   }
 
+  resetBanner(id: BannerId) {
+    const config = this.bannerConfiguration[id];
+    if (!config) return;
+    config.weaponBanner.wishesAllocated = 0;
+    Object.values(config.characters).forEach(
+      (val) => (val.wishesAllocated = 0)
+    );
+  }
+
   get accountCurrentWishValue(): number {
     const primoWishes = Math.floor(this.ownedWishResources.primogem / 160);
     const starglitterWishes = Math.floor(
@@ -318,40 +332,218 @@ export class GenshinState {
     );
   }
 
-  get availableWishes(): Record<BannerId, number> {
+  getMaxSpendableWishesFor(
+    bannerId: BannerId,
+    targetId: CharacterId | WeaponId
+  ): { baseWishes: number; starglitterWishes: number } {
+    const bannerBreakdown = this.availableWishes[bannerId];
+    if (!bannerBreakdown) return { baseWishes: 0, starglitterWishes: 0 };
+
+    return (
+      bannerBreakdown.maxWishesPerCharacterOrWeapon[targetId] || {
+        baseWishes: 0,
+        starglitterWishes: 0,
+      }
+    );
+  }
+
+  get availableWishes(): Record<BannerId, BannerWishBreakdown> {
     // First banner starts with however many wishes are in the user's account
-    const bannerMap: Record<BannerId, number> = {};
-    let carryOverWishes = this.accountCurrentWishValue;
+    let runningSum = this.accountCurrentWishValue;
+
+    const bannerMap: Record<BannerId, BannerWishBreakdown> = {};
 
     // Then accumulate wishes over banners
     for (const banner of this.banners) {
+      const bannerBreakdown: BannerWishBreakdown = {
+        startingWishes: runningSum,
+        wishesSpentOnCharacters: 0,
+        wishesSpentOnWeapons: 0,
+        earnedWishes: 0,
+        starglitterWishes: 0,
+        endingWishes: runningSum,
+        maxWishesPerCharacterOrWeapon: {},
+      };
+
       const isOldBanner = isPastDate(banner.endDate);
       if (isOldBanner) {
-        bannerMap[banner.id] = carryOverWishes;
+        bannerMap[banner.id] = bannerBreakdown;
         continue;
       }
-      const bannerConfig = this.bannerConfiguration[banner.id];
-      if (!bannerConfig) continue;
 
+      const bannerConfig = this.bannerConfiguration[banner.id];
+      if (!bannerConfig) {
+        bannerMap[banner.id] = bannerBreakdown;
+        continue;
+      }
+
+      // Subtract spent wishes and add starglitter wishes
       const excludeEarnedWishes =
         this.shouldExcludeCurrentBannerEarnedWishes &&
         this.currentBannerId === banner.id;
+
+      // Calculate wishes spent
       const wishesSpentOnCharacters = Object.values(
-        this.bannerConfiguration[banner.id].characters
-      ).reduce((acc, curr) => acc + curr.wishesAllocated, 0);
+        bannerConfig.characters
+      ).reduce((acc, curr) => {
+        return acc + curr.wishesAllocated;
+      }, 0);
+
       const wishesSpentOnWeapons =
         this.bannerConfiguration[banner.id].weaponBanner.wishesAllocated;
 
-      const spentWishes = wishesSpentOnCharacters + wishesSpentOnWeapons;
+      // Add earned wishes
+      if (!excludeEarnedWishes) {
+        bannerBreakdown.earnedWishes = this.estimatedNewWishesMap[banner.id];
+      }
 
-      carryOverWishes = calculateAvailableWishesForBanner(
-        banner,
-        spentWishes,
-        excludeEarnedWishes ? 0 : this.estimatedNewWishesMap[banner.id],
-        carryOverWishes
+      bannerBreakdown.wishesSpentOnCharacters = wishesSpentOnCharacters;
+      bannerBreakdown.wishesSpentOnWeapons = wishesSpentOnWeapons;
+
+      // Calculate base wishes available for this banner (carryover + earned)
+      const baseWishesAvailable = runningSum + bannerBreakdown.earnedWishes;
+
+      // Calculate starglitter conservatively
+      const totalAllocated = wishesSpentOnCharacters + wishesSpentOnWeapons;
+      let characterWishesForStarglitter: number;
+      let weaponWishesForStarglitter: number;
+
+      if (totalAllocated > 0) {
+        // Use actual allocations + assign remaining wishes to whichever gives less starglitter
+        const remainingWishes = Math.max(
+          0,
+          baseWishesAvailable - totalAllocated
+        );
+
+        if (remainingWishes > 0) {
+          // Test both options for remaining wishes using iterative calculation
+          const optionA = calculateWishesEarnedFromStarglitter(
+            wishesSpentOnCharacters + remainingWishes,
+            wishesSpentOnWeapons,
+            this.characterPity,
+            this.weaponPity
+          );
+          const optionB = calculateWishesEarnedFromStarglitter(
+            wishesSpentOnCharacters,
+            wishesSpentOnWeapons + remainingWishes,
+            this.characterPity,
+            this.weaponPity
+          );
+
+          // Choose the option that gives less total starglitter
+          if (optionA <= optionB) {
+            characterWishesForStarglitter =
+              wishesSpentOnCharacters + remainingWishes;
+            weaponWishesForStarglitter = wishesSpentOnWeapons;
+          } else {
+            characterWishesForStarglitter = wishesSpentOnCharacters;
+            weaponWishesForStarglitter = wishesSpentOnWeapons + remainingWishes;
+          }
+        } else {
+          // All wishes are allocated - calculate starglitter from base wishes split proportionally
+          const charRatio = wishesSpentOnCharacters / totalAllocated;
+          const weaponRatio = wishesSpentOnWeapons / totalAllocated;
+
+          characterWishesForStarglitter = Math.floor(
+            baseWishesAvailable * charRatio
+          );
+          weaponWishesForStarglitter = Math.floor(
+            baseWishesAvailable * weaponRatio
+          );
+        }
+      } else {
+        // No allocation yet, use minimum of all-character vs all-weapon iterative calculation
+        const allCharacterStarglitterWishes =
+          calculateWishesEarnedFromStarglitter(
+            baseWishesAvailable,
+            0,
+            this.characterPity,
+            this.weaponPity
+          );
+        const allWeaponStarglitterWishes = calculateWishesEarnedFromStarglitter(
+          0,
+          baseWishesAvailable,
+          this.characterPity,
+          this.weaponPity
+        );
+
+        if (allCharacterStarglitterWishes <= allWeaponStarglitterWishes) {
+          characterWishesForStarglitter = baseWishesAvailable;
+          weaponWishesForStarglitter = 0;
+        } else {
+          characterWishesForStarglitter = 0;
+          weaponWishesForStarglitter = baseWishesAvailable;
+        }
+      }
+
+      // Calculate the final starglitter using iterative approach
+      bannerBreakdown.starglitterWishes = calculateWishesEarnedFromStarglitter(
+        characterWishesForStarglitter,
+        weaponWishesForStarglitter,
+        this.characterPity,
+        this.weaponPity
       );
 
-      bannerMap[banner.id] = carryOverWishes;
+      // Calculate per-character/weapon max spendable wishes
+      const allCharacterIds = Object.keys(bannerConfig.characters);
+      const weaponId = bannerConfig.weaponBanner.epitomizedPath;
+
+      // For each character, calculate max spendable
+      for (const characterId of allCharacterIds) {
+        const otherCharacterWishes = Object.entries(bannerConfig.characters)
+          .filter(([id]) => id !== characterId)
+          .reduce((acc, [, config]) => acc + config.wishesAllocated, 0);
+
+        const baseWishes = Math.max(
+          0,
+          baseWishesAvailable -
+            bannerConfig.weaponBanner.wishesAllocated -
+            otherCharacterWishes
+        );
+
+        const wishesEarnedFromStarglitter =
+          calculateWishesEarnedFromStarglitter(
+            baseWishes,
+            0, // No weapon wishes for character calculation
+            this.characterPity,
+            this.weaponPity
+          );
+
+        bannerBreakdown.maxWishesPerCharacterOrWeapon[characterId] = {
+          baseWishes: baseWishes,
+          starglitterWishes: wishesEarnedFromStarglitter,
+        };
+      }
+
+      // For weapon, calculate max spendable
+      if (weaponId) {
+        const baseWishes = Math.max(
+          0,
+          baseWishesAvailable - wishesSpentOnCharacters
+        );
+
+        const starglitterWishes = calculateWishesEarnedFromStarglitter(
+          0, // No character wishes for weapon calculation
+          baseWishes,
+          this.characterPity,
+          this.weaponPity
+        );
+
+        bannerBreakdown.maxWishesPerCharacterOrWeapon[weaponId] = {
+          baseWishes: baseWishes,
+          starglitterWishes: starglitterWishes,
+        };
+      }
+
+      // Update running sum for next banner (carryover = current + earned - spent, NO starglitter carryover)
+      runningSum =
+        runningSum +
+        bannerBreakdown.earnedWishes -
+        wishesSpentOnCharacters -
+        wishesSpentOnWeapons;
+      bannerBreakdown.endingWishes = runningSum;
+
+      bannerMap[banner.id] = bannerBreakdown;
     }
     return bannerMap;
   }
@@ -373,33 +565,6 @@ export class GenshinState {
       // Check if this is the first banner of a version (ends with "v1")
       const isFirstBannerOfVersion = banner.id.endsWith("v1");
 
-      // Add masterless stardust wishes from accumulated 3-star/4-star pulls
-      // You can buy 5 wishes per month, so only count it for banners that span across monthly reset (1st of month)
-      const bannerStart = new Date(banner.startDate);
-      const bannerEnd = new Date(banner.endDate);
-
-      // Find monthly resets that occur during this banner period
-      let currentMonthStart = new Date(
-        bannerStart.getFullYear(),
-        bannerStart.getMonth() + 1,
-        1
-      );
-
-      let monthlyResets = 0;
-      // Count monthly resets that occur during the banner period
-      while (currentMonthStart <= bannerEnd) {
-        monthlyResets++;
-        // Move to next month
-        currentMonthStart = new Date(
-          currentMonthStart.getFullYear(),
-          currentMonthStart.getMonth() + 1,
-          1
-        );
-      }
-
-      const stardustWishes = monthlyResets * 5;
-      totalLimitedWishes += stardustWishes;
-
       // Process each primogem source
       Object.entries(this.primogemSources).forEach(([key, isEnabled]) => {
         if (!isEnabled) return;
@@ -409,113 +574,22 @@ export class GenshinState {
 
         // Handle abyss and theater specially since they have differing schedules
         if (sourceKey === "abyss") {
-          // Abyss runs from the 16th of one month to the 15th of the next
-          const bannerStart = new Date(banner.startDate);
-          const bannerEnd = new Date(banner.endDate);
-
-          // Find abyss seasons that BEGIN during this banner period
-          let currentAbyssStart = new Date(
-            bannerStart.getFullYear(),
-            bannerStart.getMonth(),
-            16
-          );
-
-          // If the 16th of this month is before banner start, move to next month
-          if (currentAbyssStart < bannerStart) {
-            currentAbyssStart = new Date(
-              bannerStart.getFullYear(),
-              bannerStart.getMonth() + 1,
-              16
-            );
-          }
-
-          let abyssSeasons = 0;
-          // Only count seasons that start during the banner period
-          while (
-            currentAbyssStart >= bannerStart &&
-            currentAbyssStart <= bannerEnd
-          ) {
-            abyssSeasons++;
-            // Move to next abyss season (16th of next month)
-            currentAbyssStart = new Date(
-              currentAbyssStart.getFullYear(),
-              currentAbyssStart.getMonth() + 1,
-              16
-            );
-          }
-
-          // Apply abyss rewards for the calculated number of seasons
-          if (Array.isArray(sourceValue)) {
-            sourceValue.forEach((resource) => {
-              if (resource.type === "primogem") {
-                totalPrimogems += resource.value * abyssSeasons;
-              } else if (resource.type === "limitedWishes") {
-                totalLimitedWishes += resource.value * abyssSeasons;
-              }
-            });
-          } else {
-            if (sourceValue.type === "primogem") {
-              totalPrimogems += sourceValue.value * abyssSeasons;
-            } else if (sourceValue.type === "limitedWishes") {
-              totalLimitedWishes += sourceValue.value * abyssSeasons;
-            }
-          }
+          const {
+            totalLimitedWishes: wishesGained,
+            totalPrimogems: primogemsEarned,
+          } = handleAbyssRewards(banner, sourceValue);
+          totalLimitedWishes += wishesGained;
+          totalPrimogems += primogemsEarned;
           return;
         } else if (sourceKey === "imaginarium") {
-          // Imaginarium runs from the 1st of one month to the 30th/31st of the next
-          const bannerStart = new Date(banner.startDate);
-          const bannerEnd = new Date(banner.endDate);
-
-          // Find imaginarium seasons that BEGIN during this banner period
-          let currentImaginariumStart = new Date(
-            bannerStart.getFullYear(),
-            bannerStart.getMonth(),
-            1
-          );
-
-          // If the 1st of this month is before banner start, move to next month
-          if (currentImaginariumStart < bannerStart) {
-            currentImaginariumStart = new Date(
-              bannerStart.getFullYear(),
-              bannerStart.getMonth() + 1,
-              1
-            );
-          }
-
-          let imaginariumSeasons = 0;
-          // Only count seasons that start during the banner period
-          while (
-            currentImaginariumStart >= bannerStart &&
-            currentImaginariumStart <= bannerEnd
-          ) {
-            imaginariumSeasons++;
-            // Move to next imaginarium season (1st of next month)
-            currentImaginariumStart = new Date(
-              currentImaginariumStart.getFullYear(),
-              currentImaginariumStart.getMonth() + 1,
-              1
-            );
-          }
-
-          // Apply imaginarium rewards for the calculated number of seasons
-          if (Array.isArray(sourceValue)) {
-            sourceValue.forEach((resource) => {
-              if (resource.type === "primogem") {
-                totalPrimogems += resource.value * imaginariumSeasons;
-              } else if (resource.type === "limitedWishes") {
-                totalLimitedWishes += resource.value * imaginariumSeasons;
-              }
-            });
-          } else {
-            if (sourceValue.type === "primogem") {
-              totalPrimogems += sourceValue.value * imaginariumSeasons;
-            } else if (sourceValue.type === "limitedWishes") {
-              totalLimitedWishes += sourceValue.value * imaginariumSeasons;
-            }
-          }
+          const {
+            totalLimitedWishes: wishesGained,
+            totalPrimogems: primogemsEarned,
+          } = handleImaginariumRewards(banner, sourceValue);
+          totalLimitedWishes += wishesGained;
+          totalPrimogems += primogemsEarned;
           return;
         }
-
         // Sources that only apply during the Phase 1 banner
         const oneTimePerVersionSources: (keyof PrimogemSourcesEnabled)[] = [
           "gameUpdateCompensation",
