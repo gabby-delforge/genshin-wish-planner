@@ -1,0 +1,52 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# === COMMIT MESSAGE FORMAT ===
+# <type>(<scope>): <subject>
+#
+# Types:
+# feat:     A new feature
+# fix:      A bug fix
+# docs:     Documentation only changes
+# style:    Changes that do not affect the meaning of the code
+# refactor: A code change that neither fixes a bug nor adds a feature
+# perf:     A code change that improves performance
+# test:     Adding missing tests or correcting existing tests
+# build:    Changes that affect the build system or external dependencies
+# ci:       Changes to our CI configuration files and scripts
+# chore:    Other changes that don't modify src or test files
+# revert:   Reverts a previous commit
+#
+# Scope (optional):
+# - simulation
+# - ui
+# - changelog
+# - state
+# - banner
+# - etc.
+#
+# Subject:
+# - Use imperative mood ("add" not "added" or "adds")
+# - Don't capitalize first letter
+# - No period at the end
+# - Maximum 50 characters
+#
+# Body (optional):
+# - Wrap at 72 characters
+# - Explain what and why (not how)
+#
+# Footer (optional):
+# - Reference issues: "Closes #123"
+# - Breaking changes: "BREAKING CHANGE: describe the change"
+#
+# Examples:
+# feat(simulation): add starglitter calculation improvements
+# fix(ui): resolve modal backdrop scroll issue
+# docs: update README with new installation steps
+# feat!: redesign banner configuration API
+#
+# Breaking changes can also be indicated by ! after type/scope:
+# feat!: remove deprecated simulation API
