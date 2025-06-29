@@ -4,6 +4,7 @@ import React from "react";
 
 import { GenshinProvider } from "@/lib/mobx/genshin-context";
 import { ResponsiveProvider } from "@/lib/responsive-design/responsive-context";
+import { ChangelogProvider } from "@/components/changelog/changelog-provider";
 import { usePathname } from "next/navigation";
 
 export default function SafeClientProvider({
@@ -25,7 +26,9 @@ export default function SafeClientProvider({
 
   return (
     <GenshinProvider>
-      <ResponsiveProvider>{children}</ResponsiveProvider>
+      <ResponsiveProvider>
+        <ChangelogProvider>{children}</ChangelogProvider>
+      </ResponsiveProvider>
     </GenshinProvider>
   );
 }
