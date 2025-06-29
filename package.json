@@ -1,6 +1,6 @@
 {
   "name": "genshin-wish-planner",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -20,12 +20,17 @@
     "state:types:generate": "node scripts/generate-versioned-types.js generate",
     "state:types:update-barrel": "node scripts/generate-versioned-types.js update-barrel",
     "state:hooks:install": "node scripts/setup-git-hooks.js install",
-    "state:hooks:remove": "node scripts/setup-git-hooks.js remove"
+    "state:hooks:remove": "node scripts/setup-git-hooks.js remove",
+    "changelog:check": "node scripts/check-changelog.js check",
+    "changelog:remind": "node scripts/check-changelog.js remind",
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run"
   },
   "dependencies": {
     "@datastructures-js/priority-queue": "^6.3.3",
     "@next/third-parties": "^15.3.3",
     "@phosphor-icons/react": "^2.1.8",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.4",
     "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-separator": "^1.1.4",
@@ -56,8 +61,14 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.6",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.26.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.3",
+    "@semantic-release/npm": "^12.0.2",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-onboarding": "^8.6.14",
     "@storybook/blocks": "^8.6.14",
@@ -77,6 +88,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "@vitest/browser": "^3.1.4",
     "@vitest/coverage-v8": "^3.1.4",
+    "conventional-changelog-conventionalcommits": "^9.0.0",
     "eslint": "^9.27.0",
     "eslint-config-next": "15.3.1",
     "eslint-plugin-mobx": "^0.0.13",
@@ -86,6 +98,7 @@
     "globals": "^16.1.0",
     "jsdom": "^26.1.0",
     "playwright": "^1.52.0",
+    "semantic-release": "^24.2.6",
     "storybook": "^8.6.14",
     "tailwindcss": "^4.1.5",
     "ts-node": "^10.9.2",
