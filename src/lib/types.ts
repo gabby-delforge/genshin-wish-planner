@@ -56,6 +56,21 @@ export type BannerConfiguration = {
   weaponBanner: WeaponBannerConfig;
 };
 
+// Type-level conversion using template literal types
+type CamelToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
+  ? `${T extends Capitalize<T> ? "_" : ""}${Lowercase<T>}${CamelToSnakeCase<U>}`
+  : S;
+
+// Runtime implementation
+export function camelCaseToSnakeCase<T extends string>(
+  str: T
+): CamelToSnakeCase<T> {
+  return str.replace(
+    /[A-Z]/g,
+    (letter) => `_${letter.toLowerCase()}`
+  ) as CamelToSnakeCase<T>;
+}
+
 export type CharacterId = (typeof Characters)[number]["Id"];
 export type WeaponId = (typeof Weapons)[number]["Id"];
 

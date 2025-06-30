@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { hasNewChangelogs, getNewChangelogs } from "./changelog-utils";
 import { ChangelogEntry } from "./changelog-data";
+import { telemetry } from "../telemetry";
 
 export function useChangelog() {
   const [showChangelog, setShowChangelog] = useState(false);
   const [changelogEntries, setChangelogEntries] = useState<ChangelogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const changelogOpenTime = useRef<number | null>(null);
 
   useEffect(() => {
     // Only run on client side
@@ -24,6 +26,13 @@ export function useChangelog() {
           const newEntries = await getNewChangelogs();
           setChangelogEntries(newEntries);
           setShowChangelog(true);
+          
+          // Track changelog opened automatically
+          changelogOpenTime.current = Date.now();
+          telemetry.changelogOpened({
+            changelog_entries_count: newEntries.length,
+            is_automatic_open: true,
+          });
         }
       } catch (error) {
         console.warn("Failed to check changelog:", error);
@@ -36,6 +45,16 @@ export function useChangelog() {
   }, []);
 
   const closeChangelog = () => {
+    // Track changelog closed with time open
+    if (changelogOpenTime.current) {
+      const timeOpenMs = Date.now() - changelogOpenTime.current;
+      telemetry.changelogClosed({
+        changelog_entries_count: changelogEntries.length,
+        time_open_ms: timeOpenMs,
+      });
+      changelogOpenTime.current = null;
+    }
+    
     setShowChangelog(false);
   };
 
