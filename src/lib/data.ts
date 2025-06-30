@@ -17,13 +17,10 @@ export const GENSHIN_WEAPONS = Weapons.map((c) => c.Id);
 
 // API Character data
 export const API_CHARACTERS: Record<CharacterId, ApiCharacter> =
-  Characters.reduce(
-    (prev, curr) => {
-      prev[curr.Id] = curr;
-      return prev; //
-    },
-    {} as Record<CharacterId, ApiCharacter>
-  );
+  Characters.reduce((prev, curr) => {
+    prev[curr.Id] = curr;
+    return prev; //
+  }, {} as Record<CharacterId, ApiCharacter>);
 
 export const API_WEAPONS: Record<string, ApiWeapon> = Weapons.reduce(
   (prev, curr) => {
@@ -56,6 +53,7 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
     { value: 5, type: "standardWish" },
   ],
   abyss: { value: 800, type: "primogem" },
+  stygianOnslaught: { value: 450, type: "primogem" },
   imaginarium: { value: 800, type: "primogem" },
   battlePass: { value: 5, type: "standardWish" },
   battlePassGnostic: [

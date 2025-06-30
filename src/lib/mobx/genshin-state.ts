@@ -12,6 +12,7 @@ import {
   BannerId,
   BannerWishBreakdown,
   CharacterId,
+  DEFAULT_PRIMOGEM_SOURCES_ENABLED,
   PrimogemSourceKey,
   PrimogemSourcesEnabled,
   PrimogemSourceValues,
@@ -97,26 +98,7 @@ export class GenshinState {
       genesisCrystal: 0,
       standardWish: 0,
     };
-    this.primogemSources = {
-      gameUpdateCompensation: true,
-      dailyCommissions: true,
-      paimonBargain: true,
-      abyss: true,
-      imaginarium: true,
-      battlePass: true,
-      battlePassGnostic: true,
-      welkinMoon: true,
-      archonQuest: true,
-      storyQuests: true,
-      newAchievements: true,
-      characterTestRuns: true,
-      eventActivities: true,
-      hoyolabDailyCheckIn: true,
-      hoyolabWebEvents: true,
-      livestreamCodes: true,
-      newVersionCode: true,
-      limitedExplorationRewards: true,
-    };
+    this.primogemSources = DEFAULT_PRIMOGEM_SOURCES_ENABLED;
     this.shouldExcludeCurrentBannerEarnedWishes = false;
     this.banners = initialBanners;
     this.simulationCount = SIMULATION_COUNT;
@@ -590,10 +572,12 @@ export class GenshinState {
           totalPrimogems += primogemsEarned;
           return;
         }
+
         // Sources that only apply during the Phase 1 banner
         const oneTimePerVersionSources: (keyof PrimogemSourcesEnabled)[] = [
           "gameUpdateCompensation",
           "newVersionCode",
+          "stygianOnslaught",
           "archonQuest",
           "storyQuests",
           "newAchievements",
