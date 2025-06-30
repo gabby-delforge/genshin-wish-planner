@@ -46,7 +46,7 @@ export const BannerInputBase = observer(
         <div className="flex flex-row items-center gap-1 text-xs text-white text-left">
           {title}
         </div>
-        <div className="flex items-center gap-1 justify-around">
+        <div className="flex items-center gap-1 justify-between">
           {children}
           <div className="flex gap-2">
             {showResetButton && (

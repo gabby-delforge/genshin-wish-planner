@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "../ui/select";
 
-import { ConstellationInput } from "@/app/panels/simulation/components/constellation-input";
+import { RefinementInput } from "@/app/panels/simulation/components/constellation-input";
 import { WishesInput } from "@/app/panels/simulation/components/wishes-input";
 import WeaponIcon from "@/lib/components/weapon-icon";
 
@@ -75,12 +75,11 @@ const WeaponBannerRowMobile = observer(
           </Select>
         </div>
 
-        <ConstellationInput
+        <RefinementInput
           isLoading={isLoading}
-          type="weapon"
           weaponId={currentEpitomizedPath}
-          maxConstellation={currentMaxRefinement}
-          setMaxConstellation={setMaxRefinement}
+          maxRefinement={currentMaxRefinement}
+          setMaxRefinement={setMaxRefinement}
         />
 
         {mode === "playground" && (
@@ -166,13 +165,12 @@ const WeaponBannerRowDesktop = observer(
           </Select>
         </div>
 
-        <div className="flex gap-8 col-span-2 justify-end">
-          <ConstellationInput
+        <div className="flex gap-6 col-span-2 justify-end">
+          <RefinementInput
             isLoading={isLoading}
-            type="weapon"
             weaponId={currentEpitomizedPath}
-            maxConstellation={currentMaxRefinement}
-            setMaxConstellation={setMaxRefinement}
+            maxRefinement={currentMaxRefinement}
+            setMaxRefinement={setMaxRefinement}
           />
           {mode === "playground" && (
             <WishesInput

@@ -150,8 +150,7 @@ const Input = React.forwardRef<
           isLoading && "shimmer"
         }`}
       >
-        <div className="min-w-[24px] min-h-[24px]">{unit && unit}</div>
-
+        {unit && unit}
         <input
           type={type}
           inputMode={type === "number" ? "numeric" : undefined}
