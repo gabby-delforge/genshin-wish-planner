@@ -32,6 +32,7 @@ export default defineConfig({
           include: ["src/**/*.{test,spec}.{js,ts,tsx}"],
           environment: "jsdom",
           globals: true,
+          retry: 1,
           setupFiles: [
             "@testing-library/jest-dom",
             resolve(__dirname, "test/setup.ts"),

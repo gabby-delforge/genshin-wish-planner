@@ -26,9 +26,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Management
 
+### Changelog
+
+- Always write completed or in-progress work (fixes, features, improvements) to the [Unreleased] section of public/CHANGELOG.md. Note that this is a user-facing changelog - filter and name the items accordingly.
+
 ### Task Tracking
 
-- Use `ai/TODOS.md` for current task list organized by priority
+- For significant work, use `ai/TODOS.md` for current task list organized by priority
 - Complex topics have detailed docs in `ai/` directory with links from TODOS
 - Keep TODOS.md lean - move implementation details to separate files
 - Update TodoWrite tool to match TODOS.md priorities
@@ -51,14 +55,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **README.md**
 - **All files in /ai**
-  - **ai/GENSHIN_WISHING.md**: Describes the systems and probabilities behind the "wish" system in Genshin Impact.
-  - **ai/TODOS.md**: Current task list organized by priority with links to detailed implementation docs.
-  - **ai/state-migration-system.md**: Detailed design for automated state versioning and migration system.
-  - **ai/mobile-responsiveness.md**: Mobile UX implementation guide and patterns.
 
 ## Important Notes
 
-Do what has been asked; nothing more, nothing less.
-Don't create files unless they're necessary for achieving your goal, or doing so would result in cleaner code.
-Prefer editing an existing file to creating a new one.
-Keep documentation lean and focused.
+In general: do what has been asked; nothing more, nothing less.
+However, you should always think critically about the users' request. If there are potential issues or flaws, point these out and offer solutions.
+Keep the codebase clean and organized:
+
+- Proactively delete files and code as they become irrelevant or outdated, such as when the implementation approach changes.
+- Proactively update and improve code you come across, even if it's not directly related to the task at hand.
+- Don't create files unless they're necessary for achieving your goal, or doing so would result in cleaner code.
+- Prefer editing an existing file to creating a new one.
+- Keep documentation lean and focused. Not every feature needs standalone documentation.
