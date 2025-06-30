@@ -4,6 +4,12 @@ All notable changes to the Genshin Wish Planner will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-06-30
+
+### Added
+
+- Stygian Onslaught primogem rewards
+
 ## [0.4.0] - 2025-06-30
 
 ### Added

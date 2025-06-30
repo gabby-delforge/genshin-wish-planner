@@ -104,6 +104,7 @@ export const DEFAULT_PRIMOGEM_SOURCES_ENABLED: PrimogemSourcesEnabled = {
   dailyCommissions: true,
   paimonBargain: true,
   abyss: true,
+  stygianOnslaught: true,
   imaginarium: true,
   battlePass: true,
   battlePassGnostic: true,
@@ -157,6 +158,7 @@ export interface PrimogemSourceValues {
   dailyCommissions: PrimogemSourceValue;
   paimonBargain: PrimogemSourceValue;
   abyss: PrimogemSourceValue;
+  stygianOnslaught: PrimogemSourceValue;
   imaginarium: PrimogemSourceValue;
   battlePass: PrimogemSourceValue;
   battlePassGnostic: PrimogemSourceValue;

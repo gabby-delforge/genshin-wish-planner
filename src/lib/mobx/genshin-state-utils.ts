@@ -129,34 +129,28 @@ export const handleImaginariumRewards = (
 export const initializeBannerConfigurations = (
   bannerData: ApiBanner[]
 ): Record<BannerId, BannerConfiguration> => {
-  return bannerData.reduce(
-    (acc, banner) => {
-      const bannerConfig: BannerConfiguration = {
-        bannerId: banner.id,
-        isCurrentBanner: isCurrentBanner(banner),
-        isOldBanner: isOldBanner(banner),
-        characters: banner.characters.reduce(
-          (charAcc, charId) => {
-            charAcc[charId] = {
-              wishesAllocated: 0,
-              maxConstellation: 0, // Constellation defaults to C0
-              priority: DEFAULT_PRIORITY,
-            };
-            return charAcc;
-          },
-          {} as BannerConfiguration["characters"]
-        ),
-        weaponBanner: {
+  return bannerData.reduce((acc, banner) => {
+    const bannerConfig: BannerConfiguration = {
+      bannerId: banner.id,
+      isCurrentBanner: isCurrentBanner(banner),
+      isOldBanner: isOldBanner(banner),
+      characters: banner.characters.reduce((charAcc, charId) => {
+        charAcc[charId] = {
           wishesAllocated: 0,
-          epitomizedPath: banner.weapons[0], // Which weapon to chart path for
-          strategy: "stop", // Stop after getting epitomized weapon, or continue for both
-          maxRefinement: 0, // Default to R1 (0 = R1, 4 = R5)
-        },
-      };
+          maxConstellation: 0, // Constellation defaults to C0
+          priority: DEFAULT_PRIORITY,
+        };
+        return charAcc;
+      }, {} as BannerConfiguration["characters"]),
+      weaponBanner: {
+        wishesAllocated: 0,
+        epitomizedPath: banner.weapons[0], // Which weapon to chart path for
+        strategy: "stop", // Stop after getting epitomized weapon, or continue for both
+        maxRefinement: 0, // Default to R1 (0 = R1, 4 = R5)
+      },
+    };
 
-      acc[banner.id] = bannerConfig;
-      return acc;
-    },
-    {} as Record<BannerId, BannerConfiguration>
-  );
+    acc[banner.id] = bannerConfig;
+    return acc;
+  }, {} as Record<BannerId, BannerConfiguration>);
 };
