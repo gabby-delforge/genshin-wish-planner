@@ -1,6 +1,6 @@
 {
   "name": "genshin-wish-planner",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -20,12 +20,18 @@
     "state:types:generate": "node scripts/generate-versioned-types.js generate",
     "state:types:update-barrel": "node scripts/generate-versioned-types.js update-barrel",
     "state:hooks:install": "node scripts/setup-git-hooks.js install",
-    "state:hooks:remove": "node scripts/setup-git-hooks.js remove"
+    "state:hooks:remove": "node scripts/setup-git-hooks.js remove",
+    "changelog:check": "node scripts/check-changelog.js check",
+    "changelog:remind": "node scripts/check-changelog.js remind",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "version:minor": "npm version minor && git push && git push --tags",
+    "version:major": "npm version major && git push && git push --tags"
   },
   "dependencies": {
     "@datastructures-js/priority-queue": "^6.3.3",
     "@next/third-parties": "^15.3.3",
     "@phosphor-icons/react": "^2.1.8",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.4",
     "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-separator": "^1.1.4",
@@ -56,6 +62,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.6",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.26.0",
     "@storybook/addon-essentials": "^8.6.14",

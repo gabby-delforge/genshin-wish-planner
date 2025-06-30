@@ -14,3 +14,16 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "✅ State schema check passed"
+
+# Changelog reminder for user-facing changes
+if git diff --cached --name-only | grep -q "src/"; then
+  echo ""
+  echo "📝 Reminder: If this change affects users, please update:"
+  echo "   public/CHANGELOG.md under [Unreleased] section"
+  echo ""
+  echo "Write user-friendly descriptions, not technical details!"
+  echo "Example: 'Faster wish calculations' not 'optimize algorithm'"
+  echo ""
+  echo "Run 'npm run changelog:remind' for more guidance."
+  echo ""
+fi
