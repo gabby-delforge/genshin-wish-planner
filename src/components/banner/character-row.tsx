@@ -41,7 +41,6 @@ const CharacterRowMobile = observer(
 
         <ConstellationInput
           isLoading={isLoading}
-          type="character"
           characterId={character.Id}
           maxConstellation={currentMaxConstellation}
           setMaxConstellation={setMaxConstellation}
@@ -108,10 +107,9 @@ const CharacterRowDesktop = observer(
         <div className="flex items-center gap-4 col-span-2 md:col-span-1">
           <CharacterIcon id={characterId} showName className="shrink-0" />
         </div>
-        <div className="col-span-2 flex gap-8 justify-end">
+        <div className="col-span-2 flex gap-6 justify-end">
           <ConstellationInput
             isLoading={isLoading}
-            type="character"
             characterId={character.Id}
             maxConstellation={currentMaxConstellation}
             setMaxConstellation={setMaxConstellation}

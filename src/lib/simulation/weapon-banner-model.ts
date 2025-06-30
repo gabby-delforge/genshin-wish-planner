@@ -89,10 +89,10 @@ export const weaponWish = (
           newFatePoints,
         };
       } else {
-        // Got standard weapon - you'd need to implement getRandomStandardWeapon()
+        // Got standard weapon
         return {
           result: "standard",
-          weaponObtained: "standard_weapon" as WeaponId, // Placeholder
+          weaponObtained: "standard_weapon" as WeaponId,
           newPity: 0,
           newGuaranteed: true,
           newFatePoints: fatePoints + 1,

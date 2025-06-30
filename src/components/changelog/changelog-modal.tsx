@@ -21,17 +21,17 @@ interface ChangelogModalProps {
 const ChangeTypeColors = {
   feature: "bg-green-500/20 text-green-300 border-green-500/40",
   improvement: "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  fix: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
+  fix: "bg-gold-1/20 text-yellow-300 border-yellow-500/40",
   breaking: "bg-red-500/20 text-red-300 border-red-500/40",
   content: "bg-purple-500/20 text-purple-300 border-purple-500/40",
 } as const;
 
 const ChangeTypeLabels = {
   feature: "New",
-  improvement: "Improved",
-  fix: "Fixed",
+  improvement: "Improve",
+  fix: "Fix",
   breaking: "Breaking",
-  content: "Content",
+  content: "Update",
 } as const;
 
 export const ChangelogModal = observer(function ChangelogModal({
@@ -65,38 +65,54 @@ export const ChangelogModal = observer(function ChangelogModal({
               {`You're all caught up! No new changes to show.`}
             </div>
           ) : (
-            changelog.map((entry) => (
-              <div key={entry.version} className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gold-1">{entry.date}</span>
-                  <span className="text-sm text-white/50">
-                    v{entry.version}
-                  </span>
-                </div>
+            (() => {
+              // Group entries by date
+              const groupedEntries = changelog.reduce((acc, entry) => {
+                if (!acc[entry.date]) {
+                  acc[entry.date] = [];
+                }
+                acc[entry.date].push(entry);
+                return acc;
+              }, {} as Record<string, ChangelogEntry[]>);
 
-                <div className="space-y-2 pl-4">
-                  {entry.changes.map((change, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <Badge
-                        variant="outline"
-                        className={`${
-                          ChangeTypeColors[change.type]
-                        } text-xs shrink-0 mt-0.5`}
-                      >
-                        {ChangeTypeLabels[change.type]}
-                      </Badge>
-                      <p className="text-sm leading-relaxed mt-0.5">
-                        {change.description}
-                      </p>
+              return Object.entries(groupedEntries).map(
+                ([date, entries], groupIndex) => (
+                  <div key={date} className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gold-1">{date}</span>
+                      <span className="text-sm text-white/50">
+                        v{entries[0].version}
+                      </span>
                     </div>
-                  ))}
-                </div>
 
-                {entry !== changelog[changelog.length - 1] && (
-                  <Separator className="bg-void-2/30 mt-4" />
-                )}
-              </div>
-            ))
+                    <div className="space-y-2 pl-4">
+                      {entries
+                        .flatMap((entry) => entry.changes)
+                        .map((change, index) => (
+                          <div key={index} className="flex items-start gap-3">
+                            <Badge
+                              variant="outline"
+                              className={`${
+                                ChangeTypeColors[change.type]
+                              } text-xs shrink-0 mt-0.5`}
+                            >
+                              {ChangeTypeLabels[change.type]}
+                            </Badge>
+                            <p className="text-sm leading-relaxed mt-0.5">
+                              {change.description}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+
+                    {groupIndex !==
+                      Object.entries(groupedEntries).length - 1 && (
+                      <Separator className="bg-void-2/30 mt-4" />
+                    )}
+                  </div>
+                )
+              );
+            })()
           )}
         </div>
       </DialogContent>

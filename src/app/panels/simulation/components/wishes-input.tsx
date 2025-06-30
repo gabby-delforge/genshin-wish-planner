@@ -138,7 +138,7 @@ export const WishesInput = observer((props: WishesInputProps) => {
         }}
         unit={<LimitedWish />}
         showPlusMinus={true}
-        width={"w-10"}
+        width={"w-18"}
       />
     </BannerInputBase>
   );
