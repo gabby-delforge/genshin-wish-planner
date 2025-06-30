@@ -1,7 +1,13 @@
 import { makeAutoObservable } from "mobx";
-import { initialBanners, PRIMOGEM_SOURCE_VALUES } from "../data";
+import {
+  API_CHARACTERS,
+  API_WEAPONS,
+  initialBanners,
+  PRIMOGEM_SOURCE_VALUES,
+} from "../data";
 import { runOptimization } from "../simulation/wish-optimizer";
 import { runSimulation } from "../simulation/wish-simulator";
+import { generateSimulationId, telemetry } from "../telemetry";
 
 import { SIMULATION_COUNT } from "../consts";
 import { calculateWishesEarnedFromStarglitter } from "../simulation/starglitter-utils";
@@ -11,6 +17,7 @@ import {
   BannerConfiguration,
   BannerId,
   BannerWishBreakdown,
+  camelCaseToSnakeCase,
   CharacterId,
   DEFAULT_PRIMOGEM_SOURCES_ENABLED,
   PrimogemSourceKey,
@@ -57,6 +64,7 @@ export class GenshinState {
   // Optimizer state data
   optimizerSimulationResults: Record<string, BannerConfiguration>[] | null;
   playgroundSimulationResults: SimulationResults | null;
+  playgroundSimulationCompletedAt: number | null = null;
 
   // Banner configuration
   bannerConfiguration: Record<BannerId, BannerConfiguration>;
@@ -116,30 +124,99 @@ export class GenshinState {
   }
 
   setCharacterPity(pity: number) {
+    const oldValue = this.characterPity;
     this.characterPity = pity;
+
+    if (this.isClient && oldValue !== pity) {
+      telemetry.accountFieldUpdated({
+        field_name: "character_pity",
+        old_value: oldValue,
+        new_value: pity,
+        is_first_setup: !localStorage.getItem("genshin-store"),
+      });
+    }
   }
 
   setWeaponPity(pity: number) {
+    const oldValue = this.weaponPity;
     this.weaponPity = pity;
+
+    if (this.isClient && oldValue !== pity) {
+      telemetry.accountFieldUpdated({
+        field_name: "weapon_pity",
+        old_value: oldValue,
+        new_value: pity,
+        is_first_setup: !localStorage.getItem("genshin-store"),
+      });
+    }
   }
 
   setIsNextCharacterFeaturedGuaranteed(guaranteed: boolean) {
+    const oldValue = this.isNextCharacterFeaturedGuaranteed;
     this.isNextCharacterFeaturedGuaranteed = guaranteed;
+
+    if (this.isClient && oldValue !== guaranteed) {
+      telemetry.accountFieldUpdated({
+        field_name: "character_guaranteed",
+        old_value: oldValue,
+        new_value: guaranteed,
+        is_first_setup: !localStorage.getItem("genshin-store"),
+      });
+    }
   }
 
   setIsCapturingRadianceActive(active: boolean) {
+    const oldValue = this.isCapturingRadianceActive;
     this.isCapturingRadianceActive = active;
+
+    if (this.isClient && oldValue !== active) {
+      telemetry.accountFieldUpdated({
+        field_name: "capturing_radiance",
+        old_value: oldValue,
+        new_value: active,
+        is_first_setup: !localStorage.getItem("genshin-store"),
+      });
+    }
   }
 
   setIsNextWeaponFeaturedGuaranteed(guaranteed: boolean) {
+    const oldValue = this.isNextWeaponFeaturedGuaranteed;
     this.isNextWeaponFeaturedGuaranteed = guaranteed;
+
+    if (this.isClient && oldValue !== guaranteed) {
+      telemetry.accountFieldUpdated({
+        field_name: "weapon_guaranteed",
+        old_value: oldValue,
+        new_value: guaranteed,
+        is_first_setup: !localStorage.getItem("genshin-store"),
+      });
+    }
   }
 
   setAccountStatusOwnedWishResources(name: ResourceType, amount: number) {
+    const oldValue = this.ownedWishResources[name];
     this.ownedWishResources[name] = amount;
+
+    if (this.isClient && oldValue !== amount) {
+      telemetry.resourceUpdated({
+        resource_type: camelCaseToSnakeCase(name),
+        old_value: oldValue,
+        new_value: amount,
+        change_delta: amount - oldValue,
+      });
+    }
   }
   setAccountStatusPrimogemSources(source: PrimogemSourceKey, checked: boolean) {
-    this.primogemSources[source] = checked;
+    const oldValue = this.primogemSources[source];
+
+    if (this.isClient && oldValue !== checked) {
+      telemetry.primogemSourceToggled({
+        source_name: source,
+        enabled: checked,
+      });
+    } else {
+      this.primogemSources[source] = checked;
+    }
   }
 
   setAccountStatusExcludeCurrentBannerPrimogemSources(excludeCurrent: boolean) {
@@ -159,12 +236,33 @@ export class GenshinState {
   allocateWishesToCharacter(
     bannerId: BannerId,
     characterId: CharacterId,
-    value: number
+    value: number,
+    actionType: "manual_input" | "max_button" | "reset_button" = "manual_input"
   ) {
     const bannerConfig =
       this.bannerConfiguration[bannerId].characters[characterId];
     if (!bannerConfig) return;
+
+    const previousAllocation = bannerConfig.wishesAllocated;
     bannerConfig.wishesAllocated = value;
+
+    if (this.isClient && previousAllocation !== value) {
+      const character = API_CHARACTERS[characterId];
+      const banner = this.banners.find((b) => b.id === bannerId);
+      const currentBannerIndex = getCurrentBanner(this.banners);
+      const currentBanner = this.banners[currentBannerIndex];
+
+      telemetry.wishAllocationChanged({
+        banner_id: bannerId,
+        target_type: "character",
+        target_id: characterId,
+        target_name: character?.Name || "Unknown Character",
+        wishes_allocated: value,
+        previous_allocation: previousAllocation,
+        action_type: actionType,
+        is_current_banner: banner ? currentBanner?.id === banner.id : false,
+      });
+    }
   }
 
   allocateWishesToWeapon(bannerId: BannerId, value: number) {
@@ -173,16 +271,54 @@ export class GenshinState {
     bannerConfig.wishesAllocated = value;
   }
 
-  allocateWishesToWeaponBanner(bannerId: BannerId, value: number) {
+  allocateWishesToWeaponBanner(
+    bannerId: BannerId,
+    value: number,
+    actionType: "manual_input" | "max_button" | "reset_button" = "manual_input"
+  ) {
     const bannerConfig = this.bannerConfiguration[bannerId];
     if (!bannerConfig) return;
+
+    const previousAllocation = bannerConfig.weaponBanner.wishesAllocated;
     bannerConfig.weaponBanner.wishesAllocated = value;
+
+    if (this.isClient && previousAllocation !== value) {
+      const banner = this.banners.find((b) => b.id === bannerId);
+      const currentBannerIndex = getCurrentBanner(this.banners);
+      const currentBanner = this.banners[currentBannerIndex];
+      const epitomizedWeapon =
+        API_WEAPONS[bannerConfig.weaponBanner.epitomizedPath];
+
+      telemetry.wishAllocationChanged({
+        banner_id: bannerId,
+        target_type: "weapon",
+        target_id: bannerConfig.weaponBanner.epitomizedPath,
+        target_name: epitomizedWeapon?.Name || "Weapon Banner",
+        wishes_allocated: value,
+        previous_allocation: previousAllocation,
+        action_type: actionType,
+        is_current_banner: banner ? currentBanner?.id === banner.id : false,
+      });
+    }
   }
 
   setEpitomizedPath(bannerId: BannerId, weaponId: WeaponId) {
     const bannerConfig = this.bannerConfiguration[bannerId];
     if (!bannerConfig) return;
+
+    const previousWeaponId = bannerConfig.weaponBanner.epitomizedPath;
     bannerConfig.weaponBanner.epitomizedPath = weaponId;
+
+    if (this.isClient && previousWeaponId !== weaponId) {
+      const weapon = API_WEAPONS[weaponId];
+
+      telemetry.epitomizedPathSelected({
+        banner_id: bannerId,
+        weapon_id: weaponId,
+        weapon_name: weapon?.Name || "Unknown Weapon",
+        previous_weapon_id: previousWeaponId || null,
+      });
+    }
   }
 
   setWeaponBannerStrategy(bannerId: BannerId, value: "stop" | "continue") {
@@ -194,7 +330,22 @@ export class GenshinState {
   setWeaponBannerMaxRefinement(bannerId: BannerId, value: number) {
     const bannerConfig = this.bannerConfiguration[bannerId];
     if (!bannerConfig) return;
-    bannerConfig.weaponBanner.maxRefinement = clamp(value, 0, 4);
+
+    const oldRefinement = bannerConfig.weaponBanner.maxRefinement;
+    const newRefinement = clamp(value, 0, 4);
+    bannerConfig.weaponBanner.maxRefinement = newRefinement;
+
+    if (this.isClient && oldRefinement !== newRefinement) {
+      const weapon = API_WEAPONS[bannerConfig.weaponBanner.epitomizedPath];
+
+      telemetry.weaponRefinementChanged({
+        weapon_id: bannerConfig.weaponBanner.epitomizedPath,
+        weapon_name: weapon?.Name || "Unknown Weapon",
+        banner_id: bannerId,
+        old_refinement: oldRefinement + 1, // Convert 0-4 to 1-5
+        new_refinement: newRefinement + 1, // Convert 0-4 to 1-5
+      });
+    }
   }
 
   setCharacterPullPriority(
@@ -216,7 +367,22 @@ export class GenshinState {
     const bannerConfig =
       this.bannerConfiguration[bannerId].characters[characterId];
     if (!bannerConfig) return;
-    bannerConfig.maxConstellation = clamp(value, 0, 6);
+
+    const oldConstellation = bannerConfig.maxConstellation;
+    const newConstellation = clamp(value, 0, 6);
+    bannerConfig.maxConstellation = newConstellation;
+
+    if (this.isClient && oldConstellation !== newConstellation) {
+      const character = API_CHARACTERS[characterId];
+
+      telemetry.constellationTargetChanged({
+        character_id: characterId,
+        character_name: character?.Name || "Unknown Character",
+        banner_id: bannerId,
+        old_constellation: oldConstellation,
+        new_constellation: newConstellation,
+      });
+    }
   }
 
   setBannerConfiguration(
@@ -236,25 +402,144 @@ export class GenshinState {
     this.setIsSimulating(true);
     this.setSimulationProgress(0);
 
-    const results = await runSimulation(
-      this.banners,
-      this.bannerConfiguration,
-      this.characterPity,
-      this.isNextCharacterFeaturedGuaranteed,
-      this.isCapturingRadianceActive,
-      this.weaponPity,
-      this.isNextWeaponFeaturedGuaranteed,
-      this.simulationCount,
-      this.setSimulationProgress
+    // Calculate telemetry data
+    const totalCharactersConfigured = Object.values(
+      this.bannerConfiguration
+    ).reduce((total, bannerConfig) => {
+      return (
+        total +
+        Object.values(bannerConfig.characters).filter(
+          (char) => char.wishesAllocated > 0
+        ).length
+      );
+    }, 0);
+
+    const totalWeaponsConfigured = Object.values(
+      this.bannerConfiguration
+    ).filter(
+      (bannerConfig) => bannerConfig.weaponBanner.wishesAllocated > 0
+    ).length;
+
+    const totalWishesAllocated = Object.values(this.bannerConfiguration).reduce(
+      (total, bannerConfig) => {
+        const characterWishes = Object.values(bannerConfig.characters).reduce(
+          (sum, char) => sum + char.wishesAllocated,
+          0
+        );
+        return (
+          total + characterWishes + bannerConfig.weaponBanner.wishesAllocated
+        );
+      },
+      0
     );
 
-    this.setSimulationProgress(1);
-    this.setPlaygroundSimulationResults(results);
-    this.setIsSimulating(false);
+    const bannersWithAllocations = Object.values(
+      this.bannerConfiguration
+    ).filter((bannerConfig) => {
+      const hasCharacterWishes = Object.values(bannerConfig.characters).some(
+        (char) => char.wishesAllocated > 0
+      );
+      const hasWeaponWishes = bannerConfig.weaponBanner.wishesAllocated > 0;
+      return hasCharacterWishes || hasWeaponWishes;
+    }).length;
+
+    // Track simulation start
+    const simulationId = await generateSimulationId();
+    const startTime = Date.now();
+
+    telemetry.simulationStarted({
+      simulation_id: simulationId,
+      simulation_count: this.simulationCount,
+      total_characters_configured: totalCharactersConfigured,
+      total_weapons_configured: totalWeaponsConfigured,
+      total_wishes_allocated: totalWishesAllocated,
+      banners_with_allocations: bannersWithAllocations,
+    });
+
+    try {
+      const results = await runSimulation(
+        this.banners,
+        this.bannerConfiguration,
+        this.characterPity,
+        this.isNextCharacterFeaturedGuaranteed,
+        this.isCapturingRadianceActive,
+        this.weaponPity,
+        this.isNextWeaponFeaturedGuaranteed,
+        this.simulationCount,
+        this.setSimulationProgress
+      );
+
+      this.setSimulationProgress(1);
+      this.setPlaygroundSimulationResults(results);
+
+      // Track simulation completion
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+
+      telemetry.simulationFinished({
+        simulation_id: simulationId,
+        duration_ms: duration,
+        success: true,
+        success_rates: results.characterSuccessRates,
+        scenarios: Object.fromEntries(
+          results.scenarios.scenarios.map((s) => [s.id, s.probability])
+        ),
+      });
+    } catch (error) {
+      // Track failed simulation
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+
+      telemetry.simulationFinished({
+        simulation_id: simulationId,
+        duration_ms: duration,
+        success: false,
+      });
+
+      // Track the error
+      if (error instanceof Error) {
+        this.trackError(error, "playground_simulation", "run_simulation");
+      }
+
+      throw error; // Re-throw the error
+    } finally {
+      this.setIsSimulating(false);
+    }
   }
 
   setPlaygroundSimulationResults(results: SimulationResults) {
     this.playgroundSimulationResults = results;
+    this.playgroundSimulationCompletedAt = Date.now();
+  }
+
+  trackResultsTabViewed(tab: "success_rates" | "scenarios") {
+    if (
+      !this.isClient ||
+      !this.playgroundSimulationResults ||
+      !this.playgroundSimulationCompletedAt
+    )
+      return;
+
+    const timeSinceSimulation =
+      Date.now() - this.playgroundSimulationCompletedAt;
+
+    telemetry.resultsTabViewed({
+      tab,
+      simulation_count: this.simulationCount,
+      time_since_simulation_ms: timeSinceSimulation,
+    });
+  }
+
+  trackError(error: Error, context: string, userAction: string) {
+    if (!this.isClient) return;
+
+    telemetry.errorOccurred({
+      error_type: error.name || "Error",
+      error_message: error.message || "Unknown error",
+      context,
+      user_action: userAction,
+      stack_trace: error.stack ? error.stack.substring(0, 1000) : undefined,
+    });
   }
 
   // Optimizer functions

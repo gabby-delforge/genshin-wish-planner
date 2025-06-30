@@ -12,6 +12,7 @@ export const SimulationResults = observer(() => {
     isSimulating,
     mode,
     banners,
+    trackResultsTabViewed,
   } = useGenshinState();
 
   const noResults = (
@@ -38,7 +39,20 @@ export const SimulationResults = observer(() => {
     }
 
     return (
-      <Tabs defaultValue="success-rates">
+      <Tabs
+        defaultValue="success-rates"
+        onValueChange={(value) => {
+          // Track tab views, mapping tab values to telemetry format
+          const tabMap: Record<string, "success_rates" | "scenarios"> = {
+            "success-rates": "success_rates",
+            "common-scenarios": "scenarios",
+          };
+          const telemetryTab = tabMap[value];
+          if (telemetryTab) {
+            trackResultsTabViewed(telemetryTab);
+          }
+        }}
+      >
         <TabsList className="bg-void-1 mb-4">
           <TabsTrigger
             value="success-rates"

@@ -4,8 +4,9 @@ import {
   ChangelogEntry,
   getChangelogEntries,
 } from "@/lib/changelog/changelog-data";
+import { telemetry } from "@/lib/telemetry";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ChangelogModal } from "./changelog-modal";
 
 export const ChangelogFooterButton = observer(function ChangelogFooterButton() {
@@ -14,6 +15,7 @@ export const ChangelogFooterButton = observer(function ChangelogFooterButton() {
     []
   );
   const [isLoading, setIsLoading] = useState(false);
+  const changelogOpenTime = useRef<number | null>(null);
 
   const openChangelog = async () => {
     setIsLoading(true);
@@ -21,13 +23,30 @@ export const ChangelogFooterButton = observer(function ChangelogFooterButton() {
       const entries = await getChangelogEntries();
       setChangelogEntries(entries);
       setShowChangelog(true);
-    } catch (error) {
+      
+      // Track changelog opened manually
+      changelogOpenTime.current = Date.now();
+      telemetry.changelogOpened({
+        changelog_entries_count: entries.length,
+        is_automatic_open: false,
+      });
+    } catch {
     } finally {
       setIsLoading(false);
     }
   };
 
   const closeChangelog = () => {
+    // Track changelog closed with time open
+    if (changelogOpenTime.current) {
+      const timeOpenMs = Date.now() - changelogOpenTime.current;
+      telemetry.changelogClosed({
+        changelog_entries_count: changelogEntries.length,
+        time_open_ms: timeOpenMs,
+      });
+      changelogOpenTime.current = null;
+    }
+    
     setShowChangelog(false);
   };
 
