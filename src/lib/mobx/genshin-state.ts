@@ -3,6 +3,7 @@ import {
   API_CHARACTERS,
   API_WEAPONS,
   initialBanners,
+  PRIMOGEM_SOURCE_CATEGORIES,
   PRIMOGEM_SOURCE_VALUES,
 } from "../data";
 import { runOptimization } from "../simulation/wish-optimizer";
@@ -208,14 +209,112 @@ export class GenshinState {
   }
   setAccountStatusPrimogemSources(source: PrimogemSourceKey, checked: boolean) {
     const oldValue = this.primogemSources[source];
+    if (checked === oldValue) return;
 
-    if (this.isClient && oldValue !== checked) {
+    this.primogemSources[source] = checked;
+
+    if (this.isClient) {
       telemetry.primogemSourceToggled({
         source_name: source,
         enabled: checked,
       });
-    } else {
-      this.primogemSources[source] = checked;
+    }
+  }
+
+  selectAllPrimogemSources(category: "free_to_play" | "premium") {
+    // Helper functions to replicate component logic
+    const getPrimogemValue = (
+      sourceValue: PrimogemSourceValues[keyof PrimogemSourceValues]
+    ): number => {
+      if (Array.isArray(sourceValue)) {
+        return sourceValue.reduce((total, resource) => {
+          if (resource.type === "primogem") {
+            return total + resource.value;
+          }
+          return total;
+        }, 0);
+      } else if (sourceValue.type === "primogem") {
+        return sourceValue.value;
+      }
+      return 0;
+    };
+
+    const getLimitedWishValue = (
+      sourceValue: PrimogemSourceValues[keyof PrimogemSourceValues]
+    ): number => {
+      if (Array.isArray(sourceValue)) {
+        return sourceValue.reduce((total, resource) => {
+          if (resource.type === "limitedWishes") {
+            return total + resource.value;
+          }
+          return total;
+        }, 0);
+      } else if (sourceValue.type === "limitedWishes") {
+        return sourceValue.value;
+      }
+      return 0;
+    };
+
+    const sourcesToUpdate =
+      category === "free_to_play"
+        ? PRIMOGEM_SOURCE_CATEGORIES.freeToPlay
+        : PRIMOGEM_SOURCE_CATEGORIES.paid;
+
+    // Filter to only available sources (those with actual values)
+    const availableSources = sourcesToUpdate.filter((sourceKey) => {
+      const sourceValue = PRIMOGEM_SOURCE_VALUES[sourceKey];
+      const primoValue = getPrimogemValue(sourceValue);
+      const wishValue = getLimitedWishValue(sourceValue);
+      return primoValue > 0 || wishValue > 0;
+    });
+
+    // Track which sources actually changed
+    const sourcesChanged: string[] = [];
+
+    availableSources.forEach((sourceKey) => {
+      if (!this.primogemSources[sourceKey]) {
+        this.primogemSources[sourceKey] = true;
+        sourcesChanged.push(sourceKey);
+      }
+    });
+
+    // Send telemetry for bulk action
+    if (this.isClient && sourcesChanged.length > 0) {
+      telemetry.primogemSourcesBulkToggled({
+        category: category,
+        action: "select_all",
+        sources_changed: sourcesChanged,
+        sources_count: sourcesChanged.length,
+      });
+    }
+  }
+
+  deselectAllPrimogemSources(
+    category: "free_to_play" | "premium" = "free_to_play"
+  ) {
+    const sourcesToUpdate =
+      category === "free_to_play"
+        ? PRIMOGEM_SOURCE_CATEGORIES.freeToPlay
+        : PRIMOGEM_SOURCE_CATEGORIES.paid;
+
+    // Track which sources actually changed
+    const sourcesChanged: string[] = [];
+
+    sourcesToUpdate.forEach((sourceKey) => {
+      if (this.primogemSources[sourceKey]) {
+        this.primogemSources[sourceKey] = false;
+        sourcesChanged.push(sourceKey);
+      }
+    });
+
+    // Send telemetry for bulk action
+    if (this.isClient && sourcesChanged.length > 0) {
+      telemetry.primogemSourcesBulkToggled({
+        category: category,
+        action: "deselect_all",
+        sources_changed: sourcesChanged,
+        sources_count: sourcesChanged.length,
+      });
     }
   }
 

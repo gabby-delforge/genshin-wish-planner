@@ -14,9 +14,22 @@ const ConfigurationPanel = observer(() => {
     estimatedNewWishesPerBanner,
     primogemSources,
     setAccountStatusPrimogemSources,
+    selectAllPrimogemSources,
+    deselectAllPrimogemSources,
     shouldExcludeCurrentBannerEarnedWishes,
     setAccountStatusExcludeCurrentBannerPrimogemSources,
   } = useGenshinState();
+
+  const handleBulkPrimogemSourceChange = (
+    action: "select_all" | "deselect_all",
+    category: "free_to_play" | "premium"
+  ) => {
+    if (action === "select_all") {
+      selectAllPrimogemSources(category);
+    } else {
+      deselectAllPrimogemSources(category);
+    }
+  };
   return (
     <Panel title="Configuration" icon={<Cog className="w-h4 h-h4" />}>
       <div className="space-y-4 @container/config">
@@ -28,6 +41,7 @@ const ConfigurationPanel = observer(() => {
           estimatedNewWishesPerBanner={estimatedNewWishesPerBanner}
           primogemSources={primogemSources}
           handlePrimogemSourceChange={setAccountStatusPrimogemSources}
+          handleBulkPrimogemSourceChange={handleBulkPrimogemSourceChange}
           excludeCurrentBannerPrimogems={shouldExcludeCurrentBannerEarnedWishes}
           handleExcludeCurrentBannerPrimogemSourcesChange={
             setAccountStatusExcludeCurrentBannerPrimogemSources

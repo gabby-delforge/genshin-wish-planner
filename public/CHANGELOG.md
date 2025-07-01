@@ -4,6 +4,12 @@ All notable changes to the Genshin Wish Planner will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.2] - 2025-07-01
+
+### Fixed
+
+- Issue preventing select/deselect all primogem sources from working properly
+
 ## [0.5.1] - 2025-06-30
 
 ### Added
