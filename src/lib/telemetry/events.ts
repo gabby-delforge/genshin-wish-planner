@@ -5,6 +5,7 @@ import type {
   AccountFieldUpdatedProperties,
   ResourceUpdatedProperties,
   PrimogemSourceToggledProperties,
+  PrimogemSourcesBulkToggledProperties,
   WishAllocationChangedProperties,
   ConstellationTargetChangedProperties,
   WeaponRefinementChangedProperties,
@@ -39,6 +40,10 @@ export const telemetry = {
 
   primogemSourceToggled: async (properties: PrimogemSourceToggledProperties): Promise<void> => {
     await trackEvent("primogem_source_toggled", properties);
+  },
+
+  primogemSourcesBulkToggled: async (properties: PrimogemSourcesBulkToggledProperties): Promise<void> => {
+    await trackEvent("primogem_sources_bulk_toggled", properties);
   },
 
   // Banner Configuration

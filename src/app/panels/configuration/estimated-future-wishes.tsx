@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CheckboxWithLabel } from "@/components/ui/checkbox-with-label";
 import { InfoIcon } from "@/components/ui/info-icon";
 import { Label } from "@/components/ui/label";
-import { PRIMOGEM_SOURCE_VALUES } from "@/lib/data";
+import { PRIMOGEM_SOURCE_CATEGORIES, PRIMOGEM_SOURCE_VALUES } from "@/lib/data";
 import {
   PrimogemSourceKey,
   PrimogemSourcesEnabled,
@@ -42,30 +42,6 @@ const getLimitedWishValue = (sourceValue: PrimogemSourceValue): number => {
   return 0;
 };
 
-// Define source categories for UI organization
-const PRIMOGEM_SOURCE_CATEGORIES = {
-  freeToPlay: [
-    "gameUpdateCompensation",
-    "dailyCommissions",
-    "paimonBargain",
-    "abyss",
-    "stygianOnslaught",
-    "imaginarium",
-    "archonQuest",
-    "storyQuests",
-    "newAchievements",
-    "characterTestRuns",
-    "eventActivities",
-    "hoyolabDailyCheckIn",
-    "hoyolabWebEvents",
-    "livestreamCodes",
-    "newVersionCode",
-    "limitedExplorationRewards",
-    "battlePass",
-  ] as PrimogemSourceKey[],
-  paid: ["battlePassGnostic", "welkinMoon"] as PrimogemSourceKey[],
-};
-
 // Source display names for UI
 const SOURCE_DISPLAY_NAMES: Record<PrimogemSourceKey, string> = {
   gameUpdateCompensation: "Game Update Compensation",
@@ -96,6 +72,10 @@ type EstimatedFutureWishesProps = {
     source: PrimogemSourceKey,
     checked: boolean
   ) => void;
+  handleBulkPrimogemSourceChange: (
+    action: "select_all" | "deselect_all",
+    category: "free_to_play" | "premium"
+  ) => void;
   excludeCurrentBannerPrimogems: boolean;
 
   handleExcludeCurrentBannerPrimogemSourcesChange: (checked: boolean) => void;
@@ -106,6 +86,7 @@ export const EstimatedFutureWishes = observer(
     estimatedNewWishesPerBanner,
     primogemSources,
     handlePrimogemSourceChange,
+    handleBulkPrimogemSourceChange,
   }: EstimatedFutureWishesProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerWidth, setContainerWidth] = useState<number>();
@@ -173,32 +154,20 @@ export const EstimatedFutureWishes = observer(
         (sourceKey) => primogemSources[sourceKey]
       );
 
-    // Helper functions for toggle select/deselect all
+    // Helper functions for toggle select/deselect all using GenshinState batch functions
     const handleToggleFreeToPlay = () => {
       if (areAllFreeToPlaySelected) {
-        // Deselect all available sources
-        availableFreeToPlaySources.forEach((sourceKey) => {
-          handlePrimogemSourceChange(sourceKey, false);
-        });
+        handleBulkPrimogemSourceChange("deselect_all", "free_to_play");
       } else {
-        // Select all available sources
-        availableFreeToPlaySources.forEach((sourceKey) => {
-          handlePrimogemSourceChange(sourceKey, true);
-        });
+        handleBulkPrimogemSourceChange("select_all", "free_to_play");
       }
     };
 
     const handleTogglePremium = () => {
       if (areAllPremiumSelected) {
-        // Deselect all
-        PRIMOGEM_SOURCE_CATEGORIES.paid.forEach((sourceKey) => {
-          handlePrimogemSourceChange(sourceKey, false);
-        });
+        handleBulkPrimogemSourceChange("deselect_all", "premium");
       } else {
-        // Select all
-        PRIMOGEM_SOURCE_CATEGORIES.paid.forEach((sourceKey) => {
-          handlePrimogemSourceChange(sourceKey, true);
-        });
+        handleBulkPrimogemSourceChange("select_all", "premium");
       }
     };
 
@@ -323,15 +292,15 @@ export const EstimatedFutureWishes = observer(
             {estimatedNewWishesPerBanner[0] ===
             estimatedNewWishesPerBanner[1] ? (
               <>
-                <LimitedWish number={estimatedNewWishesPerBanner[0]} /> gained
-                each version
+                <LimitedWish number={estimatedNewWishesPerBanner[0]} />{" "}
+                <span>gained each version</span>
               </>
             ) : (
               <>
                 <LimitedWish number={estimatedNewWishesPerBanner[0]} />
                 -
                 <LimitedWish number={estimatedNewWishesPerBanner[1]} />
-                gained each version
+                <span>gained each version</span>
                 <InfoIcon
                   content={
                     <div className="flex flex-col gap-2">

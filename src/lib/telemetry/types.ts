@@ -37,6 +37,13 @@ export interface PrimogemSourceToggledProperties {
   enabled: boolean;
 }
 
+export interface PrimogemSourcesBulkToggledProperties {
+  category: "free_to_play" | "premium" | "all";
+  action: "select_all" | "deselect_all";
+  sources_changed: string[];
+  sources_count: number;
+}
+
 export interface WishAllocationChangedProperties {
   banner_id: string;
   target_type: "character" | "weapon";

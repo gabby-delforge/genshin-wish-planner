@@ -5,6 +5,7 @@ import Weapons from "../../public/metadata/weapons.json";
 import {
   ApiWeapon,
   CharacterId,
+  PrimogemSourceKey,
   PrimogemSourceValues,
   type ApiBanner,
   type ApiCharacter,
@@ -76,4 +77,27 @@ export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   livestreamCodes: { value: 300, type: "primogem" },
   newVersionCode: { value: 60, type: "primogem" },
   limitedExplorationRewards: { value: 400, type: "primogem" },
+};
+
+export const PRIMOGEM_SOURCE_CATEGORIES = {
+  freeToPlay: [
+    "gameUpdateCompensation",
+    "dailyCommissions",
+    "paimonBargain",
+    "abyss",
+    "stygianOnslaught",
+    "imaginarium",
+    "archonQuest",
+    "storyQuests",
+    "newAchievements",
+    "characterTestRuns",
+    "eventActivities",
+    "hoyolabDailyCheckIn",
+    "hoyolabWebEvents",
+    "livestreamCodes",
+    "newVersionCode",
+    "limitedExplorationRewards",
+    "battlePass",
+  ] as PrimogemSourceKey[],
+  paid: ["battlePassGnostic", "welkinMoon"] as PrimogemSourceKey[],
 };
