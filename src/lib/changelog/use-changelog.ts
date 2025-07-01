@@ -24,18 +24,21 @@ export function useChangelog() {
         
         if (hasNewChangelogs()) {
           const newEntries = await getNewChangelogs();
-          setChangelogEntries(newEntries);
-          setShowChangelog(true);
-          
-          // Track changelog opened automatically
-          changelogOpenTime.current = Date.now();
-          telemetry.changelogOpened({
-            changelog_entries_count: newEntries.length,
-            is_automatic_open: true,
-          });
+          // Only show modal if there are actually new entries to display
+          if (newEntries.length > 0) {
+            setChangelogEntries(newEntries);
+            setShowChangelog(true);
+            
+            // Track changelog opened automatically
+            changelogOpenTime.current = Date.now();
+            telemetry.changelogOpened({
+              changelog_entries_count: newEntries.length,
+              is_automatic_open: true,
+            });
+          }
         }
-      } catch (error) {
-        console.warn("Failed to check changelog:", error);
+      } catch {
+        // Silently fail changelog check to avoid interrupting app startup
       } finally {
         setIsLoading(false);
       }

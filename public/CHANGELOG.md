@@ -4,6 +4,12 @@ All notable changes to the Genshin Wish Planner will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.3] - 2025-07-1
+
+### Fixed
+
+- Only show changelog when there are new changes
+
 ## [0.5.2] - 2025-07-01
 
 ### Fixed
