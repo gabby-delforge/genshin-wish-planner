@@ -93,7 +93,7 @@ export const BannerHeader = observer(
             <p className=" text-white/80 uppercase font-bold text-xs">
               {displayStartDate} - {displayEndDate}
             </p>
-            {"isSpeculated" in bannerData && bannerData.isSpeculated ? (
+            {bannerData.status === "leaked" ? (
               <div className="ml-2 italic text-xs rounded-xl px-2 py-0.5 bg-white/20 border-1 border-white">
                 Not yet confirmed
               </div>

@@ -1,5 +1,25 @@
 [
   {
+    "Id": "aino",
+    "IconSrc": "/images/characters/aino_icon.png",
+    "Name": "Aino",
+    "Quality": 5,
+    "Element": "Anemo",
+    "Weapon": "Sword",
+    "Region": "Snezhnaya",
+    "ModelType": "Short Female"
+  },
+  {
+    "Id": "alice",
+    "IconSrc": "/images/characters/alice_icon.png",
+    "Name": "Alice",
+    "Quality": 5,
+    "Element": "Pyro",
+    "Weapon": "?",
+    "Region": "Mondstadt",
+    "ModelType": "?"
+  },
+  {
     "Id": "albedo",
     "IconSrc": "/images/characters/albedo_icon.png",
     "Name": "Albedo",
@@ -190,6 +210,16 @@
     "ModelType": "Medium Female"
   },
   {
+    "Id": "columbina",
+    "IconSrc": "/images/characters/columbina_icon.png",
+    "Name": "Columbina",
+    "Quality": 5,
+    "Element": "Hydro",
+    "Weapon": "?",
+    "Region": "Snezhnaya",
+    "ModelType": "?"
+  },
+  {
     "Id": "cyno",
     "IconSrc": "/images/characters/cyno_icon.png",
     "Name": "Cyno",
@@ -218,6 +248,16 @@
     "Weapon": "Claymore",
     "Region": "Mondstadt",
     "ModelType": "Tall Male"
+  },
+  {
+    "Id": "durin",
+    "IconSrc": "/images/characters/durin_icon.png",
+    "Name": "Durin",
+    "Quality": 5,
+    "Element": "Pyro",
+    "Weapon": "?",
+    "Region": "Mondstadt",
+    "ModelType": "?"
   },
   {
     "Id": "diona",
@@ -288,6 +328,16 @@
     "Weapon": "Bow",
     "Region": "Mondstadt",
     "ModelType": "Medium Female"
+  },
+  {
+    "Id": "frostmoon-scion-female",
+    "IconSrc": "/images/characters/frostmoon_scion_female_icon.png",
+    "Name": "Frostmoon Scion Female",
+    "Quality": 5,
+    "Element": "Geo",
+    "Weapon": "?",
+    "Region": "Nod-Krai",
+    "ModelType": "?"
   },
   {
     "Id": "freminet",
@@ -510,6 +560,16 @@
     "ModelType": "Medium Female"
   },
   {
+    "Id": "lauma",
+    "IconSrc": "/images/characters/lauma_icon.png",
+    "Name": "Lauma",
+    "Quality": 5,
+    "Element": "Dendro",
+    "Weapon": "Catalyst",
+    "Region": "Snezhnaya",
+    "ModelType": "Tall Female"
+  },
+  {
     "Id": "lan-yan",
     "IconSrc": "/images/characters/lan_yan_icon.png",
     "Name": "Lan Yan",
@@ -520,6 +580,16 @@
     "ModelType": "Medium Female"
   },
   {
+    "Id": "lady-boss",
+    "IconSrc": "/images/characters/lady_boss_icon.png",
+    "Name": "Lady Boss",
+    "Quality": 5,
+    "Element": "Pyro",
+    "Weapon": "Bow",
+    "Region": "Nod-Krai",
+    "ModelType": "?"
+  },
+  {
     "Id": "layla",
     "IconSrc": "/images/characters/layla_icon.png",
     "Name": "Layla",
@@ -528,6 +598,16 @@
     "Weapon": "Sword",
     "Region": "Sumeru",
     "ModelType": "Medium Female"
+  },
+  {
+    "Id": "lightkeeper-male",
+    "IconSrc": "/images/characters/lightkeeper_male_icon.png",
+    "Name": "Lightkeeper Male",
+    "Quality": 5,
+    "Element": "Electro",
+    "Weapon": "?",
+    "Region": "Nod-Krai",
+    "ModelType": "Tall Male"
   },
   {
     "Id": "lisa",
@@ -628,6 +708,66 @@
     "Weapon": "Catalyst",
     "Region": "Fontaine",
     "ModelType": "Tall Male"
+  },
+  {
+    "Id": "mona",
+    "IconSrc": "/images/characters/mona_icon.png",
+    "Name": "Mona",
+    "Quality": 5,
+    "Element": "Hydro",
+    "Weapon": "Catalyst",
+    "Region": "Mondstadt",
+    "ModelType": "Medium Female"
+  },
+  {
+    "Id": "mualani",
+    "IconSrc": "/images/characters/mualani_icon.png",
+    "Name": "Mualani",
+    "Quality": 5,
+    "Element": "Hydro",
+    "Weapon": "Catalyst",
+    "Region": "Natlan",
+    "ModelType": "Medium Female"
+  },
+  {
+    "Id": "nahida",
+    "IconSrc": "/images/characters/nahida_icon.png",
+    "Name": "Nahida",
+    "Quality": 5,
+    "Element": "Dendro",
+    "Weapon": "Catalyst",
+    "Region": "Sumeru",
+    "ModelType": "Short Female"
+  },
+  {
+    "Id": "navia",
+    "IconSrc": "/images/characters/navia_icon.png",
+    "Name": "Navia",
+    "Quality": 5,
+    "Element": "Geo",
+    "Weapon": "Claymore",
+    "Region": "Fontaine",
+    "ModelType": "Tall Female"
+  },
+  {
+    "Id": "neuvillette",
+    "IconSrc": "/images/characters/neuvillette_icon.png",
+    "Name": "Neuvillette",
+    "Quality": 5,
+    "Element": "Hydro",
+    "Weapon": "Catalyst",
+    "Region": "Fontaine",
+    "ModelType": "Tall Male"
+  },
+  {
+    "Id": "nicole",
+    "IconSrc": "/images/characters/nicole_icon.png",
+    "Name": "Nicole",
+    "Quality": 5,
+    "Element": "Cryo",
+    "Weapon": "?",
+    "Region": "?",
+    "ModelType": "?"
   },
   {
     "Id": "nilou",
@@ -841,6 +981,16 @@
     "ModelType": "Medium Female"
   },
   {
+    "Id": "varka",
+    "IconSrc": "/images/characters/varka_icon.png",
+    "Name": "Varka",
+    "Quality": 5,
+    "Element": "Anemo",
+    "Weapon": "Claymore",
+    "Region": "Mondstadt",
+    "ModelType": "Tall Male"
+  },
+  {
     "Id": "venti",
     "IconSrc": "/images/characters/venti_icon.png",
     "Name": "Venti",
@@ -859,6 +1009,16 @@
     "Weapon": "Catalyst",
     "Region": "Sumeru",
     "ModelType": "Medium Male"
+  },
+  {
+    "Id": "white-horse-fairy",
+    "IconSrc": "/images/characters/white_horse_fairy_icon.png",
+    "Name": "White Horse Fairy",
+    "Quality": 5,
+    "Element": "Anemo",
+    "Weapon": "?",
+    "Region": "?",
+    "ModelType": "?"
   },
   {
     "Id": "wriothesley",

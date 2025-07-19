@@ -29,7 +29,10 @@ const WeaponIcon: React.FC<WeaponIconProps> = observer(
       const weapon = API_WEAPONS[id];
       if (!weapon) {
         console.warn(`Couldn't load weapon data for ${id}`);
-        return null;
+        return {
+          name: id || "Unknown Weapon", // Fallback to id or generic name
+          iconSrc: UNKNOWN_WEAPON_IMG, // Use placeholder image
+        };
       }
       return {
         name: weapon.Name || id, // Fallback to id if no name

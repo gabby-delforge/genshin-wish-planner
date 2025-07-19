@@ -6,7 +6,9 @@
     "startDate": "2025-05-27T00:00:00-05:00",
     "endDate": "2025-06-17T00:00:00-05:00",
     "characters": ["kinich", "raiden-shogun"],
-    "weapons": ["fang-of-the-mountain-king", "engulfing-lightning"]
+    "weapons": ["fang-of-the-mountain-king", "engulfing-lightning"],
+    "visibility": "visible",
+    "status": "confirmed"
   },
   {
     "id": "5.7v1",
@@ -15,7 +17,9 @@
     "startDate": "2025-06-17T00:00:00-05:00",
     "endDate": "2025-07-08T00:00:00-05:00",
     "characters": ["skirk", "shenhe"],
-    "weapons": ["azurelight", "calamity-queller"]
+    "weapons": ["azurelight", "calamity-queller"],
+    "visibility": "visible",
+    "status": "confirmed"
   },
   {
     "id": "5.7v2",
@@ -24,26 +28,228 @@
     "startDate": "2025-07-08T00:00:00-05:00",
     "endDate": "2025-07-29T00:00:00-05:00",
     "characters": ["mavuika", "emilie"],
-    "weapons": ["a-thousand-blazing-suns", "lumidouce-elegy"]
+    "weapons": ["a-thousand-blazing-suns", "lumidouce-elegy"],
+    "visibility": "visible",
+    "status": "confirmed"
   },
   {
     "id": "5.8v1",
     "version": "5.8v1",
     "name": "5.8 Phase 1",
-    "startDate": "2025-07-08T00:00:00-05:00",
-    "endDate": "2025-07-29T00:00:00-05:00",
-    "characters": ["ineffa", "mualani"],
-    "weapons": ["fractured-halo", "surfs-up"],
-    "isSpeculated": true
+    "startDate": "2025-07-30T00:00:00-05:00",
+    "endDate": "2025-08-19T00:00:00-05:00",
+    "characters": ["ineffa", "citlali"],
+    "weapons": ["fractured-halo", "starcallers-watch"],
+    "visibility": "visible",
+    "status": "confirmed"
   },
   {
     "id": "5.8v2",
     "version": "5.8v2",
     "name": "5.8 Phase 2",
-    "startDate": "2025-07-08T00:00:00-05:00",
-    "endDate": "2025-07-29T00:00:00-05:00",
-    "characters": ["chasca", "citlali"],
-    "weapons": ["astral-vultures-crimson-plumage", "starcallers-watch"],
-    "isSpeculated": true
+    "startDate": "2025-08-19T00:00:00-05:00",
+    "endDate": "2025-09-09T00:00:00-05:00",
+    "characters": ["chasca", "mualani"],
+    "weapons": ["astral-vultures-crimson-plumage", "surfs-up"],
+    "visibility": "visible",
+    "status": "confirmed"
+  },
+  {
+    "id": "6.0v1",
+    "version": "6.0v1",
+    "name": "6.0 Phase 1",
+    "startDate": "2025-09-10T00:00:00-05:00",
+    "endDate": "2025-10-01T00:00:00-05:00",
+    "characters": ["lauma", "aino"],
+    "weapons": ["?", "?"],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.0v2",
+    "version": "6.0v2",
+    "name": "6.0 Phase 2",
+    "startDate": "2025-10-01T00:00:00-05:00",
+    "endDate": "2025-10-22T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.1v1",
+    "version": "6.1v1",
+    "name": "6.1 Phase 1",
+    "startDate": "2025-10-22T00:00:00-05:00",
+    "endDate": "2025-11-12T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.1v2",
+    "version": "6.1v2",
+    "name": "6.1 Phase 2",
+    "startDate": "2025-11-12T00:00:00-05:00",
+    "endDate": "2025-12-03T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.2v1",
+    "version": "6.2v1",
+    "name": "6.2 Phase 1",
+    "startDate": "2025-12-03T00:00:00-05:00",
+    "endDate": "2025-12-24T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.2v2",
+    "version": "6.2v2",
+    "name": "6.2 Phase 2",
+    "startDate": "2025-12-24T00:00:00-05:00",
+    "endDate": "2026-01-14T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.3v1",
+    "version": "6.3v1",
+    "name": "6.3 Phase 1",
+    "startDate": "2026-01-14T00:00:00-05:00",
+    "endDate": "2026-02-04T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.3v2",
+    "version": "6.3v2",
+    "name": "6.3 Phase 2",
+    "startDate": "2026-02-04T00:00:00-05:00",
+    "endDate": "2026-02-25T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.4v1",
+    "version": "6.4v1",
+    "name": "6.4 Phase 1",
+    "startDate": "2026-02-25T00:00:00-05:00",
+    "endDate": "2026-03-18T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.4v2",
+    "version": "6.4v2",
+    "name": "6.4 Phase 2",
+    "startDate": "2026-03-18T00:00:00-05:00",
+    "endDate": "2026-04-08T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.5v1",
+    "version": "6.5v1",
+    "name": "6.5 Phase 1",
+    "startDate": "2026-04-08T00:00:00-05:00",
+    "endDate": "2026-04-29T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.5v2",
+    "version": "6.5v2",
+    "name": "6.5 Phase 2",
+    "startDate": "2026-04-29T00:00:00-05:00",
+    "endDate": "2026-05-20T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.6v1",
+    "version": "6.6v1",
+    "name": "6.6 Phase 1",
+    "startDate": "2026-05-20T00:00:00-05:00",
+    "endDate": "2026-06-10T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.6v2",
+    "version": "6.6v2",
+    "name": "6.6 Phase 2",
+    "startDate": "2026-06-10T00:00:00-05:00",
+    "endDate": "2026-07-01T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.7v1",
+    "version": "6.7v1",
+    "name": "6.7 Phase 1",
+    "startDate": "2026-07-01T00:00:00-05:00",
+    "endDate": "2026-07-22T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.7v2",
+    "version": "6.7v2",
+    "name": "6.7 Phase 2",
+    "startDate": "2026-07-22T00:00:00-05:00",
+    "endDate": "2026-08-12T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.8v1",
+    "version": "6.8v1",
+    "name": "6.8 Phase 1",
+    "startDate": "2026-08-12T00:00:00-05:00",
+    "endDate": "2026-09-02T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
+  },
+  {
+    "id": "6.8v2",
+    "version": "6.8v2",
+    "name": "6.8 Phase 2",
+    "startDate": "2026-09-02T00:00:00-05:00",
+    "endDate": "2026-09-23T00:00:00-05:00",
+    "characters": [],
+    "weapons": [],
+    "visibility": "hidden",
+    "status": "leaked"
   }
 ]

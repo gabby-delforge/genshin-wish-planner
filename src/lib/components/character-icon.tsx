@@ -30,7 +30,11 @@ const CharacterIcon: React.FC<CharacterIconProps> = observer(
       const char = API_CHARACTERS[id];
       if (!char) {
         console.warn(`Couldn't load character data for ${id}`);
-        return null;
+        return {
+          name: id || "Unknown Character", // Fallback to id or generic name
+          iconSrc: UNKNOWN_CHAR_IMG, // Use placeholder image
+          backgroundColor: "bg-void-2", // Default background color
+        };
       }
       return {
         name: char.Name,

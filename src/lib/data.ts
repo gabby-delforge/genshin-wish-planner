@@ -43,8 +43,10 @@ export const API_BANNERS: Record<string, ApiBanner> = Banners.reduce(
 // Helper function to convert API data to application state
 // -------------------------------------------------------
 
-// Initial banners with application state for new users
-export const initialBanners: ApiBanner[] = Object.values(API_BANNERS);
+// Initial banners with application state for new users (only visible banners)
+export const initialBanners: ApiBanner[] = Object.values(API_BANNERS).filter(
+  (banner) => banner.visibility === "visible"
+);
 
 export const PRIMOGEM_SOURCE_VALUES: PrimogemSourceValues = {
   gameUpdateCompensation: { value: 600, type: "primogem" },

@@ -4,6 +4,16 @@ All notable changes to the Genshin Wish Planner will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.4] - 2025-07-19
+
+### Content
+
+- Added Lauma and Aino
+
+### Fixed
+
+- Start and end dates for 5.8 banners
+
 ## [0.5.3] - 2025-07-1
 
 ### Fixed
