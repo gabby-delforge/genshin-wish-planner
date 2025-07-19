@@ -1,6 +1,6 @@
-import Banners from "../../public/metadata/banners.json";
-import Characters from "../../public/metadata/characters.json";
-import Weapons from "../../public/metadata/weapons.json";
+import { banners } from "./data/banners";
+import { characters } from "./data/characters";
+import { weapons } from "./data/weapons";
 
 import {
   ApiWeapon,
@@ -11,19 +11,19 @@ import {
   type ApiCharacter,
 } from "./types";
 
-export const GENSHIN_CHARACTERS = Characters.map((c) => c.Id);
-export const GENSHIN_WEAPONS = Weapons.map((c) => c.Id);
+export const GENSHIN_CHARACTERS = characters.map((c) => c.Id);
+export const GENSHIN_WEAPONS = weapons.map((c) => c.Id);
 // API Data (simulating data that would come from an external API)
 // --------------------------------------------------------------
 
 // API Character data
 export const API_CHARACTERS: Record<CharacterId, ApiCharacter> =
-  Characters.reduce((prev, curr) => {
+  characters.reduce((prev, curr) => {
     prev[curr.Id] = curr;
     return prev; //
   }, {} as Record<CharacterId, ApiCharacter>);
 
-export const API_WEAPONS: Record<string, ApiWeapon> = Weapons.reduce(
+export const API_WEAPONS: Record<string, ApiWeapon> = weapons.reduce(
   (prev, curr) => {
     prev[curr.Id] = curr;
     return prev;
@@ -32,7 +32,7 @@ export const API_WEAPONS: Record<string, ApiWeapon> = Weapons.reduce(
 );
 
 // API Banner data
-export const API_BANNERS: Record<string, ApiBanner> = Banners.reduce(
+export const API_BANNERS: Record<string, ApiBanner> = banners.reduce(
   (prev, curr) => {
     prev[curr.id] = curr;
     return prev;
@@ -44,7 +44,7 @@ export const API_BANNERS: Record<string, ApiBanner> = Banners.reduce(
 // -------------------------------------------------------
 
 // Initial banners with application state for new users (only visible banners)
-export const initialBanners: ApiBanner[] = Object.values(API_BANNERS).filter(
+export const initialBanners: ApiBanner[] = banners.filter(
   (banner) => banner.visibility === "visible"
 );
 

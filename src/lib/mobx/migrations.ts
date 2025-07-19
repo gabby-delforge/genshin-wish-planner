@@ -4,7 +4,7 @@
  * Handles migration between different state schema versions.
  */
 
-import bannersData from "../../../public/metadata/banners.json";
+import { banners as bannersData } from "../data/banners";
 import { BannerId } from "../types";
 import * as StateTypes from "./snapshots";
 import { VersionedState } from "./snapshots";

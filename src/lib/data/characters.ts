@@ -1,47 +1,28 @@
-[
-  {
-    "Id": "aino",
-    "IconSrc": "/images/characters/aino_icon.png",
-    "Name": "Aino",
-    "Quality": 5,
-    "Element": "Anemo",
-    "Weapon": "Sword",
-    "Region": "Snezhnaya",
-    "ModelType": "Short Female"
-  },
-  {
-    "Id": "alice",
-    "IconSrc": "/images/characters/alice_icon.png",
-    "Name": "Alice",
-    "Quality": 5,
-    "Element": "Pyro",
-    "Weapon": "?",
-    "Region": "Mondstadt",
-    "ModelType": "?"
-  },
+import type { ApiCharacter } from "../types";
+
+export const characters: ApiCharacter[] = [
   {
     "Id": "albedo",
-    "IconSrc": "/images/characters/albedo_icon.png",
     "Name": "Albedo",
     "Quality": 5,
     "Element": "Geo",
     "Weapon": "Sword",
     "Region": "Mondstadt",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "cinnabar-spindle"
   },
   {
     "Id": "alhaitham",
-    "IconSrc": "/images/characters/alhaitham_icon.png",
     "Name": "Alhaitham",
     "Quality": 5,
     "Element": "Dendro",
     "Weapon": "Sword",
     "Region": "Sumeru",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "light-of-foliar-incision"
   },
   {
     "Id": "aloy",
-    "IconSrc": "/images/characters/aloy_icon.png",
     "Name": "Aloy",
     "Quality": 5,
     "Element": "Cryo",
@@ -51,1133 +32,980 @@
   },
   {
     "Id": "amber",
-    "IconSrc": "/images/characters/amber_icon.png",
     "Name": "Amber",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Bow",
     "Region": "Mondstadt",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "favonius-warbow"
   },
   {
     "Id": "arataki-itto",
-    "IconSrc": "/images/characters/arataki_itto_icon.png",
     "Name": "Arataki Itto",
     "Quality": 5,
     "Element": "Geo",
     "Weapon": "Claymore",
     "Region": "Inazuma",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "redhorn-stonethresher"
   },
   {
     "Id": "arlecchino",
-    "IconSrc": "/images/characters/arlecchino_icon.png",
     "Name": "Arlecchino",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Polearm",
     "Region": "Snezhnaya",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "crimson-moons-semblance"
   },
   {
     "Id": "baizhu",
-    "IconSrc": "/images/characters/baizhu_icon.png",
     "Name": "Baizhu",
     "Quality": 5,
     "Element": "Dendro",
     "Weapon": "Catalyst",
     "Region": "Liyue",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "jadefalls-splendor"
   },
   {
     "Id": "barbara",
-    "IconSrc": "/images/characters/barbara_icon.png",
     "Name": "Barbara",
     "Quality": 4,
     "Element": "Hydro",
     "Weapon": "Catalyst",
     "Region": "Mondstadt",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "ballad-of-the-boundless-blue"
   },
   {
     "Id": "beidou",
-    "IconSrc": "/images/characters/beidou_icon.png",
     "Name": "Beidou",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Claymore",
     "Region": "Liyue",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "serpent-spine"
   },
   {
     "Id": "bennett",
-    "IconSrc": "/images/characters/bennett_icon.png",
     "Name": "Bennett",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Sword",
     "Region": "Mondstadt",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "harbinger-of-dawn"
   },
   {
     "Id": "candace",
-    "IconSrc": "/images/characters/candace_icon.png",
     "Name": "Candace",
     "Quality": 4,
     "Element": "Hydro",
     "Weapon": "Polearm",
     "Region": "Sumeru",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "moonpiercer"
   },
   {
     "Id": "charlotte",
-    "IconSrc": "/images/characters/charlotte_icon.png",
     "Name": "Charlotte",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Catalyst",
     "Region": "Fontaine",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "flowing-purity"
   },
   {
     "Id": "chasca",
-    "IconSrc": "/images/characters/chasca_icon.png",
     "Name": "Chasca",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Bow",
     "Region": "Natlan",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "astral-vultures-crimson-plumage"
   },
   {
     "Id": "chevreuse",
-    "IconSrc": "/images/characters/chevreuse_icon.png",
     "Name": "Chevreuse",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Polearm",
     "Region": "Fontaine",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "rightful-reward"
   },
   {
     "Id": "chiori",
-    "IconSrc": "/images/characters/chiori_icon.png",
     "Name": "Chiori",
     "Quality": 5,
     "Element": "Geo",
     "Weapon": "Sword",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "uraku-misugiri"
   },
   {
     "Id": "chongyun",
-    "IconSrc": "/images/characters/chongyun_icon.png",
     "Name": "Chongyun",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Claymore",
     "Region": "Liyue",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "rainslasher"
   },
   {
     "Id": "citlali",
-    "IconSrc": "/images/characters/citlali_icon.png",
     "Name": "Citlali",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Catalyst",
     "Region": "Natlan",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "starcallers-watch"
   },
   {
     "Id": "clorinde",
-    "IconSrc": "/images/characters/clorinde_icon.png",
     "Name": "Clorinde",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Sword",
     "Region": "Fontaine",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "absolution"
   },
   {
     "Id": "collei",
-    "IconSrc": "/images/characters/collei_icon.png",
     "Name": "Collei",
     "Quality": 4,
     "Element": "Dendro",
     "Weapon": "Bow",
     "Region": "Sumeru",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "columbina",
-    "IconSrc": "/images/characters/columbina_icon.png",
-    "Name": "Columbina",
-    "Quality": 5,
-    "Element": "Hydro",
-    "Weapon": "?",
-    "Region": "Snezhnaya",
-    "ModelType": "?"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "viridescent-hunt"
   },
   {
     "Id": "cyno",
-    "IconSrc": "/images/characters/cyno_icon.png",
     "Name": "Cyno",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Polearm",
     "Region": "Sumeru",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "staff-of-the-scarlet-sands"
   },
   {
     "Id": "dehya",
-    "IconSrc": "/images/characters/dehya_icon.png",
     "Name": "Dehya",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Claymore",
     "Region": "Sumeru",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "beacon-of-the-reed-sea"
   },
   {
     "Id": "diluc",
-    "IconSrc": "/images/characters/diluc_icon.png",
     "Name": "Diluc",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Claymore",
     "Region": "Mondstadt",
-    "ModelType": "Tall Male"
-  },
-  {
-    "Id": "durin",
-    "IconSrc": "/images/characters/durin_icon.png",
-    "Name": "Durin",
-    "Quality": 5,
-    "Element": "Pyro",
-    "Weapon": "?",
-    "Region": "Mondstadt",
-    "ModelType": "?"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "favonius-greatsword"
   },
   {
     "Id": "diona",
-    "IconSrc": "/images/characters/diona_icon.png",
     "Name": "Diona",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Bow",
     "Region": "Mondstadt",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "windblume-ode"
   },
   {
     "Id": "dori",
-    "IconSrc": "/images/characters/dori_icon.png",
     "Name": "Dori",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Claymore",
     "Region": "Sumeru",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "makhaira-aquamarine"
   },
   {
     "Id": "emilie",
-    "IconSrc": "/images/characters/emilie_icon.png",
     "Name": "Emilie",
     "Quality": 5,
     "Element": "Dendro",
     "Weapon": "Polearm",
     "Region": "Fontaine",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "lumidouce-elegy"
   },
   {
     "Id": "escoffier",
-    "IconSrc": "/images/characters/escoffier_icon.png",
     "Name": "Escoffier",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Polearm",
     "Region": "Fontaine",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "symphonist-of-scents"
   },
   {
     "Id": "eula",
-    "IconSrc": "/images/characters/eula_icon.png",
     "Name": "Eula",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Claymore",
     "Region": "Mondstadt",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "song-of-broken-pines"
   },
   {
     "Id": "faruzan",
-    "IconSrc": "/images/characters/faruzan_icon.png",
     "Name": "Faruzan",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Bow",
     "Region": "Sumeru",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "end-of-the-line"
   },
   {
     "Id": "fischl",
-    "IconSrc": "/images/characters/fischl_icon.png",
     "Name": "Fischl",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Bow",
     "Region": "Mondstadt",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "frostmoon-scion-female",
-    "IconSrc": "/images/characters/frostmoon_scion_female_icon.png",
-    "Name": "Frostmoon Scion Female",
-    "Quality": 5,
-    "Element": "Geo",
-    "Weapon": "?",
-    "Region": "Nod-Krai",
-    "ModelType": "?"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "mitternachts-waltz"
   },
   {
     "Id": "freminet",
-    "IconSrc": "/images/characters/freminet_icon.png",
     "Name": "Freminet",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Claymore",
     "Region": "Fontaine",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "tidal-shadow"
   },
   {
     "Id": "furina",
-    "IconSrc": "/images/characters/furina_icon.png",
     "Name": "Furina",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Sword",
     "Region": "Fontaine",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "splendor-of-tranquil-waters"
   },
   {
     "Id": "gaming",
-    "IconSrc": "/images/characters/gaming_icon.png",
     "Name": "Gaming",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Claymore",
     "Region": "Liyue",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "blackcliff-slasher"
   },
   {
     "Id": "ganyu",
-    "IconSrc": "/images/characters/ganyu_icon.png",
     "Name": "Ganyu",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Bow",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "amos-bow"
   },
   {
     "Id": "gorou",
-    "IconSrc": "/images/characters/gorou_icon.png",
     "Name": "Gorou",
     "Quality": 4,
     "Element": "Geo",
     "Weapon": "Bow",
     "Region": "Inazuma",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "mouuns-moon"
   },
   {
     "Id": "hu-tao",
-    "IconSrc": "/images/characters/hu_tao_icon.png",
     "Name": "Hu Tao",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "staff-of-homa"
   },
   {
     "Id": "iansan",
-    "IconSrc": "/images/characters/iansan_icon.png",
     "Name": "Iansan",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Polearm",
     "Region": "Natlan",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "footprint-of-the-rainbow"
   },
   {
     "Id": "ifa",
-    "IconSrc": "/images/characters/ifa_icon.png",
     "Name": "Ifa",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Natlan",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "ring-of-yaxche"
   },
   {
     "Id": "ineffa",
-    "IconSrc": "/images/characters/ineffa_icon.png",
     "Name": "Ineffa",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Polearm",
     "Region": "Snezhnaya",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "fractured-halo"
   },
   {
     "Id": "jean",
-    "IconSrc": "/images/characters/jean_icon.png",
     "Name": "Jean",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Sword",
     "Region": "Mondstadt",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "aquila-favonia"
   },
   {
     "Id": "kachina",
-    "IconSrc": "/images/characters/kachina_icon.png",
     "Name": "Kachina",
     "Quality": 4,
     "Element": "Geo",
     "Weapon": "Polearm",
     "Region": "Natlan",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "mountain-bracing-bolt"
   },
   {
     "Id": "kaedehara-kazuha",
-    "IconSrc": "/images/characters/kaedehara_kazuha_icon.png",
     "Name": "Kaedehara Kazuha",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Sword",
     "Region": "Inazuma",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "freedom-sworn"
   },
   {
     "Id": "kaeya",
-    "IconSrc": "/images/characters/kaeya_icon.png",
     "Name": "Kaeya",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Sword",
     "Region": "Mondstadt",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "favonius-sword"
   },
   {
     "Id": "kamisato-ayaka",
-    "IconSrc": "/images/characters/kamisato_ayaka_icon.png",
     "Name": "Kamisato Ayaka",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Sword",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "mistsplitter-reforged"
   },
   {
     "Id": "kamisato-ayato",
-    "IconSrc": "/images/characters/kamisato_ayato_icon.png",
     "Name": "Kamisato Ayato",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Sword",
     "Region": "Inazuma",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "haran-geppaku-futsu"
   },
   {
     "Id": "kaveh",
-    "IconSrc": "/images/characters/kaveh_icon.png",
     "Name": "Kaveh",
     "Quality": 4,
     "Element": "Dendro",
     "Weapon": "Claymore",
     "Region": "Sumeru",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "forest-regalia"
   },
   {
     "Id": "keqing",
-    "IconSrc": "/images/characters/keqing_icon.png",
     "Name": "Keqing",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Sword",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "lions-roar"
   },
   {
     "Id": "kinich",
-    "IconSrc": "/images/characters/kinich_icon.png",
     "Name": "Kinich",
     "Quality": 5,
     "Element": "Dendro",
     "Weapon": "Claymore",
     "Region": "Natlan",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "fang-of-the-mountain-king"
   },
   {
     "Id": "kirara",
-    "IconSrc": "/images/characters/kirara_icon.png",
     "Name": "Kirara",
     "Quality": 4,
     "Element": "Dendro",
     "Weapon": "Sword",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "toukabou-shigure"
   },
   {
     "Id": "klee",
-    "IconSrc": "/images/characters/klee_icon.png",
     "Name": "Klee",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Catalyst",
     "Region": "Mondstadt",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "dodoco-tales"
   },
   {
     "Id": "kujou-sara",
-    "IconSrc": "/images/characters/kujou_sara_icon.png",
     "Name": "Kujou Sara",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Bow",
     "Region": "Inazuma",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "hamayumi"
   },
   {
     "Id": "kuki-shinobu",
-    "IconSrc": "/images/characters/kuki_shinobu_icon.png",
     "Name": "Kuki Shinobu",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Sword",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "lauma",
-    "IconSrc": "/images/characters/lauma_icon.png",
-    "Name": "Lauma",
-    "Quality": 5,
-    "Element": "Dendro",
-    "Weapon": "Catalyst",
-    "Region": "Snezhnaya",
-    "ModelType": "Tall Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "amenoma-kageuchi"
   },
   {
     "Id": "lan-yan",
-    "IconSrc": "/images/characters/lan_yan_icon.png",
     "Name": "Lan Yan",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "lady-boss",
-    "IconSrc": "/images/characters/lady_boss_icon.png",
-    "Name": "Lady Boss",
-    "Quality": 5,
-    "Element": "Pyro",
-    "Weapon": "Bow",
-    "Region": "Nod-Krai",
-    "ModelType": "?"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "sacrificial-jade"
   },
   {
     "Id": "layla",
-    "IconSrc": "/images/characters/layla_icon.png",
     "Name": "Layla",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Sword",
     "Region": "Sumeru",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "lightkeeper-male",
-    "IconSrc": "/images/characters/lightkeeper_male_icon.png",
-    "Name": "Lightkeeper Male",
-    "Quality": 5,
-    "Element": "Electro",
-    "Weapon": "?",
-    "Region": "Nod-Krai",
-    "ModelType": "Tall Male"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "xiphos-moonlight"
   },
   {
     "Id": "lisa",
-    "IconSrc": "/images/characters/lisa_icon.png",
     "Name": "Lisa",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Catalyst",
     "Region": "Mondstadt",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "favonius-codex"
   },
   {
     "Id": "lynette",
-    "IconSrc": "/images/characters/lynette_icon.png",
     "Name": "Lynette",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Sword",
     "Region": "Fontaine",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "finale-of-the-deep"
   },
   {
     "Id": "lyney",
-    "IconSrc": "/images/characters/lyney_icon.png",
     "Name": "Lyney",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Bow",
     "Region": "Fontaine",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "the-first-great-magic"
   },
   {
     "Id": "mavuika",
-    "IconSrc": "/images/characters/mavuika_icon.png",
     "Name": "Mavuika",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Claymore",
     "Region": "Natlan",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "a-thousand-blazing-suns"
   },
   {
     "Id": "mika",
-    "IconSrc": "/images/characters/mika_icon.png",
     "Name": "Mika",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Polearm",
     "Region": "Mondstadt",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "favonius-lance"
   },
   {
     "Id": "mona",
-    "IconSrc": "/images/characters/mona_icon.png",
     "Name": "Mona",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Catalyst",
     "Region": "Mondstadt",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "lost-prayer-to-the-sacred-winds"
   },
   {
     "Id": "mualani",
-    "IconSrc": "/images/characters/mualani_icon.png",
     "Name": "Mualani",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Catalyst",
     "Region": "Natlan",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "surfs-up"
   },
   {
     "Id": "nahida",
-    "IconSrc": "/images/characters/nahida_icon.png",
     "Name": "Nahida",
     "Quality": 5,
     "Element": "Dendro",
     "Weapon": "Catalyst",
     "Region": "Sumeru",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "a-thousand-floating-dreams"
   },
   {
     "Id": "navia",
-    "IconSrc": "/images/characters/navia_icon.png",
     "Name": "Navia",
     "Quality": 5,
     "Element": "Geo",
     "Weapon": "Claymore",
     "Region": "Fontaine",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "verdict"
   },
   {
     "Id": "neuvillette",
-    "IconSrc": "/images/characters/neuvillette_icon.png",
     "Name": "Neuvillette",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Catalyst",
     "Region": "Fontaine",
-    "ModelType": "Tall Male"
-  },
-  {
-    "Id": "mona",
-    "IconSrc": "/images/characters/mona_icon.png",
-    "Name": "Mona",
-    "Quality": 5,
-    "Element": "Hydro",
-    "Weapon": "Catalyst",
-    "Region": "Mondstadt",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "mualani",
-    "IconSrc": "/images/characters/mualani_icon.png",
-    "Name": "Mualani",
-    "Quality": 5,
-    "Element": "Hydro",
-    "Weapon": "Catalyst",
-    "Region": "Natlan",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "nahida",
-    "IconSrc": "/images/characters/nahida_icon.png",
-    "Name": "Nahida",
-    "Quality": 5,
-    "Element": "Dendro",
-    "Weapon": "Catalyst",
-    "Region": "Sumeru",
-    "ModelType": "Short Female"
-  },
-  {
-    "Id": "navia",
-    "IconSrc": "/images/characters/navia_icon.png",
-    "Name": "Navia",
-    "Quality": 5,
-    "Element": "Geo",
-    "Weapon": "Claymore",
-    "Region": "Fontaine",
-    "ModelType": "Tall Female"
-  },
-  {
-    "Id": "neuvillette",
-    "IconSrc": "/images/characters/neuvillette_icon.png",
-    "Name": "Neuvillette",
-    "Quality": 5,
-    "Element": "Hydro",
-    "Weapon": "Catalyst",
-    "Region": "Fontaine",
-    "ModelType": "Tall Male"
-  },
-  {
-    "Id": "nicole",
-    "IconSrc": "/images/characters/nicole_icon.png",
-    "Name": "Nicole",
-    "Quality": 5,
-    "Element": "Cryo",
-    "Weapon": "?",
-    "Region": "?",
-    "ModelType": "?"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "tome-of-the-eternal-flow"
   },
   {
     "Id": "nilou",
-    "IconSrc": "/images/characters/nilou_icon.png",
     "Name": "Nilou",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Sword",
     "Region": "Sumeru",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "key-of-khaj-nisut"
   },
   {
     "Id": "ningguang",
-    "IconSrc": "/images/characters/ningguang_icon.png",
     "Name": "Ningguang",
     "Quality": 4,
     "Element": "Geo",
     "Weapon": "Catalyst",
     "Region": "Liyue",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "memory-of-dust"
   },
   {
     "Id": "noelle",
-    "IconSrc": "/images/characters/noelle_icon.png",
     "Name": "Noelle",
     "Quality": 4,
     "Element": "Geo",
     "Weapon": "Claymore",
     "Region": "Mondstadt",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "mailed-flower"
   },
   {
     "Id": "ororon",
-    "IconSrc": "/images/characters/ororon_icon.png",
     "Name": "Ororon",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Bow",
     "Region": "Natlan",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "chain-breaker"
   },
   {
     "Id": "qiqi",
-    "IconSrc": "/images/characters/qiqi_icon.png",
     "Name": "Qiqi",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Sword",
     "Region": "Liyue",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "summit-shaper"
   },
   {
     "Id": "raiden-shogun",
-    "IconSrc": "/images/characters/raiden_shogun_icon.png",
     "Name": "Raiden Shogun",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Polearm",
     "Region": "Inazuma",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "engulfing-lightning"
   },
   {
     "Id": "razor",
-    "IconSrc": "/images/characters/razor_icon.png",
     "Name": "Razor",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Claymore",
     "Region": "Mondstadt",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "wolfs-gravestone"
   },
   {
     "Id": "rosaria",
-    "IconSrc": "/images/characters/rosaria_icon.png",
     "Name": "Rosaria",
     "Quality": 4,
     "Element": "Cryo",
     "Weapon": "Polearm",
     "Region": "Mondstadt",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "dragonspine-spear"
   },
   {
     "Id": "sangonomiya-kokomi",
-    "IconSrc": "/images/characters/sangonomiya_kokomi_icon.png",
     "Name": "Sangonomiya Kokomi",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Catalyst",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "everlasting-moonglow"
   },
   {
     "Id": "sayu",
-    "IconSrc": "/images/characters/sayu_icon.png",
     "Name": "Sayu",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Claymore",
     "Region": "Inazuma",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "katsuragikiri-nagamasa"
   },
   {
     "Id": "sethos",
-    "IconSrc": "/images/characters/sethos_icon.png",
     "Name": "Sethos",
     "Quality": 4,
     "Element": "Electro",
     "Weapon": "Bow",
     "Region": "Sumeru",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "scion-of-the-blazing-sun"
   },
   {
     "Id": "shenhe",
-    "IconSrc": "/images/characters/shenhe_icon.png",
     "Name": "Shenhe",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "calamity-queller"
   },
   {
     "Id": "shikanoin-heizou",
-    "IconSrc": "/images/characters/shikanoin_heizou_icon.png",
     "Name": "Shikanoin Heizou",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Inazuma",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "hakushin-ring"
   },
   {
     "Id": "sigewinne",
-    "IconSrc": "/images/characters/sigewinne_icon.png",
     "Name": "Sigewinne",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Bow",
     "Region": "Fontaine",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "silvershower-heartstrings"
   },
   {
     "Id": "skirk",
-    "IconSrc": "/images/characters/skirk_icon.png",
     "Name": "Skirk",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Sword",
     "Region": "Snezhnaya",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "azurelight"
   },
-
   {
     "Id": "sucrose",
-    "IconSrc": "/images/characters/sucrose_icon.png",
     "Name": "Sucrose",
     "Quality": 4,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Mondstadt",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "sacrificial-fragments"
   },
   {
     "Id": "tartaglia",
-    "IconSrc": "/images/characters/tartaglia_icon.png",
     "Name": "Tartaglia",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Bow",
     "Region": "Snezhnaya",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "polar-star"
   },
   {
     "Id": "thoma",
-    "IconSrc": "/images/characters/thoma_icon.png",
     "Name": "Thoma",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Polearm",
     "Region": "Inazuma",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "kitain-cross-spear"
   },
   {
     "Id": "tighnari",
-    "IconSrc": "/images/characters/tighnari_icon.png",
     "Name": "Tighnari",
     "Quality": 5,
     "Element": "Dendro",
     "Weapon": "Bow",
     "Region": "Sumeru",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "hunters-path"
   },
   {
     "Id": "traveler",
-    "IconSrc": "/images/characters/traveler_icon.png",
     "Name": "Traveler",
     "Quality": 5,
     "Element": "None",
     "Weapon": "Sword",
-    "Region": "None",
-    "ModelType": "Aether: Medium MaleLumine: Medium Female"
+    "Region": "None"
   },
   {
     "Id": "varesa",
-    "IconSrc": "/images/characters/varesa_icon.png",
     "Name": "Varesa",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Catalyst",
     "Region": "Natlan",
-    "ModelType": "Medium Female"
-  },
-  {
-    "Id": "varka",
-    "IconSrc": "/images/characters/varka_icon.png",
-    "Name": "Varka",
-    "Quality": 5,
-    "Element": "Anemo",
-    "Weapon": "Claymore",
-    "Region": "Mondstadt",
-    "ModelType": "Tall Male"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "vivid-notions"
   },
   {
     "Id": "venti",
-    "IconSrc": "/images/characters/venti_icon.png",
     "Name": "Venti",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Bow",
     "Region": "Mondstadt",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "skyward-harp"
   },
   {
     "Id": "wanderer",
-    "IconSrc": "/images/characters/wanderer_icon.png",
     "Name": "Wanderer",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Sumeru",
-    "ModelType": "Medium Male"
-  },
-  {
-    "Id": "white-horse-fairy",
-    "IconSrc": "/images/characters/white_horse_fairy_icon.png",
-    "Name": "White Horse Fairy",
-    "Quality": 5,
-    "Element": "Anemo",
-    "Weapon": "?",
-    "Region": "?",
-    "ModelType": "?"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "tulaytullahs-remembrance"
   },
   {
     "Id": "wriothesley",
-    "IconSrc": "/images/characters/wriothesley_icon.png",
     "Name": "Wriothesley",
     "Quality": 5,
     "Element": "Cryo",
     "Weapon": "Catalyst",
     "Region": "Fontaine",
-    "ModelType": "Tall Male"
+    "ModelType": "Tall Male",
+    "signatureWeapon": "cashflow-supervision"
   },
   {
     "Id": "xiangling",
-    "IconSrc": "/images/characters/xiangling_icon.png",
     "Name": "Xiangling",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "blackcliff-pole"
   },
   {
     "Id": "xianyun",
-    "IconSrc": "/images/characters/xianyun_icon.png",
     "Name": "Xianyun",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Liyue",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "cranes-echoing-call"
   },
   {
     "Id": "xiao",
-    "IconSrc": "/images/characters/xiao_icon.png",
     "Name": "Xiao",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "primordial-jade-winged-spear"
   },
   {
     "Id": "xilonen",
-    "IconSrc": "/images/characters/xilonen_icon.png",
     "Name": "Xilonen",
     "Quality": 5,
     "Element": "Geo",
     "Weapon": "Sword",
     "Region": "Natlan",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "peak-patrol-song"
   },
   {
     "Id": "xingqiu",
-    "IconSrc": "/images/characters/xingqiu_icon.png",
     "Name": "Xingqiu",
     "Quality": 4,
     "Element": "Hydro",
     "Weapon": "Sword",
     "Region": "Liyue",
-    "ModelType": "Medium Male"
+    "ModelType": "Medium Male",
+    "signatureWeapon": "iron-sting"
   },
   {
     "Id": "xinyan",
-    "IconSrc": "/images/characters/xinyan_icon.png",
     "Name": "Xinyan",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Claymore",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "the-unforged"
   },
   {
     "Id": "yae-miko",
-    "IconSrc": "/images/characters/yae_miko_icon.png",
     "Name": "Yae Miko",
     "Quality": 5,
     "Element": "Electro",
     "Weapon": "Catalyst",
     "Region": "Inazuma",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "kaguras-verity"
   },
   {
     "Id": "yanfei",
-    "IconSrc": "/images/characters/yanfei_icon.png",
     "Name": "Yanfei",
     "Quality": 4,
     "Element": "Pyro",
     "Weapon": "Catalyst",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "eye-of-perception"
   },
   {
     "Id": "yaoyao",
-    "IconSrc": "/images/characters/yaoyao_icon.png",
     "Name": "Yaoyao",
     "Quality": 4,
     "Element": "Dendro",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Short Female"
+    "ModelType": "Short Female",
+    "signatureWeapon": "dragons-bane"
   },
   {
     "Id": "yelan",
-    "IconSrc": "/images/characters/yelan_icon.png",
     "Name": "Yelan",
     "Quality": 5,
     "Element": "Hydro",
     "Weapon": "Bow",
     "Region": "Liyue",
-    "ModelType": "Tall Female"
+    "ModelType": "Tall Female",
+    "signatureWeapon": "aqua-simulacra"
   },
   {
     "Id": "yoimiya",
-    "IconSrc": "/images/characters/yoimiya_icon.png",
     "Name": "Yoimiya",
     "Quality": 5,
     "Element": "Pyro",
     "Weapon": "Bow",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "thundering-pulse"
   },
   {
     "Id": "yumemizuki-mizuki",
-    "IconSrc": "/images/characters/yumemizuki_mizuki_icon.png",
     "Name": "Yumemizuki Mizuki",
     "Quality": 5,
     "Element": "Anemo",
     "Weapon": "Catalyst",
     "Region": "Inazuma",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "sunny-morning-sleep-in"
   },
   {
     "Id": "yun-jin",
-    "IconSrc": "/images/characters/yun_jin_icon.png",
     "Name": "Yun Jin",
     "Quality": 4,
     "Element": "Geo",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Medium Female"
+    "ModelType": "Medium Female",
+    "signatureWeapon": "crescent-pike"
   },
   {
     "Id": "zhongli",
-    "IconSrc": "/images/characters/zhongli_icon.png",
     "Name": "Zhongli",
     "Quality": 5,
     "Element": "Geo",
     "Weapon": "Polearm",
     "Region": "Liyue",
-    "ModelType": "Tall Male"
-  },
-  {
-    "Id": "",
-    "IconSrc": "/images/characters/traveler_icon.png",
-    "Name": "",
-    "Quality": 5,
-    "Element": "",
-    "Weapon": "",
-    "Region": "",
-    "ModelType": ""
+    "ModelType": "Tall Male",
+    "signatureWeapon": "vortex-vanquisher"
   }
-]
+];

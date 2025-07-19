@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
 import { API_CHARACTERS } from "../data";
-import { CharacterId } from "../types";
+import { CharacterId, getCharacterIconSrc } from "../types";
 import { getCharacterElementColor } from "../utils";
 
 const UNKNOWN_CHAR_IMG = "/images/unknown_character.png";
@@ -38,8 +38,8 @@ const CharacterIcon: React.FC<CharacterIconProps> = observer(
       }
       return {
         name: char.Name,
-        iconSrc: char.IconSrc,
-        backgroundColor: getCharacterElementColor(char.Element),
+        iconSrc: getCharacterIconSrc(char.Id),
+        backgroundColor: char.Element ? getCharacterElementColor(char.Element) : "bg-void-2",
       };
     }, [id]);
 

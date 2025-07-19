@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
 import { API_WEAPONS } from "../data";
+import { getWeaponIconSrc } from "../types";
 
 const UNKNOWN_WEAPON_IMG = "/images/unknown_character.png";
 
@@ -36,7 +37,7 @@ const WeaponIcon: React.FC<WeaponIconProps> = observer(
       }
       return {
         name: weapon.Name || id, // Fallback to id if no name
-        iconSrc: weapon.IconSrc,
+        iconSrc: getWeaponIconSrc(weapon.Id),
       };
     }, [id]);
 

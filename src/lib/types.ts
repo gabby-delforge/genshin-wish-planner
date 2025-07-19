@@ -1,17 +1,75 @@
-import Banners from "../../public/metadata/banners.json";
-import Characters from "../../public/metadata/characters.json";
-import Weapons from "../../public/metadata/weapons.json";
-
 // Application modes
 export type AppMode = "playground" | "strategy";
+
+// Banner types
+export type BannerVisibility = "visible" | "hidden";
+export type BannerStatus = "confirmed" | "leaked";
+
+export interface ApiBanner {
+  id: string;
+  version: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  characters: string[];
+  weapons: string[];
+  visibility: BannerVisibility;
+  status: BannerStatus;
+}
+
+// Character types
+export type Element =
+  | "Anemo"
+  | "Geo"
+  | "Electro"
+  | "Dendro"
+  | "Hydro"
+  | "Pyro"
+  | "Cryo"
+  | "None";
+export type WeaponType = "Sword" | "Claymore" | "Polearm" | "Bow" | "Catalyst";
+
+export type Region =
+  | "Mondstadt"
+  | "Liyue"
+  | "Inazuma"
+  | "Sumeru"
+  | "Fontaine"
+  | "Natlan"
+  | "Snezhnaya"
+  | "Nod-Krai"
+  | "None";
+
+export type ModelType =
+  | "Short Female"
+  | "Medium Female"
+  | "Tall Female"
+  | "Short Male"
+  | "Medium Male"
+  | "Tall Male";
+
+export interface ApiCharacter {
+  Id: string;
+  Name: string;
+  Quality: number;
+  Element?: Element; // Optional - undefined for unknown
+  Weapon?: WeaponType; // Optional - undefined for unknown
+  Region?: Region; // Optional - undefined for unknown
+  ModelType?: ModelType; // Optional - undefined for unknown
+  signatureWeapon?: string; // Optional - signature weapon ID
+}
 
 // API Data Types (static data from external source)
 // ------------------------------------------------
 
-// API Character data
-export type ApiCharacter = (typeof Characters)[number];
-export type ApiWeapon = (typeof Weapons)[number];
-export type ApiBanner = (typeof Banners)[number];
+export interface ApiWeapon {
+  Id: string;
+  Name: string;
+  Quality: number;
+  BaseATK?: string;
+  SecondStat?: string;
+  PassiveAbility?: string;
+}
 
 // export type BannerId = `${number}.${number}v${number}`;
 export type BannerId = string;
@@ -71,8 +129,19 @@ export function camelCaseToSnakeCase<T extends string>(
   ) as CamelToSnakeCase<T>;
 }
 
-export type CharacterId = (typeof Characters)[number]["Id"];
-export type WeaponId = (typeof Weapons)[number]["Id"];
+export type CharacterId = string; // Character IDs are strings
+
+// Helper function to generate character icon path from ID
+export function getCharacterIconSrc(characterId: string): string {
+  return `/images/characters/${characterId}_icon.png`;
+}
+
+// Helper function to generate weapon icon path from ID
+export function getWeaponIconSrc(weaponId: string): string {
+  const weaponIdUnderscored = weaponId.replace(/-/g, "_");
+  return `/images/weapons/weapon_${weaponIdUnderscored}.png`;
+}
+export type WeaponId = string; // Weapon IDs are strings
 
 export type CharacterSuccessRate = {
   versionId: BannerId;

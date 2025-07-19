@@ -1,7 +1,8 @@
-[
+import type { ApiWeapon } from "../types";
+
+export const weapons: ApiWeapon[] = [
   {
     "Id": "a-thousand-blazing-suns",
-    "IconSrc": "/images/weapons/weapon_a_thousand_blazing_suns.png",
     "Name": "A Thousand Blazing Suns",
     "Quality": 5,
     "BaseATK": "741(49)",
@@ -10,7 +11,6 @@
   },
   {
     "Id": "a-thousand-floating-dreams",
-    "IconSrc": "/images/weapons/weapon_a_thousand_floating_dreams.png",
     "Name": "A Thousand Floating Dreams",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -19,7 +19,6 @@
   },
   {
     "Id": "absolution",
-    "IconSrc": "/images/weapons/weapon_absolution.png",
     "Name": "Absolution",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -28,7 +27,6 @@
   },
   {
     "Id": "amos-bow",
-    "IconSrc": "/images/weapons/weapon_amos_bow.png",
     "Name": "Amos' Bow",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -37,7 +35,6 @@
   },
   {
     "Id": "aqua-simulacra",
-    "IconSrc": "/images/weapons/weapon_aqua_simulacra.png",
     "Name": "Aqua Simulacra",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -46,7 +43,6 @@
   },
   {
     "Id": "aquila-favonia",
-    "IconSrc": "/images/weapons/weapon_aquila_favonia.png",
     "Name": "Aquila Favonia",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -55,7 +51,6 @@
   },
   {
     "Id": "astral-vultures-crimson-plumage",
-    "IconSrc": "/images/weapons/weapon_astral_vultures_crimson_plumage.png",
     "Name": "Astral Vulture's Crimson Plumage",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -64,7 +59,6 @@
   },
   {
     "Id": "azurelight",
-    "IconSrc": "/images/weapons/weapon_azurelight.png",
     "Name": "Azurelight",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -73,7 +67,6 @@
   },
   {
     "Id": "beacon-of-the-reed-sea",
-    "IconSrc": "/images/weapons/weapon_beacon_of_the_reed_sea.png",
     "Name": "Beacon of the Reed Sea",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -82,7 +75,6 @@
   },
   {
     "Id": "calamity-queller",
-    "IconSrc": "/images/weapons/weapon_calamity_queller.png",
     "Name": "Calamity Queller",
     "Quality": 5,
     "BaseATK": "741(49)",
@@ -91,7 +83,6 @@
   },
   {
     "Id": "cashflow-supervision",
-    "IconSrc": "/images/weapons/weapon_cashflow_supervision.png",
     "Name": "Cashflow Supervision",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -100,7 +91,6 @@
   },
   {
     "Id": "cranes-echoing-call",
-    "IconSrc": "/images/weapons/weapon_cranes_echoing_call.png",
     "Name": "Crane's Echoing Call",
     "Quality": 5,
     "BaseATK": "741(49)",
@@ -109,7 +99,6 @@
   },
   {
     "Id": "crimson-moons-semblance",
-    "IconSrc": "/images/weapons/weapon_crimson_moons_semblance.png",
     "Name": "Crimson Moon's Semblance",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -118,7 +107,6 @@
   },
   {
     "Id": "elegy-for-the-end",
-    "IconSrc": "/images/weapons/weapon_elegy_for_the_end.png",
     "Name": "Elegy for the End",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -127,7 +115,6 @@
   },
   {
     "Id": "engulfing-lightning",
-    "IconSrc": "/images/weapons/weapon_engulfing_lightning.png",
     "Name": "Engulfing Lightning",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -136,7 +123,6 @@
   },
   {
     "Id": "everlasting-moonglow",
-    "IconSrc": "/images/weapons/weapon_everlasting_moonglow.png",
     "Name": "Everlasting Moonglow",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -145,7 +131,6 @@
   },
   {
     "Id": "fang-of-the-mountain-king",
-    "IconSrc": "/images/weapons/weapon_fang_of_the_mountain_king.png",
     "Name": "Fang of the Mountain King",
     "Quality": 5,
     "BaseATK": "741(49)",
@@ -154,16 +139,11 @@
   },
   {
     "Id": "fractured-halo",
-    "IconSrc": "/images/weapons/weapon_fractured_halo.png",
     "Name": "Fractured Halo",
-    "Quality": 5,
-    "BaseATK": "",
-    "SecondStat": "",
-    "PassiveAbility": ""
+    "Quality": 5
   },
   {
     "Id": "freedom-sworn",
-    "IconSrc": "/images/weapons/weapon_freedom-sworn.png",
     "Name": "Freedom-Sworn",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -172,7 +152,6 @@
   },
   {
     "Id": "haran-geppaku-futsu",
-    "IconSrc": "/images/weapons/weapon_haran_geppaku_futsu.png",
     "Name": "Haran Geppaku Futsu",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -181,7 +160,6 @@
   },
   {
     "Id": "hunters-path",
-    "IconSrc": "/images/weapons/weapon_hunters_path.png",
     "Name": "Hunter's Path",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -190,7 +168,6 @@
   },
   {
     "Id": "jadefalls-splendor",
-    "IconSrc": "/images/weapons/weapon_jadefalls_splendor.png",
     "Name": "Jadefall's Splendor",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -199,7 +176,6 @@
   },
   {
     "Id": "kaguras-verity",
-    "IconSrc": "/images/weapons/weapon_kaguras_verity.png",
     "Name": "Kagura's Verity",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -208,7 +184,6 @@
   },
   {
     "Id": "key-of-khaj-nisut",
-    "IconSrc": "/images/weapons/weapon_key_of_khaj-nisut.png",
     "Name": "Key of Khaj-Nisut",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -217,7 +192,6 @@
   },
   {
     "Id": "light-of-foliar-incision",
-    "IconSrc": "/images/weapons/weapon_light_of_foliar_incision.png",
     "Name": "Light of Foliar Incision",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -226,7 +200,6 @@
   },
   {
     "Id": "lost-prayer-to-the-sacred-winds",
-    "IconSrc": "/images/weapons/weapon_lost_prayer_to_the_sacred_winds.png",
     "Name": "Lost Prayer to the Sacred Winds",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -235,7 +208,6 @@
   },
   {
     "Id": "lumidouce-elegy",
-    "IconSrc": "/images/weapons/weapon_lumidouce_elegy.png",
     "Name": "Lumidouce Elegy",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -244,7 +216,6 @@
   },
   {
     "Id": "memory-of-dust",
-    "IconSrc": "/images/weapons/weapon_memory_of_dust.png",
     "Name": "Memory of Dust",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -253,7 +224,6 @@
   },
   {
     "Id": "mistsplitter-reforged",
-    "IconSrc": "/images/weapons/weapon_mistsplitter_reforged.png",
     "Name": "Mistsplitter Reforged",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -262,7 +232,6 @@
   },
   {
     "Id": "peak-patrol-song",
-    "IconSrc": "/images/weapons/weapon_peak_patrol_song.png",
     "Name": "Peak Patrol Song",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -271,7 +240,6 @@
   },
   {
     "Id": "polar-star",
-    "IconSrc": "/images/weapons/weapon_polar_star.png",
     "Name": "Polar Star",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -280,7 +248,6 @@
   },
   {
     "Id": "primordial-jade-cutter",
-    "IconSrc": "/images/weapons/weapon_primordial_jade_cutter.png",
     "Name": "Primordial Jade Cutter",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -289,7 +256,6 @@
   },
   {
     "Id": "primordial-jade-winged-spear",
-    "IconSrc": "/images/weapons/weapon_primordial_jade_winged-spear.png",
     "Name": "Primordial Jade Winged-Spear",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -298,7 +264,6 @@
   },
   {
     "Id": "redhorn-stonethresher",
-    "IconSrc": "/images/weapons/weapon_redhorn_stonethresher.png",
     "Name": "Redhorn Stonethresher",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -307,7 +272,6 @@
   },
   {
     "Id": "silvershower-heartstrings",
-    "IconSrc": "/images/weapons/weapon_silvershower_heartstrings.png",
     "Name": "Silvershower Heartstrings",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -316,7 +280,6 @@
   },
   {
     "Id": "skyward-atlas",
-    "IconSrc": "/images/weapons/weapon_skyward_atlas.png",
     "Name": "Skyward Atlas",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -325,7 +288,6 @@
   },
   {
     "Id": "skyward-blade",
-    "IconSrc": "/images/weapons/weapon_skyward_blade.png",
     "Name": "Skyward Blade",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -334,7 +296,6 @@
   },
   {
     "Id": "skyward-harp",
-    "IconSrc": "/images/weapons/weapon_skyward_harp.png",
     "Name": "Skyward Harp",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -343,7 +304,6 @@
   },
   {
     "Id": "skyward-pride",
-    "IconSrc": "/images/weapons/weapon_skyward_pride.png",
     "Name": "Skyward Pride",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -352,7 +312,6 @@
   },
   {
     "Id": "skyward-spine",
-    "IconSrc": "/images/weapons/weapon_skyward_spine.png",
     "Name": "Skyward Spine",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -361,7 +320,6 @@
   },
   {
     "Id": "song-of-broken-pines",
-    "IconSrc": "/images/weapons/weapon_song_of_broken_pines.png",
     "Name": "Song of Broken Pines",
     "Quality": 5,
     "BaseATK": "741(49)",
@@ -370,7 +328,6 @@
   },
   {
     "Id": "splendor-of-tranquil-waters",
-    "IconSrc": "/images/weapons/weapon_splendor_of_tranquil_waters.png",
     "Name": "Splendor of Tranquil Waters",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -379,7 +336,6 @@
   },
   {
     "Id": "staff-of-homa",
-    "IconSrc": "/images/weapons/weapon_staff_of_homa.png",
     "Name": "Staff of Homa",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -388,7 +344,6 @@
   },
   {
     "Id": "staff-of-the-scarlet-sands",
-    "IconSrc": "/images/weapons/weapon_staff_of_the_scarlet_sands.png",
     "Name": "Staff of the Scarlet Sands",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -397,7 +352,6 @@
   },
   {
     "Id": "starcallers-watch",
-    "IconSrc": "/images/weapons/weapon_starcallers_watch.png",
     "Name": "Starcaller's Watch",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -406,7 +360,6 @@
   },
   {
     "Id": "summit-shaper",
-    "IconSrc": "/images/weapons/weapon_summit_shaper.png",
     "Name": "Summit Shaper",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -415,7 +368,6 @@
   },
   {
     "Id": "sunny-morning-sleep-in",
-    "IconSrc": "/images/weapons/weapon_sunny_morning_sleep-in.png",
     "Name": "Sunny Morning Sleep-In",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -424,7 +376,6 @@
   },
   {
     "Id": "surfs-up",
-    "IconSrc": "/images/weapons/weapon_surfs_up.png",
     "Name": "Surf's Up",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -433,7 +384,6 @@
   },
   {
     "Id": "symphonist-of-scents",
-    "IconSrc": "/images/weapons/weapon_symphonist_of_scents.png",
     "Name": "Symphonist of Scents",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -442,7 +392,6 @@
   },
   {
     "Id": "the-first-great-magic",
-    "IconSrc": "/images/weapons/weapon_the_first_great_magic.png",
     "Name": "The First Great Magic",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -451,7 +400,6 @@
   },
   {
     "Id": "the-unforged",
-    "IconSrc": "/images/weapons/weapon_the_unforged.png",
     "Name": "The Unforged",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -460,7 +408,6 @@
   },
   {
     "Id": "thundering-pulse",
-    "IconSrc": "/images/weapons/weapon_thundering_pulse.png",
     "Name": "Thundering Pulse",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -469,7 +416,6 @@
   },
   {
     "Id": "tome-of-the-eternal-flow",
-    "IconSrc": "/images/weapons/weapon_tome_of_the_eternal_flow.png",
     "Name": "Tome of the Eternal Flow",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -478,7 +424,6 @@
   },
   {
     "Id": "tulaytullahs-remembrance",
-    "IconSrc": "/images/weapons/weapon_tulaytullahs_remembrance.png",
     "Name": "Tulaytullah's Remembrance",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -487,7 +432,6 @@
   },
   {
     "Id": "uraku-misugiri",
-    "IconSrc": "/images/weapons/weapon_uraku_misugiri.png",
     "Name": "Uraku Misugiri",
     "Quality": 5,
     "BaseATK": "542(44)",
@@ -496,7 +440,6 @@
   },
   {
     "Id": "verdict",
-    "IconSrc": "/images/weapons/weapon_verdict.png",
     "Name": "Verdict",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -505,7 +448,6 @@
   },
   {
     "Id": "vivid-notions",
-    "IconSrc": "/images/weapons/weapon_vivid_notions.png",
     "Name": "Vivid Notions",
     "Quality": 5,
     "BaseATK": "674(48)",
@@ -514,7 +456,6 @@
   },
   {
     "Id": "vortex-vanquisher",
-    "IconSrc": "/images/weapons/weapon_vortex_vanquisher.png",
     "Name": "Vortex Vanquisher",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -523,7 +464,6 @@
   },
   {
     "Id": "wolfs-gravestone",
-    "IconSrc": "/images/weapons/weapon_wolfs_gravestone.png",
     "Name": "Wolf's Gravestone",
     "Quality": 5,
     "BaseATK": "608(46)",
@@ -532,7 +472,6 @@
   },
   {
     "Id": "the-catch",
-    "IconSrc": "/images/weapons/weapon_the_catch.png",
     "Name": "\"The Catch\"",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -541,7 +480,6 @@
   },
   {
     "Id": "ultimate-overlords-mega-magic-sword",
-    "IconSrc": "/images/weapons/weapon_ultimate_overlords_mega_magic_sword.png",
     "Name": "\"Ultimate Overlord's Mega Magic Sword\"",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -550,7 +488,6 @@
   },
   {
     "Id": "akuoumaru",
-    "IconSrc": "/images/weapons/weapon_akuoumaru.png",
     "Name": "Akuoumaru",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -559,7 +496,6 @@
   },
   {
     "Id": "alley-hunter",
-    "IconSrc": "/images/weapons/weapon_alley_hunter.png",
     "Name": "Alley Hunter",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -568,7 +504,6 @@
   },
   {
     "Id": "amenoma-kageuchi",
-    "IconSrc": "/images/weapons/weapon_amenoma_kageuchi.png",
     "Name": "Amenoma Kageuchi",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -577,7 +512,6 @@
   },
   {
     "Id": "ash-graven-drinking-horn",
-    "IconSrc": "/images/weapons/weapon_ash-graven_drinking_horn.png",
     "Name": "Ash-Graven Drinking Horn",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -586,7 +520,6 @@
   },
   {
     "Id": "ballad-of-the-boundless-blue",
-    "IconSrc": "/images/weapons/weapon_ballad_of_the_boundless_blue.png",
     "Name": "Ballad of the Boundless Blue",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -595,7 +528,6 @@
   },
   {
     "Id": "ballad-of-the-fjords",
-    "IconSrc": "/images/weapons/weapon_ballad_of_the_fjords.png",
     "Name": "Ballad of the Fjords",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -604,7 +536,6 @@
   },
   {
     "Id": "blackcliff-agate",
-    "IconSrc": "/images/weapons/weapon_blackcliff_agate.png",
     "Name": "Blackcliff Agate",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -613,7 +544,6 @@
   },
   {
     "Id": "blackcliff-longsword",
-    "IconSrc": "/images/weapons/weapon_blackcliff_longsword.png",
     "Name": "Blackcliff Longsword",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -622,7 +552,6 @@
   },
   {
     "Id": "blackcliff-pole",
-    "IconSrc": "/images/weapons/weapon_blackcliff_pole.png",
     "Name": "Blackcliff Pole",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -631,7 +560,6 @@
   },
   {
     "Id": "blackcliff-slasher",
-    "IconSrc": "/images/weapons/weapon_blackcliff_slasher.png",
     "Name": "Blackcliff Slasher",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -640,7 +568,6 @@
   },
   {
     "Id": "blackcliff-warbow",
-    "IconSrc": "/images/weapons/weapon_blackcliff_warbow.png",
     "Name": "Blackcliff Warbow",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -649,7 +576,6 @@
   },
   {
     "Id": "calamity-of-eshu",
-    "IconSrc": "/images/weapons/weapon_calamity_of_eshu.png",
     "Name": "Calamity of Eshu",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -658,7 +584,6 @@
   },
   {
     "Id": "chain-breaker",
-    "IconSrc": "/images/weapons/weapon_chain_breaker.png",
     "Name": "Chain Breaker",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -667,7 +592,6 @@
   },
   {
     "Id": "cinnabar-spindle",
-    "IconSrc": "/images/weapons/weapon_cinnabar_spindle.png",
     "Name": "Cinnabar Spindle",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -676,7 +600,6 @@
   },
   {
     "Id": "cloudforged",
-    "IconSrc": "/images/weapons/weapon_cloudforged.png",
     "Name": "Cloudforged",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -685,7 +608,6 @@
   },
   {
     "Id": "compound-bow",
-    "IconSrc": "/images/weapons/weapon_compound_bow.png",
     "Name": "Compound Bow",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -694,7 +616,6 @@
   },
   {
     "Id": "crescent-pike",
-    "IconSrc": "/images/weapons/weapon_crescent_pike.png",
     "Name": "Crescent Pike",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -703,7 +624,6 @@
   },
   {
     "Id": "deathmatch",
-    "IconSrc": "/images/weapons/weapon_deathmatch.png",
     "Name": "Deathmatch",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -712,7 +632,6 @@
   },
   {
     "Id": "dialogues-of-the-desert-sages",
-    "IconSrc": "/images/weapons/weapon_dialogues_of_the_desert_sages.png",
     "Name": "Dialogues of the Desert Sages",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -721,7 +640,6 @@
   },
   {
     "Id": "dodoco-tales",
-    "IconSrc": "/images/weapons/weapon_dodoco_tales.png",
     "Name": "Dodoco Tales",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -730,7 +648,6 @@
   },
   {
     "Id": "dragons-bane",
-    "IconSrc": "/images/weapons/weapon_dragons_bane.png",
     "Name": "Dragon's Bane",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -739,7 +656,6 @@
   },
   {
     "Id": "dragonspine-spear",
-    "IconSrc": "/images/weapons/weapon_dragonspine_spear.png",
     "Name": "Dragonspine Spear",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -748,7 +664,6 @@
   },
   {
     "Id": "earth-shaker",
-    "IconSrc": "/images/weapons/weapon_earth_shaker.png",
     "Name": "Earth Shaker",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -757,7 +672,6 @@
   },
   {
     "Id": "end-of-the-line",
-    "IconSrc": "/images/weapons/weapon_end_of_the_line.png",
     "Name": "End of the Line",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -766,7 +680,6 @@
   },
   {
     "Id": "eye-of-perception",
-    "IconSrc": "/images/weapons/weapon_eye_of_perception.png",
     "Name": "Eye of Perception",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -775,7 +688,6 @@
   },
   {
     "Id": "fading-twilight",
-    "IconSrc": "/images/weapons/weapon_fading_twilight.png",
     "Name": "Fading Twilight",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -784,7 +696,6 @@
   },
   {
     "Id": "favonius-codex",
-    "IconSrc": "/images/weapons/weapon_favonius_codex.png",
     "Name": "Favonius Codex",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -793,7 +704,6 @@
   },
   {
     "Id": "favonius-greatsword",
-    "IconSrc": "/images/weapons/weapon_favonius_greatsword.png",
     "Name": "Favonius Greatsword",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -802,7 +712,6 @@
   },
   {
     "Id": "favonius-lance",
-    "IconSrc": "/images/weapons/weapon_favonius_lance.png",
     "Name": "Favonius Lance",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -811,7 +720,6 @@
   },
   {
     "Id": "favonius-sword",
-    "IconSrc": "/images/weapons/weapon_favonius_sword.png",
     "Name": "Favonius Sword",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -820,7 +728,6 @@
   },
   {
     "Id": "favonius-warbow",
-    "IconSrc": "/images/weapons/weapon_favonius_warbow.png",
     "Name": "Favonius Warbow",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -829,7 +736,6 @@
   },
   {
     "Id": "festering-desire",
-    "IconSrc": "/images/weapons/weapon_festering_desire.png",
     "Name": "Festering Desire",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -838,7 +744,6 @@
   },
   {
     "Id": "finale-of-the-deep",
-    "IconSrc": "/images/weapons/weapon_finale_of_the_deep.png",
     "Name": "Finale of the Deep",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -847,7 +752,6 @@
   },
   {
     "Id": "fleuve-cendre-ferryman",
-    "IconSrc": "/images/weapons/weapon_fleuve_cendre_ferryman.png",
     "Name": "Fleuve Cendre Ferryman",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -856,7 +760,6 @@
   },
   {
     "Id": "flower-wreathed-feathers",
-    "IconSrc": "/images/weapons/weapon_flower-wreathed_feathers.png",
     "Name": "Flower-Wreathed Feathers",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -865,7 +768,6 @@
   },
   {
     "Id": "flowing-purity",
-    "IconSrc": "/images/weapons/weapon_flowing_purity.png",
     "Name": "Flowing Purity",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -874,7 +776,6 @@
   },
   {
     "Id": "flute-of-ezpitzal",
-    "IconSrc": "/images/weapons/weapon_flute_of_ezpitzal.png",
     "Name": "Flute of Ezpitzal",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -883,7 +784,6 @@
   },
   {
     "Id": "footprint-of-the-rainbow",
-    "IconSrc": "/images/weapons/weapon_footprint_of_the_rainbow.png",
     "Name": "Footprint of the Rainbow",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -892,7 +792,6 @@
   },
   {
     "Id": "forest-regalia",
-    "IconSrc": "/images/weapons/weapon_forest_regalia.png",
     "Name": "Forest Regalia",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -901,7 +800,6 @@
   },
   {
     "Id": "frostbearer",
-    "IconSrc": "/images/weapons/weapon_frostbearer.png",
     "Name": "Frostbearer",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -910,7 +808,6 @@
   },
   {
     "Id": "fruit-of-fulfillment",
-    "IconSrc": "/images/weapons/weapon_fruit_of_fulfillment.png",
     "Name": "Fruit of Fulfillment",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -919,7 +816,6 @@
   },
   {
     "Id": "fruitful-hook",
-    "IconSrc": "/images/weapons/weapon_fruitful_hook.png",
     "Name": "Fruitful Hook",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -928,7 +824,6 @@
   },
   {
     "Id": "hakushin-ring",
-    "IconSrc": "/images/weapons/weapon_hakushin_ring.png",
     "Name": "Hakushin Ring",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -937,7 +832,6 @@
   },
   {
     "Id": "hamayumi",
-    "IconSrc": "/images/weapons/weapon_hamayumi.png",
     "Name": "Hamayumi",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -946,7 +840,6 @@
   },
   {
     "Id": "ibis-piercer",
-    "IconSrc": "/images/weapons/weapon_ibis_piercer.png",
     "Name": "Ibis Piercer",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -955,7 +848,6 @@
   },
   {
     "Id": "iron-sting",
-    "IconSrc": "/images/weapons/weapon_iron_sting.png",
     "Name": "Iron Sting",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -964,7 +856,6 @@
   },
   {
     "Id": "kagotsurube-isshin",
-    "IconSrc": "/images/weapons/weapon_kagotsurube_isshin.png",
     "Name": "Kagotsurube Isshin",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -973,7 +864,6 @@
   },
   {
     "Id": "katsuragikiri-nagamasa",
-    "IconSrc": "/images/weapons/weapon_katsuragikiri_nagamasa.png",
     "Name": "Katsuragikiri Nagamasa",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -982,7 +872,6 @@
   },
   {
     "Id": "kings-squire",
-    "IconSrc": "/images/weapons/weapon_kings_squire.png",
     "Name": "King's Squire",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -991,7 +880,6 @@
   },
   {
     "Id": "kitain-cross-spear",
-    "IconSrc": "/images/weapons/weapon_kitain_cross_spear.png",
     "Name": "Kitain Cross Spear",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1000,7 +888,6 @@
   },
   {
     "Id": "lions-roar",
-    "IconSrc": "/images/weapons/weapon_lions_roar.png",
     "Name": "Lion's Roar",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1009,7 +896,6 @@
   },
   {
     "Id": "lithic-blade",
-    "IconSrc": "/images/weapons/weapon_lithic_blade.png",
     "Name": "Lithic Blade",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1018,7 +904,6 @@
   },
   {
     "Id": "lithic-spear",
-    "IconSrc": "/images/weapons/weapon_lithic_spear.png",
     "Name": "Lithic Spear",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1027,7 +912,6 @@
   },
   {
     "Id": "luxurious-sea-lord",
-    "IconSrc": "/images/weapons/weapon_luxurious_sea-lord.png",
     "Name": "Luxurious Sea-Lord",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -1036,7 +920,6 @@
   },
   {
     "Id": "mailed-flower",
-    "IconSrc": "/images/weapons/weapon_mailed_flower.png",
     "Name": "Mailed Flower",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1045,7 +928,6 @@
   },
   {
     "Id": "makhaira-aquamarine",
-    "IconSrc": "/images/weapons/weapon_makhaira_aquamarine.png",
     "Name": "Makhaira Aquamarine",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1054,7 +936,6 @@
   },
   {
     "Id": "mappa-mare",
-    "IconSrc": "/images/weapons/weapon_mappa_mare.png",
     "Name": "Mappa Mare",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1063,7 +944,6 @@
   },
   {
     "Id": "missive-windspear",
-    "IconSrc": "/images/weapons/weapon_missive_windspear.png",
     "Name": "Missive Windspear",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1072,7 +952,6 @@
   },
   {
     "Id": "mitternachts-waltz",
-    "IconSrc": "/images/weapons/weapon_mitternachts_waltz.png",
     "Name": "Mitternachts Waltz",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1081,7 +960,6 @@
   },
   {
     "Id": "moonpiercer",
-    "IconSrc": "/images/weapons/weapon_moonpiercer.png",
     "Name": "Moonpiercer",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1090,7 +968,6 @@
   },
   {
     "Id": "mountain-bracing-bolt",
-    "IconSrc": "/images/weapons/weapon_mountain-bracing_bolt.png",
     "Name": "Mountain-Bracing Bolt",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1099,7 +976,6 @@
   },
   {
     "Id": "mouuns-moon",
-    "IconSrc": "/images/weapons/weapon_mouuns_moon.png",
     "Name": "Mouun's Moon",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1108,7 +984,6 @@
   },
   {
     "Id": "oathsworn-eye",
-    "IconSrc": "/images/weapons/weapon_oathsworn_eye.png",
     "Name": "Oathsworn Eye",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1117,7 +992,6 @@
   },
   {
     "Id": "portable-power-saw",
-    "IconSrc": "/images/weapons/weapon_portable_power_saw.png",
     "Name": "Portable Power Saw",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -1126,7 +1000,6 @@
   },
   {
     "Id": "predator",
-    "IconSrc": "/images/weapons/weapon_predator.png",
     "Name": "Predator",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1135,7 +1008,6 @@
   },
   {
     "Id": "prospectors-drill",
-    "IconSrc": "/images/weapons/weapon_prospectors_drill.png",
     "Name": "Prospector's Drill",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1144,7 +1016,6 @@
   },
   {
     "Id": "prototype-amber",
-    "IconSrc": "/images/weapons/weapon_prototype_amber.png",
     "Name": "Prototype Amber",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1153,7 +1024,6 @@
   },
   {
     "Id": "prototype-archaic",
-    "IconSrc": "/images/weapons/weapon_prototype_archaic.png",
     "Name": "Prototype Archaic",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1162,7 +1032,6 @@
   },
   {
     "Id": "prototype-crescent",
-    "IconSrc": "/images/weapons/weapon_prototype_crescent.png",
     "Name": "Prototype Crescent",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1171,7 +1040,6 @@
   },
   {
     "Id": "prototype-rancour",
-    "IconSrc": "/images/weapons/weapon_prototype_rancour.png",
     "Name": "Prototype Rancour",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1180,7 +1048,6 @@
   },
   {
     "Id": "prototype-starglitter",
-    "IconSrc": "/images/weapons/weapon_prototype_starglitter.png",
     "Name": "Prototype Starglitter",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1189,7 +1056,6 @@
   },
   {
     "Id": "rainslasher",
-    "IconSrc": "/images/weapons/weapon_rainslasher.png",
     "Name": "Rainslasher",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1198,7 +1064,6 @@
   },
   {
     "Id": "range-gauge",
-    "IconSrc": "/images/weapons/weapon_range_gauge.png",
     "Name": "Range Gauge",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1207,7 +1072,6 @@
   },
   {
     "Id": "rightful-reward",
-    "IconSrc": "/images/weapons/weapon_rightful_reward.png",
     "Name": "Rightful Reward",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1216,7 +1080,6 @@
   },
   {
     "Id": "ring-of-yaxche",
-    "IconSrc": "/images/weapons/weapon_ring_of_yaxche.png",
     "Name": "Ring of Yaxche",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1225,7 +1088,6 @@
   },
   {
     "Id": "royal-bow",
-    "IconSrc": "/images/weapons/weapon_royal_bow.png",
     "Name": "Royal Bow",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1234,7 +1096,6 @@
   },
   {
     "Id": "royal-greatsword",
-    "IconSrc": "/images/weapons/weapon_royal_greatsword.png",
     "Name": "Royal Greatsword",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1243,7 +1104,6 @@
   },
   {
     "Id": "royal-grimoire",
-    "IconSrc": "/images/weapons/weapon_royal_grimoire.png",
     "Name": "Royal Grimoire",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1252,7 +1112,6 @@
   },
   {
     "Id": "royal-longsword",
-    "IconSrc": "/images/weapons/weapon_royal_longsword.png",
     "Name": "Royal Longsword",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1261,7 +1120,6 @@
   },
   {
     "Id": "royal-spear",
-    "IconSrc": "/images/weapons/weapon_royal_spear.png",
     "Name": "Royal Spear",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1270,7 +1128,6 @@
   },
   {
     "Id": "rust",
-    "IconSrc": "/images/weapons/weapon_rust.png",
     "Name": "Rust",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1279,7 +1136,6 @@
   },
   {
     "Id": "sacrificial-bow",
-    "IconSrc": "/images/weapons/weapon_sacrificial_bow.png",
     "Name": "Sacrificial Bow",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1288,7 +1144,6 @@
   },
   {
     "Id": "sacrificial-fragments",
-    "IconSrc": "/images/weapons/weapon_sacrificial_fragments.png",
     "Name": "Sacrificial Fragments",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -1297,7 +1152,6 @@
   },
   {
     "Id": "sacrificial-greatsword",
-    "IconSrc": "/images/weapons/weapon_sacrificial_greatsword.png",
     "Name": "Sacrificial Greatsword",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1306,7 +1160,6 @@
   },
   {
     "Id": "sacrificial-jade",
-    "IconSrc": "/images/weapons/weapon_sacrificial_jade.png",
     "Name": "Sacrificial Jade",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -1315,7 +1168,6 @@
   },
   {
     "Id": "sacrificial-sword",
-    "IconSrc": "/images/weapons/weapon_sacrificial_sword.png",
     "Name": "Sacrificial Sword",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -1324,7 +1176,6 @@
   },
   {
     "Id": "sapwood-blade",
-    "IconSrc": "/images/weapons/weapon_sapwood_blade.png",
     "Name": "Sapwood Blade",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1333,7 +1184,6 @@
   },
   {
     "Id": "scion-of-the-blazing-sun",
-    "IconSrc": "/images/weapons/weapon_scion_of_the_blazing_sun.png",
     "Name": "Scion of the Blazing Sun",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1342,7 +1192,6 @@
   },
   {
     "Id": "sequence-of-solitude",
-    "IconSrc": "/images/weapons/weapon_sequence_of_solitude.png",
     "Name": "Sequence of Solitude",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1351,7 +1200,6 @@
   },
   {
     "Id": "serpent-spine",
-    "IconSrc": "/images/weapons/weapon_serpent_spine.png",
     "Name": "Serpent Spine",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1360,7 +1208,6 @@
   },
   {
     "Id": "snow-tombed-starsilver",
-    "IconSrc": "/images/weapons/weapon_snow-tombed_starsilver.png",
     "Name": "Snow-Tombed Starsilver",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1369,7 +1216,6 @@
   },
   {
     "Id": "solar-pearl",
-    "IconSrc": "/images/weapons/weapon_solar_pearl.png",
     "Name": "Solar Pearl",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1378,7 +1224,6 @@
   },
   {
     "Id": "song-of-stillness",
-    "IconSrc": "/images/weapons/weapon_song_of_stillness.png",
     "Name": "Song of Stillness",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1387,7 +1232,6 @@
   },
   {
     "Id": "sturdy-bone",
-    "IconSrc": "/images/weapons/weapon_sturdy_bone.png",
     "Name": "Sturdy Bone",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1396,7 +1240,6 @@
   },
   {
     "Id": "sword-of-descension",
-    "IconSrc": "/images/weapons/weapon_sword_of_descension.png",
     "Name": "Sword of Descension",
     "Quality": 4,
     "BaseATK": "440(39)",
@@ -1405,7 +1248,6 @@
   },
   {
     "Id": "sword-of-narzissenkreuz",
-    "IconSrc": "/images/weapons/weapon_sword_of_narzissenkreuz_pneuma.png",
     "Name": "Sword of Narzissenkreuz",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1414,7 +1256,6 @@
   },
   {
     "Id": "talking-stick",
-    "IconSrc": "/images/weapons/weapon_talking_stick.png",
     "Name": "Talking Stick",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1423,7 +1264,6 @@
   },
   {
     "Id": "tamayuratei-no-ohanashi",
-    "IconSrc": "/images/weapons/weapon_tamayuratei_no_ohanashi.png",
     "Name": "Tamayuratei no Ohanashi",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1432,7 +1272,6 @@
   },
   {
     "Id": "the-alley-flash",
-    "IconSrc": "/images/weapons/weapon_the_alley_flash.png",
     "Name": "The Alley Flash",
     "Quality": 4,
     "BaseATK": "620(45)",
@@ -1441,7 +1280,6 @@
   },
   {
     "Id": "the-bell",
-    "IconSrc": "/images/weapons/weapon_the_bell.png",
     "Name": "The Bell",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1450,7 +1288,6 @@
   },
   {
     "Id": "the-black-sword",
-    "IconSrc": "/images/weapons/weapon_the_black_sword.png",
     "Name": "The Black Sword",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1459,7 +1296,6 @@
   },
   {
     "Id": "the-dockhands-assistant",
-    "IconSrc": "/images/weapons/weapon_the_dockhands_assistant.png",
     "Name": "The Dockhand's Assistant",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1468,7 +1304,6 @@
   },
   {
     "Id": "the-flute",
-    "IconSrc": "/images/weapons/weapon_the_flute.png",
     "Name": "The Flute",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1477,7 +1312,6 @@
   },
   {
     "Id": "the-stringless",
-    "IconSrc": "/images/weapons/weapon_the_stringless.png",
     "Name": "The Stringless",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1486,7 +1320,6 @@
   },
   {
     "Id": "the-viridescent-hunt",
-    "IconSrc": "/images/weapons/weapon_the_viridescent_hunt.png",
     "Name": "The Viridescent Hunt",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1495,7 +1328,6 @@
   },
   {
     "Id": "the-widsith",
-    "IconSrc": "/images/weapons/weapon_the_widsith.png",
     "Name": "The Widsith",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1504,7 +1336,6 @@
   },
   {
     "Id": "tidal-shadow",
-    "IconSrc": "/images/weapons/weapon_tidal_shadow.png",
     "Name": "Tidal Shadow",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1513,7 +1344,6 @@
   },
   {
     "Id": "toukabou-shigure",
-    "IconSrc": "/images/weapons/weapon_toukabou_shigure.png",
     "Name": "Toukabou Shigure",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1522,7 +1352,6 @@
   },
   {
     "Id": "wandering-evenstar",
-    "IconSrc": "/images/weapons/weapon_wandering_evenstar.png",
     "Name": "Wandering Evenstar",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1531,7 +1360,6 @@
   },
   {
     "Id": "wavebreakers-fin",
-    "IconSrc": "/images/weapons/weapon_wavebreakers_fin.png",
     "Name": "Wavebreaker's Fin",
     "Quality": 4,
     "BaseATK": "620(45)",
@@ -1540,7 +1368,6 @@
   },
   {
     "Id": "waveriding-whirl",
-    "IconSrc": "/images/weapons/weapon_waveriding_whirl.png",
     "Name": "Waveriding Whirl",
     "Quality": 4,
     "BaseATK": "454(41)",
@@ -1549,7 +1376,6 @@
   },
   {
     "Id": "whiteblind",
-    "IconSrc": "/images/weapons/weapon_whiteblind.png",
     "Name": "Whiteblind",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1558,7 +1384,6 @@
   },
   {
     "Id": "windblume-ode",
-    "IconSrc": "/images/weapons/weapon_windblume_ode.png",
     "Name": "Windblume Ode",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1567,7 +1392,6 @@
   },
   {
     "Id": "wine-and-song",
-    "IconSrc": "/images/weapons/weapon_wine_and_song.png",
     "Name": "Wine and Song",
     "Quality": 4,
     "BaseATK": "565(44)",
@@ -1576,7 +1400,6 @@
   },
   {
     "Id": "wolf-fang",
-    "IconSrc": "/images/weapons/weapon_wolf-fang.png",
     "Name": "Wolf-Fang",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1585,7 +1408,6 @@
   },
   {
     "Id": "xiphos-moonlight",
-    "IconSrc": "/images/weapons/weapon_xiphos_moonlight.png",
     "Name": "Xiphos' Moonlight",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1594,7 +1416,6 @@
   },
   {
     "Id": "black-tassel",
-    "IconSrc": "/images/weapons/weapon_black_tassel.png",
     "Name": "Black Tassel",
     "Quality": 3,
     "BaseATK": "354(38)",
@@ -1603,7 +1424,6 @@
   },
   {
     "Id": "bloodtainted-greatsword",
-    "IconSrc": "/images/weapons/weapon_bloodtainted_greatsword.png",
     "Name": "Bloodtainted Greatsword",
     "Quality": 3,
     "BaseATK": "354(38)",
@@ -1612,7 +1432,6 @@
   },
   {
     "Id": "cool-steel",
-    "IconSrc": "/images/weapons/weapon_cool_steel.png",
     "Name": "Cool Steel",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1621,7 +1440,6 @@
   },
   {
     "Id": "dark-iron-sword",
-    "IconSrc": "/images/weapons/weapon_dark_iron_sword.png",
     "Name": "Dark Iron Sword",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1630,7 +1448,6 @@
   },
   {
     "Id": "debate-club",
-    "IconSrc": "/images/weapons/weapon_debate_club.png",
     "Name": "Debate Club",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1639,7 +1456,6 @@
   },
   {
     "Id": "emerald-orb",
-    "IconSrc": "/images/weapons/weapon_emerald_orb.png",
     "Name": "Emerald Orb",
     "Quality": 3,
     "BaseATK": "448(40)",
@@ -1648,7 +1464,6 @@
   },
   {
     "Id": "ferrous-shadow",
-    "IconSrc": "/images/weapons/weapon_ferrous_shadow.png",
     "Name": "Ferrous Shadow",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1657,7 +1472,6 @@
   },
   {
     "Id": "fillet-blade",
-    "IconSrc": "/images/weapons/weapon_fillet_blade.png",
     "Name": "Fillet Blade",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1666,7 +1480,6 @@
   },
   {
     "Id": "halberd",
-    "IconSrc": "/images/weapons/weapon_halberd.png",
     "Name": "Halberd",
     "Quality": 3,
     "BaseATK": "448(40)",
@@ -1675,7 +1488,6 @@
   },
   {
     "Id": "harbinger-of-dawn",
-    "IconSrc": "/images/weapons/weapon_harbinger_of_dawn.png",
     "Name": "Harbinger of Dawn",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1684,7 +1496,6 @@
   },
   {
     "Id": "magic-guide",
-    "IconSrc": "/images/weapons/weapon_magic_guide.png",
     "Name": "Magic Guide",
     "Quality": 3,
     "BaseATK": "354(38)",
@@ -1693,7 +1504,6 @@
   },
   {
     "Id": "messenger",
-    "IconSrc": "/images/weapons/weapon_messenger.png",
     "Name": "Messenger",
     "Quality": 3,
     "BaseATK": "448(40)",
@@ -1702,7 +1512,6 @@
   },
   {
     "Id": "otherworldly-story",
-    "IconSrc": "/images/weapons/weapon_otherworldly_story.png",
     "Name": "Otherworldly Story",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1711,7 +1520,6 @@
   },
   {
     "Id": "raven-bow",
-    "IconSrc": "/images/weapons/weapon_raven_bow.png",
     "Name": "Raven Bow",
     "Quality": 3,
     "BaseATK": "448(40)",
@@ -1720,7 +1528,6 @@
   },
   {
     "Id": "recurve-bow",
-    "IconSrc": "/images/weapons/weapon_recurve_bow.png",
     "Name": "Recurve Bow",
     "Quality": 3,
     "BaseATK": "354(38)",
@@ -1729,7 +1536,6 @@
   },
   {
     "Id": "sharpshooters-oath",
-    "IconSrc": "/images/weapons/weapon_sharpshooters_oath.png",
     "Name": "Sharpshooter's Oath",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1738,7 +1544,6 @@
   },
   {
     "Id": "skyrider-greatsword",
-    "IconSrc": "/images/weapons/weapon_skyrider_greatsword.png",
     "Name": "Skyrider Greatsword",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1747,7 +1552,6 @@
   },
   {
     "Id": "skyrider-sword",
-    "IconSrc": "/images/weapons/weapon_skyrider_sword.png",
     "Name": "Skyrider Sword",
     "Quality": 3,
     "BaseATK": "354(38)",
@@ -1756,7 +1560,6 @@
   },
   {
     "Id": "slingshot",
-    "IconSrc": "/images/weapons/weapon_slingshot.png",
     "Name": "Slingshot",
     "Quality": 3,
     "BaseATK": "354(38)",
@@ -1765,7 +1568,6 @@
   },
   {
     "Id": "thrilling-tales-of-dragon-slayers",
-    "IconSrc": "/images/weapons/weapon_thrilling_tales_of_dragon_slayers.png",
     "Name": "Thrilling Tales of Dragon Slayers",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1774,7 +1576,6 @@
   },
   {
     "Id": "travelers-handy-sword",
-    "IconSrc": "/images/weapons/weapon_travelers_handy_sword.png",
     "Name": "Traveler's Handy Sword",
     "Quality": 3,
     "BaseATK": "448(40)",
@@ -1783,7 +1584,6 @@
   },
   {
     "Id": "twin-nephrite",
-    "IconSrc": "/images/weapons/weapon_twin_nephrite.png",
     "Name": "Twin Nephrite",
     "Quality": 3,
     "BaseATK": "448(40)",
@@ -1792,7 +1592,6 @@
   },
   {
     "Id": "white-iron-greatsword",
-    "IconSrc": "/images/weapons/weapon_white_iron_greatsword.png",
     "Name": "White Iron Greatsword",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1801,7 +1600,6 @@
   },
   {
     "Id": "white-tassel",
-    "IconSrc": "/images/weapons/weapon_white_tassel.png",
     "Name": "White Tassel",
     "Quality": 3,
     "BaseATK": "401(39)",
@@ -1810,7 +1608,6 @@
   },
   {
     "Id": "iron-point",
-    "IconSrc": "/images/weapons/weapon_iron_point.png",
     "Name": "Iron Point",
     "Quality": 2,
     "BaseATK": "243(33)",
@@ -1819,7 +1616,6 @@
   },
   {
     "Id": "old-mercs-pal",
-    "IconSrc": "/images/weapons/weapon_old_mercs_pal.png",
     "Name": "Old Merc's Pal",
     "Quality": 2,
     "BaseATK": "243(33)",
@@ -1828,7 +1624,6 @@
   },
   {
     "Id": "pocket-grimoire",
-    "IconSrc": "/images/weapons/weapon_pocket_grimoire.png",
     "Name": "Pocket Grimoire",
     "Quality": 2,
     "BaseATK": "243(33)",
@@ -1837,7 +1632,6 @@
   },
   {
     "Id": "seasoned-hunters-bow",
-    "IconSrc": "/images/weapons/weapon_seasoned_hunters_bow.png",
     "Name": "Seasoned Hunter's Bow",
     "Quality": 2,
     "BaseATK": "243(33)",
@@ -1846,7 +1640,6 @@
   },
   {
     "Id": "silver-sword",
-    "IconSrc": "/images/weapons/weapon_silver_sword.png",
     "Name": "Silver Sword",
     "Quality": 2,
     "BaseATK": "243(33)",
@@ -1855,7 +1648,6 @@
   },
   {
     "Id": "apprentices-notes",
-    "IconSrc": "/images/weapons/weapon_apprentices_notes.png",
     "Name": "Apprentice's Notes",
     "Quality": 1,
     "BaseATK": "185(23)",
@@ -1864,7 +1656,6 @@
   },
   {
     "Id": "beginners-protector",
-    "IconSrc": "/images/weapons/weapon_beginners_protector.png",
     "Name": "Beginner's Protector",
     "Quality": 1,
     "BaseATK": "185(23)",
@@ -1873,7 +1664,6 @@
   },
   {
     "Id": "dull-blade",
-    "IconSrc": "/images/weapons/weapon_dull_blade.png",
     "Name": "Dull Blade",
     "Quality": 1,
     "BaseATK": "185(23)",
@@ -1882,7 +1672,6 @@
   },
   {
     "Id": "hunters-bow",
-    "IconSrc": "/images/weapons/weapon_hunters_bow.png",
     "Name": "Hunter's Bow",
     "Quality": 1,
     "BaseATK": "185(23)",
@@ -1891,7 +1680,6 @@
   },
   {
     "Id": "waster-greatsword",
-    "IconSrc": "/images/weapons/weapon_waster_greatsword.png",
     "Name": "Waster Greatsword",
     "Quality": 1,
     "BaseATK": "185(23)",
@@ -1900,7 +1688,6 @@
   },
   {
     "Id": "prized-isshin-blade-awakened",
-    "IconSrc": "/images/weapons/weapon_prized_isshin_blade_awakened.png",
     "Name": "Prized Isshin Blade (Awakened)",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1909,7 +1696,6 @@
   },
   {
     "Id": "prized-isshin-blade-shattered",
-    "IconSrc": "/images/weapons/weapon_prized_isshin_blade_shattered.png",
     "Name": "Prized Isshin Blade (Shattered)",
     "Quality": 4,
     "BaseATK": "510(42)",
@@ -1918,11 +1704,10 @@
   },
   {
     "Id": "sword-of-narzissenkreuz-quest",
-    "IconSrc": "/images/weapons/weapon_sword_of_narzissenkreuz_pneuma.png",
     "Name": "Sword of Narzissenkreuz (Quest)",
     "Quality": 4,
     "BaseATK": "510(42)",
     "SecondStat": "ATK 41.3%(9%)",
     "PassiveAbility": "\"Holy Sword\"In countless stories, the weapon that befits the legendary hero is also the key to opening all gates, required to surpass the climax and reach destiny's denouement."
   }
-]
+];
